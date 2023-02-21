@@ -23,7 +23,7 @@ public class SubscriptionEntity {
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
-    @Column(name = "end_date", nullable = false, unique = true)
+    @Column(name = "end_date", nullable = false, unique = false)
     private LocalDate endDate;
 
     @Column(name = "status", nullable = false)

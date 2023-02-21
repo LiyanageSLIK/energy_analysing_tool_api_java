@@ -18,7 +18,7 @@ public class TokenEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String token;
+    private String accessToken;
 
     @Column(name = "refresh_token", nullable = false)
     private String refreshToken;
