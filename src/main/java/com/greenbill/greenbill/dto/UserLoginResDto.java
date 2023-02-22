@@ -23,6 +23,7 @@ public class UserLoginResDto extends BaseDto{
     public UserLoginResDto(UserEntity userEntity) {
         this.firstName= userEntity.getFirstName();
         this.lastName= userEntity.getLastName();
+        this.role=userEntity.getRole();
         this.accessToken=userEntity.getToken().getAccessToken();
         this.refreshToken=userEntity.getToken().getRefreshToken();
     }
