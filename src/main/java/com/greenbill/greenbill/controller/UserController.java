@@ -17,7 +17,7 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseWrapper login(@RequestBody @Valid UserLoginDto userLoginDto) {
         try {
             return new ResponseWrapper(userService.login(userLoginDto),HttpStatus.OK.value(), "Success: Successfully loggedIn");

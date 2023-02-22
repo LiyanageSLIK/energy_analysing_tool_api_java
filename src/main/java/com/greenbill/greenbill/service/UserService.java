@@ -3,8 +3,10 @@ package com.greenbill.greenbill.service;
 import com.greenbill.greenbill.dto.UserLoginDto;
 import com.greenbill.greenbill.dto.UserLoginResDto;
 import com.greenbill.greenbill.dto.UserRegisterDto;
+import com.greenbill.greenbill.entity.TokenEntity;
 import com.greenbill.greenbill.entity.UserEntity;
 import com.greenbill.greenbill.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,7 +28,7 @@ public class UserService implements UserDetailsService {
 
 
 
-
+    @Transactional
     public UserLoginResDto login(UserLoginDto userLoginDto)throws HttpClientErrorException{
         String email= userLoginDto.getEmail();
         String password= userLoginDto.getPassword();
@@ -38,8 +40,17 @@ public class UserService implements UserDetailsService {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Email:User not found");
         }
         if(user.checkPassword(password)) {
-            user.setToken(tokenService.generateLoginToken(user));
-            userRepository.save(user);
+            TokenEntity existingToken=user.getToken();
+            TokenEntity generatedToken=tokenService.generateLoginToken(user);
+            if(existingToken!=null) {
+                existingToken.setAccessToken(generatedToken.getAccessToken());
+                existingToken.setRefreshToken(generatedToken.getRefreshToken());
+                user.setToken(existingToken);
+                userRepository.save(user);
+            }else{
+                user.setToken(generatedToken);
+                userRepository.save(user);
+            }
             return new UserLoginResDto(user);
         }else {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Wrong Password:Enter Correct Password");

@@ -52,11 +52,13 @@ public class UserEntity implements UserDetails {
     private final BCryptPasswordEncoder passwordEncoder= new BCryptPasswordEncoder();
 
     public void setPassword(String password) {
-        this.password = passwordEncoder.encode(password);
+//        this.password = passwordEncoder.encode(password);
+        this.password=password;
     }
 
     public boolean checkPassword(String password) {
-        return passwordEncoder.matches(password, this.password);
+//        return passwordEncoder.matches(password, this.password);
+        return this.password.equals(password);
     }
 
     public UserEntity(UserRegisterDto userRegisterDto) {
@@ -66,6 +68,7 @@ public class UserEntity implements UserDetails {
         this.setPassword(userRegisterDto.getPassword());
         this.setRole(Role.USER);
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

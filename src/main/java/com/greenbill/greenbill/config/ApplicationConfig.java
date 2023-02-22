@@ -2,6 +2,7 @@ package com.greenbill.greenbill.config;
 
 import com.greenbill.greenbill.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.authenticator.NonLoginAuthenticator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;

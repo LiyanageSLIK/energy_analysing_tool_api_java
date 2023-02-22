@@ -22,11 +22,10 @@ public class TokenService {
 
 
     public TokenEntity generateLoginToken(@NonNull UserEntity userEntity) {
-        TokenEntity token=new  TokenEntity();
-        token.setRefreshToken(jwtUtil.generateRefreshToken(userEntity.getEmail()));
-        token.setAccessToken(jwtUtil.generateAccessToken(userEntity.getEmail()));
-        userEntity.setToken(token);
-        return  token;
+        TokenEntity newToken =new TokenEntity();
+        newToken.setRefreshToken(jwtUtil.generateRefreshToken(userEntity.getEmail()));
+        newToken.setAccessToken(jwtUtil.generateAccessToken(userEntity.getEmail()));
+        return newToken;
     }
 
     public TokenEntity requestNewAccessToken(@NonNull String refreshToken)throws HttpClientErrorException {
