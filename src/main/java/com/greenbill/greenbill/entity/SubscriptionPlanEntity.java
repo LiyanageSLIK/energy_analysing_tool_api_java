@@ -28,23 +28,24 @@ public class SubscriptionPlanEntity {
     private SubscriptionPlan name;
 
     @Column(nullable = false)
-    private Integer rate;
+    private Float rate;
 
-    @Column(nullable = false)
+    @Column(name = "currency_code",nullable = false)
     @Enumerated(EnumType.STRING)
     private CurrencyCode currencyCode;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
+    @Enumerated(EnumType.STRING)
     private Cycle cycle;
 
-    @Column(nullable = false)
+    @Column(name = "plan_type",nullable = false)
     @Enumerated(EnumType.STRING)
     private PlanType planType;
 
-    @Column(name = "max_num_project", nullable = false)
+    @Column(name = "max_num_project", nullable = true)
     private Integer maxNumProject;
 
-    @Column(name = "max_num_node", nullable = false)
+    @Column(name = "max_num_node", nullable = true)
     private Integer maxNumNode;
 
     @Column(nullable = false)

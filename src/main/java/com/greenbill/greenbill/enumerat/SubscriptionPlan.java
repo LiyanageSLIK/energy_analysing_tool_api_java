@@ -5,5 +5,6 @@ public enum SubscriptionPlan {
     DOMESTIC_LITE,
     DOMESTIC_PRO,
     INDUSTRIAL,
-    INDUSTRIAL_FREEDOM
+    INDUSTRIAL_FREEDOM,
+    ADMIN_PLAN
 }
