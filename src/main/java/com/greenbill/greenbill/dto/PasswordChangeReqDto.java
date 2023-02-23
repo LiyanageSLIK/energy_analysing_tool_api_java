@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PasswordChangeReqDto  extends BaseDto{
+public class PasswordChangeReqDto extends BaseDto {
 
     private String email;
     private String OldPassword;

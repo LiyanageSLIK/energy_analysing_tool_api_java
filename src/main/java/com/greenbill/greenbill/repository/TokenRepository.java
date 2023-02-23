@@ -13,7 +13,9 @@ public interface TokenRepository extends JpaRepository<TokenEntity, Long> {
     @Modifying
     @Query("update TokenEntity t set t.accessToken = ?1, t.refreshToken = ?2")
     int updateAccessTokenAndRefreshTokenBy(String accessToken, String refreshToken);
+
     long deleteByIdAndAccessTokenAndRefreshToken(Long id, String accessToken, String refreshToken);
+
     TokenEntity findByAccessToken(String accessToken);
 
     long deleteByRefreshToken(String refreshToken);

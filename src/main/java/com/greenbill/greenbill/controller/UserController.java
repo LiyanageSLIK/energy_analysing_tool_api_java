@@ -22,7 +22,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseWrapper> login(@RequestBody @Valid UserLoginDto userLoginDto,@RequestHeader(value = "Authorization", required = true) String token) {
+    public ResponseEntity<ResponseWrapper> login(@RequestBody @Valid UserLoginDto userLoginDto, @RequestHeader(value = "Authorization", required = true) String token) {
         System.out.println("Authorization header value: " + token);
         try {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(userService.login(userLoginDto), HttpStatus.OK.value(), "Success: Successfully loggedIn"));
@@ -35,7 +35,7 @@ public class UserController {
     public ResponseEntity login(@RequestHeader(value = "Authorization", required = true) String token) {
         try {
             userService.logOut(token);
-            return ResponseEntity.status(HttpStatus.OK).body(new String("Success: Successfully loggedOut"));
+            return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully loggedOut");
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
         }
@@ -53,10 +53,10 @@ public class UserController {
     @PutMapping("/password")
     public ResponseEntity changePassword(@RequestBody @Valid PasswordChangeReqDto passwordChangeReqDto, @RequestHeader(value = "Authorization", required = true) String token) {
         try {
-            if(userService.changePassword(passwordChangeReqDto,token)){
-                return ResponseEntity.status(HttpStatus.OK).body(new String("Success: Successfully Changed Password"));
+            if (userService.changePassword(passwordChangeReqDto, token)) {
+                return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully Changed Password");
             }
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new String("UnSuccess: Password Not Changed"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("UnSuccess: Password Not Changed");
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
         }
@@ -65,10 +65,10 @@ public class UserController {
     @DeleteMapping("/delete")
     public ResponseEntity delete(@RequestBody @Valid UserLoginDto userLoginDto, @RequestHeader(value = "Authorization", required = true) String token) {
         try {
-            if(userService.delete(userLoginDto,token)){
-                return ResponseEntity.status(HttpStatus.OK).body(new String("Success: Account Successfully Deleted"));
+            if (userService.delete(userLoginDto, token)) {
+                return ResponseEntity.status(HttpStatus.OK).body("Success: Account Successfully Deleted");
             }
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new String("UnSuccess: Delete Unsuccessful"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("UnSuccess: Delete Unsuccessful");
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
         }

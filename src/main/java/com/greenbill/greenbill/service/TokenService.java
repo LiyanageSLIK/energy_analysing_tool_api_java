@@ -8,8 +8,6 @@ import com.greenbill.greenbill.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -24,7 +22,6 @@ public class TokenService {
     private TokenRepository tokenRepository;
 
 
-
     public TokenEntity generateLoginToken(@NonNull UserEntity userEntity) {
         TokenEntity newToken = new TokenEntity();
         newToken.setRefreshToken(jwtUtil.generateRefreshToken(userEntity.getEmail()));
@@ -33,7 +30,7 @@ public class TokenService {
     }
 
     public AccessTokenReqResDto requestNewAccessToken(@NonNull AccessTokenReqResDto accessTokenReqResDto) throws HttpClientErrorException {
-        String refreshToken= accessTokenReqResDto.getToken();
+        String refreshToken = accessTokenReqResDto.getToken();
         TokenEntity token = tokenRepository.findByRefreshToken(refreshToken);
         if (token == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:RToken not found in DB");
@@ -42,7 +39,7 @@ public class TokenService {
             ResetTokenAttributesByRefreshToken(refreshToken);
             throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Token Expired:RToken Expired Please login ");
         }
-        String userEmail=jwtUtil.extractEmail(refreshToken);
+        String userEmail = jwtUtil.extractEmail(refreshToken);
         token.setAccessToken(jwtUtil.generateAccessToken(userEmail));
         tokenRepository.save(token);
         return new AccessTokenReqResDto(token.getAccessToken());

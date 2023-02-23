@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccessTokenReqResDto extends BaseDto{
+public class AccessTokenReqResDto extends BaseDto {
     private String token;
 }

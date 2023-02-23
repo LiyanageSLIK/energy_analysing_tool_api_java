@@ -31,8 +31,6 @@ public class UserService implements UserDetailsService {
     private JwtUtil jwtUtil;
 
 
-
-
     @Transactional
     public UserLoginResDto login(UserLoginDto userLoginDto) throws HttpClientErrorException {
         String email = userLoginDto.getEmail();
@@ -72,27 +70,28 @@ public class UserService implements UserDetailsService {
         userRepository.save(newUser);
         return new UserLoginResDto(newUser);
     }
+
     public boolean logOut(String token) throws HttpClientErrorException {
-        String accessToken=token.substring(7);
+        String accessToken = token.substring(7);
         if (accessToken == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Token is empty");
         }
         return tokenService.ResetTokenAttributesByAccessToken(accessToken);
     }
 
-    public boolean changePassword(PasswordChangeReqDto passwordChangeReqDto,String token) throws HttpClientErrorException {
-        String accessToken=token.substring(7);
+    public boolean changePassword(PasswordChangeReqDto passwordChangeReqDto, String token) throws HttpClientErrorException {
+        String accessToken = token.substring(7);
         if (accessToken == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Token is empty");
         }
-        String userEmail= passwordChangeReqDto.getEmail();
-        String tokenEmail=jwtUtil.extractEmail(accessToken);
+        String userEmail = passwordChangeReqDto.getEmail();
+        String tokenEmail = jwtUtil.extractEmail(accessToken);
         if (!userEmail.equals(tokenEmail)) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Conflict With Email");
         }
-        String userOldPassword= passwordChangeReqDto.getOldPassword();
-        String userNewPassword=passwordChangeReqDto.getNewPassword();
-        UserEntity user= (UserEntity) loadUserByUsername(userEmail);
+        String userOldPassword = passwordChangeReqDto.getOldPassword();
+        String userNewPassword = passwordChangeReqDto.getNewPassword();
+        UserEntity user = (UserEntity) loadUserByUsername(userEmail);
         if (!user.checkPassword(userOldPassword)) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Conflict: Old Password is wrong");
         }
@@ -101,23 +100,23 @@ public class UserService implements UserDetailsService {
         return (userRepository.save(user).checkPassword(userNewPassword));
     }
 
-    public boolean delete(UserLoginDto userLoginDto,String token) throws HttpClientErrorException {
-        String accessToken=token.substring(7);
+    public boolean delete(UserLoginDto userLoginDto, String token) throws HttpClientErrorException {
+        String accessToken = token.substring(7);
         if (accessToken == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Token is empty");
         }
-        String userEmail= userLoginDto.getEmail();
-        String tokenEmail=jwtUtil.extractEmail(accessToken);
+        String userEmail = userLoginDto.getEmail();
+        String tokenEmail = jwtUtil.extractEmail(accessToken);
         if (!userEmail.equals(tokenEmail)) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Conflict With Email");
         }
-        String userPassword= userLoginDto.getPassword();
-        UserEntity user= (UserEntity) loadUserByUsername(userEmail);
+        String userPassword = userLoginDto.getPassword();
+        UserEntity user = (UserEntity) loadUserByUsername(userEmail);
         if (!user.checkPassword(userPassword)) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Conflict:Password is wrong");
         }
         userRepository.delete(user);
-        return (loadUserByUsername(userEmail)==null);
+        return (loadUserByUsername(userEmail) == null);
     }
 
 
