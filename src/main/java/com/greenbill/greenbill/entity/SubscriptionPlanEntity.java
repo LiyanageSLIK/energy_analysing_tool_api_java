@@ -1,15 +1,13 @@
 package com.greenbill.greenbill.entity;
 
-import com.greenbill.greenbill.enumerat.CurrencyCode;
-import com.greenbill.greenbill.enumerat.PlanType;
-import com.greenbill.greenbill.enumerat.Status;
-import com.greenbill.greenbill.enumerat.SubscriptionPlan;
+import com.greenbill.greenbill.enumerat.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +35,7 @@ public class SubscriptionPlanEntity {
     private CurrencyCode currencyCode;
 
     @Column(nullable = false)
-    private String cycle;
+    private Cycle cycle;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
