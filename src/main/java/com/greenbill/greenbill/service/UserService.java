@@ -101,6 +101,25 @@ public class UserService implements UserDetailsService {
         return (userRepository.save(user).checkPassword(userNewPassword));
     }
 
+    public boolean delete(UserLoginDto userLoginDto,String token) throws HttpClientErrorException {
+        String accessToken=token.substring(7);
+        if (accessToken == null) {
+            throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Token is empty");
+        }
+        String userEmail= userLoginDto.getEmail();
+        String tokenEmail=jwtUtil.extractEmail(accessToken);
+        if (!userEmail.equals(tokenEmail)) {
+            throw new HttpClientErrorException(HttpStatus.CONFLICT, "Conflict With Email");
+        }
+        String userPassword= userLoginDto.getPassword();
+        UserEntity user= (UserEntity) loadUserByUsername(userEmail);
+        if (!user.checkPassword(userPassword)) {
+            throw new HttpClientErrorException(HttpStatus.CONFLICT, "Conflict:Password is wrong");
+        }
+        userRepository.delete(user);
+        return (loadUserByUsername(userEmail)==null);
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

@@ -62,5 +62,17 @@ public class UserController {
         }
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity delete(@RequestBody @Valid UserLoginDto userLoginDto, @RequestHeader(value = "Authorization", required = true) String token) {
+        try {
+            if(userService.delete(userLoginDto,token)){
+                return ResponseEntity.status(HttpStatus.OK).body(new String("Success: Account Successfully Deleted"));
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new String("UnSuccess: Delete Unsuccessful"));
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
+        }
+    }
+
 
 }
