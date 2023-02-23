@@ -9,7 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
 @Controller
@@ -19,24 +22,24 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
     @PostMapping("/login")
-    public ResponseEntity<ResponseWrapper>  login(@RequestBody @Valid UserLoginDto userLoginDto) {
+    public ResponseEntity<ResponseWrapper> login(@RequestBody @Valid UserLoginDto userLoginDto) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(userService.login(userLoginDto),HttpStatus.OK.value(), "Success: Successfully loggedIn")) ;
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(userService.login(userLoginDto), HttpStatus.OK.value(), "Success: Successfully loggedIn"));
         } catch (HttpClientErrorException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(new ResponseWrapper(null, e.getStatusCode().value(), e.getMessage())) ;
+            return ResponseEntity.status(e.getStatusCode()).body(new ResponseWrapper(null, e.getStatusCode().value(), e.getMessage()));
         }
     }
 
     @PostMapping("/register")
     public ResponseEntity<ResponseWrapper> register(@RequestBody @Valid UserRegisterDto userRegisterDto) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(userService.register(userRegisterDto),HttpStatus.OK.value(), "Success: Successfully Registered"));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(userService.register(userRegisterDto), HttpStatus.OK.value(), "Success: Successfully Registered"));
         } catch (HttpClientErrorException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(new ResponseWrapper(null, e.getStatusCode().value(), e.getMessage())) ;
+            return ResponseEntity.status(e.getStatusCode()).body(new ResponseWrapper(null, e.getStatusCode().value(), e.getMessage()));
         }
     }
-
 
 
 }

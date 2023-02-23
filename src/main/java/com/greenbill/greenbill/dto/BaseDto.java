@@ -1,6 +1,8 @@
 package com.greenbill.greenbill.dto;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 
 @Data

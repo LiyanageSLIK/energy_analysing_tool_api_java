@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRegisterDto extends BaseDto{
+public class UserRegisterDto extends BaseDto {
 
     private String firstName;
     private String lastName;
@@ -18,11 +18,11 @@ public class UserRegisterDto extends BaseDto{
     private String password;
 
 
-    public UserRegisterDto(UserEntity userEntity){
-        this.firstName= userEntity.getFirstName();
-        this.lastName= userEntity.getLastName();
-        this.email= userEntity.getEmail();
-        this.password= userEntity.getPassword();
+    public UserRegisterDto(UserEntity userEntity) {
+        this.firstName = userEntity.getFirstName();
+        this.lastName = userEntity.getLastName();
+        this.email = userEntity.getEmail();
+        this.password = userEntity.getPassword();
 
     }
 }

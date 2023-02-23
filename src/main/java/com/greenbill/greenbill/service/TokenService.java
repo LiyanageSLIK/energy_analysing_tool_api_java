@@ -22,15 +22,15 @@ public class TokenService {
 
 
     public TokenEntity generateLoginToken(@NonNull UserEntity userEntity) {
-        TokenEntity newToken =new TokenEntity();
+        TokenEntity newToken = new TokenEntity();
         newToken.setRefreshToken(jwtUtil.generateRefreshToken(userEntity.getEmail()));
         newToken.setAccessToken(jwtUtil.generateAccessToken(userEntity.getEmail()));
         return newToken;
     }
 
-    public TokenEntity requestNewAccessToken(@NonNull String refreshToken)throws HttpClientErrorException {
-        TokenEntity token=tokenRepository.findByRefreshToken(refreshToken);
-        if (token==null){
+    public TokenEntity requestNewAccessToken(@NonNull String refreshToken) throws HttpClientErrorException {
+        TokenEntity token = tokenRepository.findByRefreshToken(refreshToken);
+        if (token == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:RToken not found in DB");
         }
         if (jwtUtil.isTokenExpired(refreshToken)) {
@@ -38,12 +38,12 @@ public class TokenService {
             throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Token Expired:RToken Expired Please login ");
         }
         token.setAccessToken(jwtUtil.generateAccessToken(jwtUtil.extractEmail(refreshToken)));
-        return  tokenRepository.save(token);
+        return tokenRepository.save(token);
     }
 
-    public Boolean validateAccessToken(String accessToken)throws HttpClientErrorException {
-        TokenEntity token=tokenRepository.findByAccessToken(accessToken);
-        if (token==null){
+    public Boolean validateAccessToken(String accessToken) throws HttpClientErrorException {
+        TokenEntity token = tokenRepository.findByAccessToken(accessToken);
+        if (token == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:AToken not found in DB");
         }
         if (jwtUtil.isTokenExpired(accessToken)) {

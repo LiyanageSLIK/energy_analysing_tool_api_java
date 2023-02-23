@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class GreenbillApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(GreenbillApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(GreenbillApplication.class, args);
+    }
 
 }

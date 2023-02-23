@@ -29,10 +29,10 @@ public class SubscriptionEntity {
     @Column(name = "status", nullable = false)
     private boolean status;
 
-    @ManyToOne( cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserEntity user;
 
-    @ManyToOne( cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private SubscriptionPlanEntity subscriptionPlan;
 
 

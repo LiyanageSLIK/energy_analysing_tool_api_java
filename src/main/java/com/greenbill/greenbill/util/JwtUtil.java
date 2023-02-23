@@ -6,7 +6,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -21,8 +23,7 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    private static  final  String SECRET_KEY ="73357538782F413F4428472B4B6250655368566D5971337436773979244226452948404D635166546A576E5A7234753778214125432A462D4A614E645267556B";
-
+    private static final String SECRET_KEY = "73357538782F413F4428472B4B6250655368566D5971337436773979244226452948404D635166546A576E5A7234753778214125432A462D4A614E645267556B";
 
 
     public String generateAccessToken(String email) {
@@ -74,8 +75,8 @@ public class JwtUtil {
         return Jwts.parserBuilder().setSigningKey(getSecretKey()).build().parseClaimsJws(token).getBody();
     }
 
-    private Key getSecretKey(){
-        byte[] keyByte= Decoders.BASE64.decode(SECRET_KEY);
+    private Key getSecretKey() {
+        byte[] keyByte = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyByte);
     }
 
