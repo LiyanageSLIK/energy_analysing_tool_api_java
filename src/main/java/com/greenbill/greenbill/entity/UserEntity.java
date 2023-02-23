@@ -53,8 +53,8 @@ public class UserEntity implements UserDetails {
     }
 
     public boolean checkPassword(String password) {
-//        return passwordEncoder.matches(password, this.password);
-        return this.password.equals(password);
+        return passwordEncoder.matches(password, this.password);
+//        return this.password.equals(password);
     }
 
     @Override
@@ -68,8 +68,8 @@ public class UserEntity implements UserDetails {
     }
 
     public void setPassword(String password) {
-//        this.password = passwordEncoder.encode(password);
-        this.password = password;
+        this.password = passwordEncoder.encode(password);
+//        this.password = password;
     }
 
     @Override

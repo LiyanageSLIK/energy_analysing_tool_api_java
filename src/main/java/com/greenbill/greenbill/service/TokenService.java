@@ -52,5 +52,16 @@ public class TokenService {
         return true;
     }
 
+    public boolean ResetTokenAttributes(String accessToken) throws HttpClientErrorException {
+        TokenEntity token = tokenRepository.findByAccessToken(accessToken);
+        if (token == null) {
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:AToken not found in DB");
+        }
+        token.setAccessToken("loggedOut");
+        token.setRefreshToken("loggedOut");
+        tokenRepository.save(token);
+        return (tokenRepository.save(token)!=null);
+    }
+
 
 }

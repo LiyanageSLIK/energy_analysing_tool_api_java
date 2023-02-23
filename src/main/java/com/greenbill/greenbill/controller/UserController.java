@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 @Controller
@@ -24,11 +21,23 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseWrapper> login(@RequestBody @Valid UserLoginDto userLoginDto) {
+    public ResponseEntity<ResponseWrapper> login(@RequestBody @Valid UserLoginDto userLoginDto,@RequestHeader(value = "Authorization", required = true) String token) {
+        System.out.println("Authorization header value: " + token);
         try {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(userService.login(userLoginDto), HttpStatus.OK.value(), "Success: Successfully loggedIn"));
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(new ResponseWrapper(null, e.getStatusCode().value(), e.getMessage()));
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity login(@RequestHeader(value = "Authorization", required = true) String token) {
+        System.out.println("Authorization header value: " + token);
+        try {
+            userService.logOut(token);
+            return ResponseEntity.status(HttpStatus.OK).body(new String("Success: Successfully loggedOut"));
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
         }
     }
 

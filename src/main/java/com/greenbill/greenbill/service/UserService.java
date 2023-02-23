@@ -7,7 +7,6 @@ import com.greenbill.greenbill.entity.TokenEntity;
 import com.greenbill.greenbill.entity.UserEntity;
 import com.greenbill.greenbill.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +24,8 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private TokenService tokenService;
+
+
 
 
     @Transactional
@@ -56,7 +57,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public UserLoginResDto register(@Valid UserRegisterDto userRegisterDto) throws HttpClientErrorException {
+    public UserLoginResDto register(UserRegisterDto userRegisterDto) throws HttpClientErrorException {
         UserEntity user = (UserEntity) loadUserByUsername(userRegisterDto.getEmail());
         if (user != null) {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Existing Email:Email already registered");
@@ -65,6 +66,13 @@ public class UserService implements UserDetailsService {
         newUser.setToken(tokenService.generateLoginToken(newUser));
         userRepository.save(newUser);
         return new UserLoginResDto(newUser);
+    }
+    public boolean logOut(String token) throws HttpClientErrorException {
+        String accessToken=token.substring(7);
+        if (accessToken == null) {
+            throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Token is empty");
+        }
+        return tokenService.ResetTokenAttributes(accessToken);
     }
 
 
