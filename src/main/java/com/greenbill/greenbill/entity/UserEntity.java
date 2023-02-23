@@ -4,6 +4,10 @@ import com.greenbill.greenbill.dto.UserRegisterDto;
 import com.greenbill.greenbill.util.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 //import org.springframework.security.core.GrantedAuthority;
 //import org.springframework.security.core.authority.SimpleGrantedAuthority;
 //import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "user")
-public class UserEntity /**implements UserDetails**/ {
+public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -48,8 +52,8 @@ public class UserEntity /**implements UserDetails**/ {
     private List<SubscriptionEntity> subscriptions = new ArrayList<>();
 
 
-//    @Transient
-//    private final BCryptPasswordEncoder passwordEncoder= new BCryptPasswordEncoder();
+    @Transient
+    private final BCryptPasswordEncoder passwordEncoder= new BCryptPasswordEncoder();
 
     public void setPassword(String password) {
 //        this.password = passwordEncoder.encode(password);
@@ -70,37 +74,37 @@ public class UserEntity /**implements UserDetails**/ {
     }
 
 
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return List.of(new SimpleGrantedAuthority(role.name()));
-//    }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
 
-//    @Override
-//    public String getPassword() {
-//        return this.password;
-//    }
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
 
-//    @Override
+    @Override
     public String getUsername() {
         return getEmail();
     }
 
-//    @Override
+    @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
-//    @Override
+    @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
-//    @Override
+    @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-//    @Override
+    @Override
     public boolean isEnabled() {
         return true;
     }
