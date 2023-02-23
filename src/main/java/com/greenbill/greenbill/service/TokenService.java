@@ -21,7 +21,6 @@ public class TokenService {
     @Autowired
     private TokenRepository tokenRepository;
 
-
     public TokenEntity generateLoginToken(@NonNull UserEntity userEntity) {
         TokenEntity newToken = new TokenEntity();
         newToken.setRefreshToken(jwtUtil.generateRefreshToken(userEntity.getEmail()));
@@ -76,7 +75,5 @@ public class TokenService {
         token.setRefreshToken("loggedOut");
         tokenRepository.save(token);
         return (tokenRepository.save(token) != null);
-
-
     }
 }

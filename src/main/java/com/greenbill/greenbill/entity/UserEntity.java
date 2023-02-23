@@ -1,7 +1,7 @@
 package com.greenbill.greenbill.entity;
 
 import com.greenbill.greenbill.dto.UserRegisterDto;
-import com.greenbill.greenbill.util.Role;
+import com.greenbill.greenbill.enumerat.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

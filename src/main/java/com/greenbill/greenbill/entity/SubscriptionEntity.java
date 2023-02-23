@@ -1,5 +1,6 @@
 package com.greenbill.greenbill.entity;
 
+import com.greenbill.greenbill.enumerat.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +28,8 @@ public class SubscriptionEntity {
     private LocalDate endDate;
 
     @Column(name = "status", nullable = false)
-    private boolean status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserEntity user;

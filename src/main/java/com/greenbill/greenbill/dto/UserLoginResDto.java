@@ -1,7 +1,7 @@
 package com.greenbill.greenbill.dto;
 
 import com.greenbill.greenbill.entity.UserEntity;
-import com.greenbill.greenbill.util.Role;
+import com.greenbill.greenbill.enumerat.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

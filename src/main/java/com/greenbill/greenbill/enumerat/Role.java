@@ -1,4 +1,4 @@
-package com.greenbill.greenbill.util;
+package com.greenbill.greenbill.enumerat;
 
 public enum Role {
     USER,
