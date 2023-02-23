@@ -2,6 +2,7 @@ package com.greenbill.greenbill.entity;
 
 import com.greenbill.greenbill.dto.UserRegisterDto;
 import com.greenbill.greenbill.enumerat.Role;
+import com.greenbill.greenbill.enumerat.VerifyType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,7 +39,7 @@ public class UserEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
     @Column(nullable = false)
-    private boolean verified;
+    private VerifyType verifyType;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private TokenEntity token;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -50,6 +51,7 @@ public class UserEntity implements UserDetails {
         this.email = userRegisterDto.getEmail();
         this.setPassword(userRegisterDto.getPassword());
         this.setRole(Role.USER);
+        this.setVerifyType(VerifyType.PENDING);
     }
 
     public boolean checkPassword(String password) {
