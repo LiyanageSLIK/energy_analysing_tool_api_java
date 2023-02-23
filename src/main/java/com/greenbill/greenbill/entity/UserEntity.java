@@ -39,6 +39,7 @@ public class UserEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private VerifyType verifyType;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private TokenEntity token;
