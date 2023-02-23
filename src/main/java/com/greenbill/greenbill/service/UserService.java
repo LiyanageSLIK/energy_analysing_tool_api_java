@@ -72,7 +72,7 @@ public class UserService implements UserDetailsService {
         if (accessToken == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Token is empty");
         }
-        return tokenService.ResetTokenAttributes(accessToken);
+        return tokenService.ResetTokenAttributesByAccessToken(accessToken);
     }
 
 

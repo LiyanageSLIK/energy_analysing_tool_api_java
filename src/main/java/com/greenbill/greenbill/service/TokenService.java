@@ -1,5 +1,6 @@
 package com.greenbill.greenbill.service;
 
+import com.greenbill.greenbill.dto.AccessTokenReqResDto;
 import com.greenbill.greenbill.entity.TokenEntity;
 import com.greenbill.greenbill.entity.UserEntity;
 import com.greenbill.greenbill.repository.TokenRepository;
@@ -28,17 +29,20 @@ public class TokenService {
         return newToken;
     }
 
-    public TokenEntity requestNewAccessToken(@NonNull String refreshToken) throws HttpClientErrorException {
+    public AccessTokenReqResDto requestNewAccessToken(@NonNull AccessTokenReqResDto accessTokenReqResDto) throws HttpClientErrorException {
+        String refreshToken= accessTokenReqResDto.getToken();
         TokenEntity token = tokenRepository.findByRefreshToken(refreshToken);
         if (token == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:RToken not found in DB");
         }
         if (jwtUtil.isTokenExpired(refreshToken)) {
-            tokenRepository.deleteByRefreshToken(refreshToken);
+            ResetTokenAttributesByRefreshToken(refreshToken);
             throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Token Expired:RToken Expired Please login ");
         }
-        token.setAccessToken(jwtUtil.generateAccessToken(jwtUtil.extractEmail(refreshToken)));
-        return tokenRepository.save(token);
+        String userEmail=jwtUtil.extractEmail(refreshToken);
+        token.setAccessToken(jwtUtil.generateAccessToken(userEmail));
+        tokenRepository.save(token);
+        return new AccessTokenReqResDto(token.getAccessToken());
     }
 
     public Boolean validateAccessToken(String accessToken) throws HttpClientErrorException {
@@ -52,7 +56,7 @@ public class TokenService {
         return true;
     }
 
-    public boolean ResetTokenAttributes(String accessToken) throws HttpClientErrorException {
+    public boolean ResetTokenAttributesByAccessToken(String accessToken) throws HttpClientErrorException {
         TokenEntity token = tokenRepository.findByAccessToken(accessToken);
         if (token == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:AToken not found in DB");
@@ -60,8 +64,19 @@ public class TokenService {
         token.setAccessToken("loggedOut");
         token.setRefreshToken("loggedOut");
         tokenRepository.save(token);
-        return (tokenRepository.save(token)!=null);
+        return (tokenRepository.save(token) != null);
     }
 
+    public boolean ResetTokenAttributesByRefreshToken(String refreshToken) throws HttpClientErrorException {
+        TokenEntity token = tokenRepository.findByRefreshToken(refreshToken);
+        if (token == null) {
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:AToken not found in DB");
+        }
+        token.setAccessToken("loggedOut");
+        token.setRefreshToken("loggedOut");
+        tokenRepository.save(token);
+        return (tokenRepository.save(token) != null);
 
+
+    }
 }
