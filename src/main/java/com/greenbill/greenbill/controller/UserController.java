@@ -1,5 +1,6 @@
 package com.greenbill.greenbill.controller;
 
+import com.greenbill.greenbill.dto.PasswordChangeReqDto;
 import com.greenbill.greenbill.dto.ResponseWrapper;
 import com.greenbill.greenbill.dto.UserLoginDto;
 import com.greenbill.greenbill.dto.UserRegisterDto;
@@ -32,7 +33,6 @@ public class UserController {
 
     @PostMapping("/logout")
     public ResponseEntity login(@RequestHeader(value = "Authorization", required = true) String token) {
-        System.out.println("Authorization header value: " + token);
         try {
             userService.logOut(token);
             return ResponseEntity.status(HttpStatus.OK).body(new String("Success: Successfully loggedOut"));
@@ -47,6 +47,18 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(userService.register(userRegisterDto), HttpStatus.OK.value(), "Success: Successfully Registered"));
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(new ResponseWrapper(null, e.getStatusCode().value(), e.getMessage()));
+        }
+    }
+
+    @PutMapping("/password")
+    public ResponseEntity changePassword(@RequestBody @Valid PasswordChangeReqDto passwordChangeReqDto, @RequestHeader(value = "Authorization", required = true) String token) {
+        try {
+            if(userService.changePassword(passwordChangeReqDto,token)){
+                return ResponseEntity.status(HttpStatus.OK).body(new String("Success: Successfully Changed Password"));
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new String("UnSuccess: Password Not Changed"));
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
         }
     }
 

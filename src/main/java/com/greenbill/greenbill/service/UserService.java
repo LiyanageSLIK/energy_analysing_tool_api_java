@@ -1,11 +1,13 @@
 package com.greenbill.greenbill.service;
 
+import com.greenbill.greenbill.dto.PasswordChangeReqDto;
 import com.greenbill.greenbill.dto.UserLoginDto;
 import com.greenbill.greenbill.dto.UserLoginResDto;
 import com.greenbill.greenbill.dto.UserRegisterDto;
 import com.greenbill.greenbill.entity.TokenEntity;
 import com.greenbill.greenbill.entity.UserEntity;
 import com.greenbill.greenbill.repository.UserRepository;
+import com.greenbill.greenbill.util.JwtUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,9 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
 
 
@@ -73,6 +78,27 @@ public class UserService implements UserDetailsService {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Token is empty");
         }
         return tokenService.ResetTokenAttributesByAccessToken(accessToken);
+    }
+
+    public boolean changePassword(PasswordChangeReqDto passwordChangeReqDto,String token) throws HttpClientErrorException {
+        String accessToken=token.substring(7);
+        if (accessToken == null) {
+            throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Token is empty");
+        }
+        String userEmail= passwordChangeReqDto.getEmail();
+        String tokenEmail=jwtUtil.extractEmail(accessToken);
+        if (!userEmail.equals(tokenEmail)) {
+            throw new HttpClientErrorException(HttpStatus.CONFLICT, "Conflict With Email");
+        }
+        String userOldPassword= passwordChangeReqDto.getOldPassword();
+        String userNewPassword=passwordChangeReqDto.getNewPassword();
+        UserEntity user= (UserEntity) loadUserByUsername(userEmail);
+        if (!user.checkPassword(userOldPassword)) {
+            throw new HttpClientErrorException(HttpStatus.CONFLICT, "Conflict: Old Password is wrong");
+        }
+        user.setPassword(userNewPassword);
+        tokenService.ResetTokenAttributesByAccessToken(accessToken);
+        return (userRepository.save(user).checkPassword(userNewPassword));
     }
 
 
