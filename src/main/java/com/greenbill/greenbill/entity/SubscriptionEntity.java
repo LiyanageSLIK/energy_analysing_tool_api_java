@@ -1,6 +1,8 @@
 package com.greenbill.greenbill.entity;
 
+import com.greenbill.greenbill.enumerat.Cycle;
 import com.greenbill.greenbill.enumerat.Status;
+import com.greenbill.greenbill.enumerat.SubscriptionPlan;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,11 +10,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "subscription")
@@ -24,7 +26,7 @@ public class SubscriptionEntity {
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
-    @Column(name = "end_date", nullable = false, unique = false)
+    @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
     @Column(name = "status", nullable = false)
@@ -37,5 +39,16 @@ public class SubscriptionEntity {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private SubscriptionPlanEntity subscriptionPlan;
 
+    public SubscriptionEntity() {
+        this.startDate=LocalDate.now();
+        this.status=Status.ACTIVE;
 
+    }
+
+    public void setSubscriptionPlan(SubscriptionPlanEntity subscriptionPlan) {
+        this.subscriptionPlan = subscriptionPlan;
+        Cycle cycle=subscriptionPlan.getCycle();
+        this.endDate=this.startDate.plusMonths(cycle.getMonth());
+
+    }
 }

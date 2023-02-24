@@ -3,6 +3,7 @@ package com.greenbill.greenbill.enumerat;
 import lombok.Data;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -11,8 +12,10 @@ public enum Cycle {
     THREE_MONTH(3),
     SIX_MONTH(6),
     ONE_YEAR(12),
-    TWO_YEAR(24)
-    ;
+    TWO_YEAR(24),
+    UNLIMITED (12000);
+
+
     private final Integer month;
 
     Cycle(Integer month) {

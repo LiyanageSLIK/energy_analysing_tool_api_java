@@ -1,4 +1,4 @@
-INSERT INTO greenbill.subscription_plan (name, rate, currency_code, cycle, plan_type, max_num_project, max_num_node, status) VALUES ('FREE',0.00, 'LKR',NULL,'FREE',1,5,'ACTIVE');
+INSERT INTO greenbill.subscription_plan (name, rate, currency_code, cycle, plan_type, max_num_project, max_num_node, status) VALUES ('FREE',0.00, 'LKR','UNLIMITED','FREE',1,5,'ACTIVE');
 INSERT INTO greenbill.subscription_plan (name, rate, currency_code, cycle, plan_type, max_num_project, max_num_node, status) VALUES ('DOMESTIC_LITE',3000.00, 'LKR','SIX_MONTH','PAID',5,25,'ACTIVE');
 INSERT INTO greenbill.subscription_plan (name, rate, currency_code, cycle, plan_type, max_num_project, max_num_node, status) VALUES ('INDUSTRIAL_FREEDOM',80000.00, 'LKR','SIX_MONTH','PAID',50,250,'INACTIVE');
-INSERT INTO greenbill.subscription_plan (name, rate, currency_code, cycle, plan_type, max_num_project, max_num_node, status) VALUES ('ADMIN_PLAN',00.00, 'LKR',NULL,'ADMIN',NULL,NULL,'ACTIVE');
+INSERT INTO greenbill.subscription_plan (name, rate, currency_code, cycle, plan_type, max_num_project, max_num_node, status) VALUES ('ADMIN_PLAN',00.00, 'LKR','UNLIMITED','ADMIN',NULL,NULL,'ACTIVE');

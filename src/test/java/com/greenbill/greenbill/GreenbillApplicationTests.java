@@ -8,6 +8,7 @@ class GreenbillApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }

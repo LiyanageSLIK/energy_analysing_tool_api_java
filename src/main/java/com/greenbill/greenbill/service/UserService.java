@@ -4,8 +4,13 @@ import com.greenbill.greenbill.dto.PasswordChangeReqDto;
 import com.greenbill.greenbill.dto.UserLoginDto;
 import com.greenbill.greenbill.dto.UserLoginResDto;
 import com.greenbill.greenbill.dto.UserRegisterDto;
+import com.greenbill.greenbill.entity.SubscriptionEntity;
+import com.greenbill.greenbill.entity.SubscriptionPlanEntity;
 import com.greenbill.greenbill.entity.TokenEntity;
 import com.greenbill.greenbill.entity.UserEntity;
+import com.greenbill.greenbill.enumerat.SubscriptionPlan;
+import com.greenbill.greenbill.repository.SubscriptionPlanRepository;
+import com.greenbill.greenbill.repository.SubscriptionRepository;
 import com.greenbill.greenbill.repository.UserRepository;
 import com.greenbill.greenbill.util.JwtUtil;
 import jakarta.transaction.Transactional;
@@ -17,12 +22,21 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Service
 public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SubscriptionPlanRepository subscriptionPlanRepository;
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
 
     @Autowired
     private TokenService tokenService;
@@ -60,12 +74,19 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    @Transactional
     public UserLoginResDto register(UserRegisterDto userRegisterDto) throws HttpClientErrorException {
         UserEntity user = (UserEntity) loadUserByUsername(userRegisterDto.getEmail());
         if (user != null) {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Existing Email:Email already registered");
         }
         UserEntity newUser = new UserEntity(userRegisterDto);
+        SubscriptionPlanEntity initialPlan=subscriptionPlanRepository.findByName(SubscriptionPlan.FREE);
+        SubscriptionEntity initialSubscription=new SubscriptionEntity();
+        initialSubscription.setSubscriptionPlan(initialPlan);
+        List<SubscriptionEntity> initialSubsList=newUser.getSubscriptions();
+        initialSubsList.add(initialSubscription);
+        newUser.setSubscriptions(initialSubsList);
         newUser.setToken(tokenService.generateLoginToken(newUser));
         userRepository.save(newUser);
         return new UserLoginResDto(newUser);
