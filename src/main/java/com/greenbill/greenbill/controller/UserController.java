@@ -22,8 +22,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseWrapper> login(@RequestBody @Valid UserLoginDto userLoginDto, @RequestHeader(value = "Authorization", required = true) String token) {
-        System.out.println("Authorization header value: " + token);
+    public ResponseEntity<ResponseWrapper> login(@RequestBody @Valid UserLoginDto userLoginDto) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(userService.login(userLoginDto), HttpStatus.OK.value(), "Success: Successfully loggedIn"));
         } catch (HttpClientErrorException e) {
