@@ -45,7 +45,7 @@ public class SubscriptionService {
     }
 
     @Transactional
-    public void addSubscription(String email, SubscriptionPlan planName) throws HttpClientErrorException {
+    public SubscriptionEntity addSubscription(String email, SubscriptionPlan planName) throws HttpClientErrorException {
         UserEntity user = userRepository.findByEmail(email);
         SubscriptionPlanEntity subscriptionPlan = subscriptionPlanRepository.findByName(planName);
         if (user == null) {
@@ -60,13 +60,12 @@ public class SubscriptionService {
             SubscriptionEntity freeSubscription = subscriptionRepository.findFirstByUser_EmailAndSubscriptionPlan_Name(email, planName);
             freeSubscription.setStatus(Status.ACTIVE);
             subscriptionRepository.save(currentSubscription);
-            subscriptionRepository.save(freeSubscription);
+            return subscriptionRepository.save(freeSubscription);
         } else {
-            List<SubscriptionEntity> subsList = user.getSubscriptions();
             SubscriptionEntity newSubscription = new SubscriptionEntity();
             newSubscription.setSubscriptionPlan(subscriptionPlan);
-            user.setSubscriptions(subsList);
-            userRepository.save(user);
+            newSubscription.setUser(user);
+            return subscriptionRepository.save(newSubscription);
         }
     }
 

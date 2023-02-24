@@ -83,11 +83,9 @@ public class UserService implements UserDetailsService {
         SubscriptionPlanEntity initialPlan = subscriptionPlanRepository.findByName(SubscriptionPlan.FREE);
         SubscriptionEntity initialSubscription = new SubscriptionEntity();
         initialSubscription.setSubscriptionPlan(initialPlan);
-        List<SubscriptionEntity> initialSubsList = newUser.getSubscriptions();
-        initialSubsList.add(initialSubscription);
-        newUser.setSubscriptions(initialSubsList);
         newUser.setToken(tokenService.generateLoginToken(newUser));
-        userRepository.save(newUser);
+        initialSubscription.setUser(userRepository.save(newUser));
+        subscriptionRepository.save(initialSubscription);
         return new UserLoginResDto(newUser);
     }
 
@@ -119,6 +117,7 @@ public class UserService implements UserDetailsService {
         tokenService.ResetTokenAttributesByAccessToken(accessToken);
         return (userRepository.save(user).checkPassword(userNewPassword));
     }
+
 
     public boolean delete(UserLoginDto userLoginDto, String token) throws HttpClientErrorException {
         String accessToken = token.substring(7);

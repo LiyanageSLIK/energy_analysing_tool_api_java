@@ -33,7 +33,7 @@ public class SubscriptionEntity {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserEntity user;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private SubscriptionPlanEntity subscriptionPlan;
 
     public SubscriptionEntity() {

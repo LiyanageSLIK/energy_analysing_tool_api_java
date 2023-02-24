@@ -51,7 +51,7 @@ public class SubscriptionPlanEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToMany(mappedBy = "subscriptionPlan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "subscriptionPlan", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private List<SubscriptionEntity> subscriptions = new ArrayList<>();
 
 }
