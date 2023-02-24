@@ -22,7 +22,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -81,10 +80,10 @@ public class UserService implements UserDetailsService {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Existing Email:Email already registered");
         }
         UserEntity newUser = new UserEntity(userRegisterDto);
-        SubscriptionPlanEntity initialPlan=subscriptionPlanRepository.findByName(SubscriptionPlan.FREE);
-        SubscriptionEntity initialSubscription=new SubscriptionEntity();
+        SubscriptionPlanEntity initialPlan = subscriptionPlanRepository.findByName(SubscriptionPlan.FREE);
+        SubscriptionEntity initialSubscription = new SubscriptionEntity();
         initialSubscription.setSubscriptionPlan(initialPlan);
-        List<SubscriptionEntity> initialSubsList=newUser.getSubscriptions();
+        List<SubscriptionEntity> initialSubsList = newUser.getSubscriptions();
         initialSubsList.add(initialSubscription);
         newUser.setSubscriptions(initialSubsList);
         newUser.setToken(tokenService.generateLoginToken(newUser));

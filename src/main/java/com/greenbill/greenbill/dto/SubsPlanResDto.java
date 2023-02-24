@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubsPlanResDto extends BaseDto{
+public class SubsPlanResDto extends BaseDto {
 
     private SubscriptionPlan name;
     private Float rate;
@@ -22,11 +22,11 @@ public class SubsPlanResDto extends BaseDto{
 
     public SubsPlanResDto(SubscriptionPlanEntity subscriptionPlanEntity) {
 
-        this.name=subscriptionPlanEntity.getName();
-        this.rate= subscriptionPlanEntity.getRate();
-        this.planType=subscriptionPlanEntity.getPlanType();
-        this.cycle=subscriptionPlanEntity.getCycle();
-        this.maxNumProject= subscriptionPlanEntity.getMaxNumProject();
-        this.maxNumNode= subscriptionPlanEntity.getMaxNumNode();
+        this.name = subscriptionPlanEntity.getName();
+        this.rate = subscriptionPlanEntity.getRate();
+        this.planType = subscriptionPlanEntity.getPlanType();
+        this.cycle = subscriptionPlanEntity.getCycle();
+        this.maxNumProject = subscriptionPlanEntity.getMaxNumProject();
+        this.maxNumNode = subscriptionPlanEntity.getMaxNumNode();
     }
 }

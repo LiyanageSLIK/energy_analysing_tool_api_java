@@ -9,5 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SubscriptionRepository extends JpaRepository<SubscriptionEntity, Long> {
     SubscriptionEntity findFirstByUser_EmailAndStatus(String email, Status status);
+
     SubscriptionEntity findFirstByUser_EmailAndSubscriptionPlan_Name(String email, SubscriptionPlan name);
 }

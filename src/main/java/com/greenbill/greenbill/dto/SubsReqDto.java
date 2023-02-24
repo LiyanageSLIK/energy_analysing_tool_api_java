@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubsReqDto extends BaseDto{
+public class SubsReqDto extends BaseDto {
 
     private String userEmail;
 

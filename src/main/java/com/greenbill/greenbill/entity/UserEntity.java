@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -55,7 +54,6 @@ public class UserEntity implements UserDetails {
         this.setRole(Role.USER);
         this.setVerifyType(VerifyType.PENDING);
     }
-
 
 
     public boolean checkPassword(String password) {

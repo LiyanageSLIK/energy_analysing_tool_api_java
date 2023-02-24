@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +29,7 @@ public class SubscriptionPlanEntity {
     @Column(nullable = false)
     private Float rate;
 
-    @Column(name = "currency_code",nullable = false)
+    @Column(name = "currency_code", nullable = false)
     @Enumerated(EnumType.STRING)
     private CurrencyCode currencyCode;
 
@@ -38,7 +37,7 @@ public class SubscriptionPlanEntity {
     @Enumerated(EnumType.STRING)
     private Cycle cycle;
 
-    @Column(name = "plan_type",nullable = false)
+    @Column(name = "plan_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private PlanType planType;
 

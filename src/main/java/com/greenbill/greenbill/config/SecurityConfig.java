@@ -26,7 +26,7 @@ public class SecurityConfig {
         // disable CSRF protection
         http.csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/user/register", "/user/login", "/auth/token","/subscription/plan")
+                .requestMatchers("/user/register", "/user/login", "/auth/token", "/subscription/plan")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
