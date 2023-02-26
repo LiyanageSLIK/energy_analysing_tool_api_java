@@ -80,7 +80,7 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyByte);
     }
 
-    private Date extractExpiration(String token) {
+    public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 

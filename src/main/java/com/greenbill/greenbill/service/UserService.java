@@ -65,7 +65,10 @@ public class UserService implements UserDetailsService {
                 user.setToken(generatedToken);
                 userRepository.save(user);
             }
-            return new UserLoginResDto(user);
+            UserLoginResDto response=new UserLoginResDto(user);
+            response.setATExTime(jwtUtil.extractExpiration(user.getToken().getAccessToken()).getTime());
+            response.setRTExTime(jwtUtil.extractExpiration(user.getToken().getRefreshToken()).getTime());
+            return response;
         } else {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Wrong Password:Enter Correct Password");
         }
@@ -75,7 +78,7 @@ public class UserService implements UserDetailsService {
     public UserLoginResDto register(UserRegisterDto userRegisterDto) throws HttpClientErrorException {
         UserEntity user = (UserEntity) loadUserByUsername(userRegisterDto.getEmail());
         if (user != null) {
-            throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Existing Email:Email already registered");
+            throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Email already registered");
         }
         UserEntity newUser = new UserEntity(userRegisterDto);
         SubscriptionPlanEntity initialPlan = subscriptionPlanRepository.findByName(SubscriptionPlan.FREE);
@@ -84,7 +87,10 @@ public class UserService implements UserDetailsService {
         newUser.setToken(tokenService.generateLoginToken(newUser));
         initialSubscription.setUser(userRepository.save(newUser));
         subscriptionRepository.save(initialSubscription);
-        return new UserLoginResDto(newUser);
+        UserLoginResDto response=new UserLoginResDto(newUser);
+        response.setATExTime(jwtUtil.extractExpiration(newUser.getToken().getAccessToken()).getTime());
+        response.setRTExTime(jwtUtil.extractExpiration(newUser.getToken().getRefreshToken()).getTime());
+        return response;
     }
 
     public boolean logOut(String token) throws HttpClientErrorException {

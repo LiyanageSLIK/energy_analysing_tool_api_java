@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,7 +17,9 @@ public class UserLoginResDto extends BaseDto {
     private String lastName;
     private Role role;
     private String accessToken;
+    private long aTExTime;
     private String refreshToken;
+    private long rTExTime;
 
     public UserLoginResDto(UserEntity userEntity) {
         this.firstName = userEntity.getFirstName();
