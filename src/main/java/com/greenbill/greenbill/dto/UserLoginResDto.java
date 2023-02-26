@@ -19,7 +19,6 @@ public class UserLoginResDto extends BaseDto {
     private String accessToken;
     private long aTExTime;
     private String refreshToken;
-    private long rTExTime;
 
     public UserLoginResDto(UserEntity userEntity) {
         this.firstName = userEntity.getFirstName();

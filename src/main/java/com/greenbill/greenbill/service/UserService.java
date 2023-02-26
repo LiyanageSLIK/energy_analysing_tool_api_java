@@ -67,7 +67,6 @@ public class UserService implements UserDetailsService {
             }
             UserLoginResDto response=new UserLoginResDto(user);
             response.setATExTime(jwtUtil.extractExpiration(user.getToken().getAccessToken()).getTime());
-            response.setRTExTime(jwtUtil.extractExpiration(user.getToken().getRefreshToken()).getTime());
             return response;
         } else {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Wrong Password:Enter Correct Password");
@@ -89,7 +88,6 @@ public class UserService implements UserDetailsService {
         subscriptionRepository.save(initialSubscription);
         UserLoginResDto response=new UserLoginResDto(newUser);
         response.setATExTime(jwtUtil.extractExpiration(newUser.getToken().getAccessToken()).getTime());
-        response.setRTExTime(jwtUtil.extractExpiration(newUser.getToken().getRefreshToken()).getTime());
         return response;
     }
 

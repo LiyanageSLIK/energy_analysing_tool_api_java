@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AccessTokenReqResDto extends BaseDto {
     private String token;
+    private long aTExTime;
 }

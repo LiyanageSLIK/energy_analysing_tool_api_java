@@ -41,7 +41,9 @@ public class TokenService {
         String userEmail = jwtUtil.extractEmail(refreshToken);
         token.setAccessToken(jwtUtil.generateAccessToken(userEmail));
         tokenRepository.save(token);
-        return new AccessTokenReqResDto(token.getAccessToken());
+        String accessToken=token.getAccessToken();
+        long expireTime=jwtUtil.extractExpiration(accessToken).getTime();
+        return new AccessTokenReqResDto(accessToken,expireTime);
     }
 
     public Boolean validateAccessToken(String accessToken) throws HttpClientErrorException {
