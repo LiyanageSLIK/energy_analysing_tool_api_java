@@ -5,6 +5,7 @@ import com.greenbill.greenbill.entity.TokenEntity;
 import com.greenbill.greenbill.entity.UserEntity;
 import com.greenbill.greenbill.repository.TokenRepository;
 import com.greenbill.greenbill.util.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
@@ -34,9 +35,11 @@ public class TokenService {
         if (token == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:RToken not found in DB");
         }
-        if (jwtUtil.isTokenExpired(extractedRefreshToken)) {
+        try{
+            jwtUtil.isTokenExpired(extractedRefreshToken);
+        }catch (ExpiredJwtException e){
             ResetTokenAttributesByRefreshToken(extractedRefreshToken);
-            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Token Expired:RToken Expired Please login ");
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Token Expired:RToken Expired Please login");
         }
         String userEmail = jwtUtil.extractEmail(extractedRefreshToken);
         token.setAccessToken(jwtUtil.generateAccessToken(userEmail));
@@ -51,7 +54,9 @@ public class TokenService {
         if (token == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:AToken not found in DB");
         }
-        if (jwtUtil.isTokenExpired(accessToken)) {
+        try{
+            jwtUtil.isTokenExpired(accessToken);
+        }catch(ExpiredJwtException e) {
             throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Token Expired:AToken Expired Request new token using RToken ");
         }
         return true;
