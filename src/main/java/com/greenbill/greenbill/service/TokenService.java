@@ -1,6 +1,6 @@
 package com.greenbill.greenbill.service;
 
-import com.greenbill.greenbill.dto.AccessTokenReqResDto;
+import com.greenbill.greenbill.dto.AccessTokenResDto;
 import com.greenbill.greenbill.entity.TokenEntity;
 import com.greenbill.greenbill.entity.UserEntity;
 import com.greenbill.greenbill.repository.TokenRepository;
@@ -28,22 +28,22 @@ public class TokenService {
         return newToken;
     }
 
-    public AccessTokenReqResDto requestNewAccessToken(@NonNull AccessTokenReqResDto accessTokenReqResDto) throws HttpClientErrorException {
-        String refreshToken = accessTokenReqResDto.getToken();
-        TokenEntity token = tokenRepository.findByRefreshToken(refreshToken);
+    public AccessTokenResDto requestNewAccessToken(@NonNull String refreshToken) throws HttpClientErrorException {
+        String extractedRefreshToken=refreshToken.substring(7);
+        TokenEntity token = tokenRepository.findByRefreshToken(extractedRefreshToken);
         if (token == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:RToken not found in DB");
         }
-        if (jwtUtil.isTokenExpired(refreshToken)) {
-            ResetTokenAttributesByRefreshToken(refreshToken);
+        if (jwtUtil.isTokenExpired(extractedRefreshToken)) {
+            ResetTokenAttributesByRefreshToken(extractedRefreshToken);
             throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Token Expired:RToken Expired Please login ");
         }
-        String userEmail = jwtUtil.extractEmail(refreshToken);
+        String userEmail = jwtUtil.extractEmail(extractedRefreshToken);
         token.setAccessToken(jwtUtil.generateAccessToken(userEmail));
         tokenRepository.save(token);
         String accessToken=token.getAccessToken();
         long expireTime=jwtUtil.extractExpiration(accessToken).getTime();
-        return new AccessTokenReqResDto(accessToken,expireTime);
+        return new AccessTokenResDto(accessToken,expireTime);
     }
 
     public Boolean validateAccessToken(String accessToken) throws HttpClientErrorException {
