@@ -22,7 +22,7 @@ public class AddProjectReqResDto extends BaseDto{
     private String name;
     @NotNull
     private ProjectType projectType;
-    @JsonIgnore
+
     private Date lastUpdated;
 
     public AddProjectReqResDto(ProjectEntity project) {
