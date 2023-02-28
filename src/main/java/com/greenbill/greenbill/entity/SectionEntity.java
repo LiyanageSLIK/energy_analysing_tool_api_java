@@ -20,7 +20,7 @@ public class SectionEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-    @Column(name = "parent_section_id", insertable=false, updatable=false, nullable = true)
+    @Column(name = "parent_section_id", insertable = false, updatable = false, nullable = true)
     private Long parentSectionId;
     @Column(name = "node_id", nullable = false)
     private Long nodeId;
@@ -43,9 +43,9 @@ public class SectionEntity {
     private List<ApplianceEntity> appliances = new ArrayList<>();
 
     public SectionEntity(AddSectionDto addSectionDto) {
-        this.nodeId=addSectionDto.getNodeId();
-        this.parentSectionId=addSectionDto.getParentSectionId();
-        this.name=addSectionDto.getName();
-        this.status=addSectionDto.getStatus();
+        this.nodeId = addSectionDto.getNodeId();
+        this.parentSectionId = addSectionDto.getParentSectionId();
+        this.name = addSectionDto.getName();
+        this.status = addSectionDto.getStatus();
     }
 }

@@ -30,23 +30,23 @@ public class TokenService {
     }
 
     public AccessTokenResDto requestNewAccessToken(@NonNull String refreshToken) throws HttpClientErrorException {
-        String extractedRefreshToken=refreshToken.substring(7);
+        String extractedRefreshToken = refreshToken.substring(7);
         TokenEntity token = tokenRepository.findByRefreshToken(extractedRefreshToken);
         if (token == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:RToken not found in DB");
         }
-        try{
+        try {
             jwtUtil.isTokenExpired(extractedRefreshToken);
-        }catch (ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             ResetTokenAttributesByRefreshToken(extractedRefreshToken);
             throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Token Expired:RToken Expired Please login");
         }
         String userEmail = jwtUtil.extractEmail(extractedRefreshToken);
         token.setAccessToken(jwtUtil.generateAccessToken(userEmail));
         tokenRepository.save(token);
-        String accessToken=token.getAccessToken();
-        long expireTime=jwtUtil.extractExpiration(accessToken).getTime();
-        return new AccessTokenResDto(accessToken,expireTime);
+        String accessToken = token.getAccessToken();
+        long expireTime = jwtUtil.extractExpiration(accessToken).getTime();
+        return new AccessTokenResDto(accessToken, expireTime);
     }
 
     public Boolean validateAccessToken(String accessToken) throws HttpClientErrorException {
@@ -54,9 +54,9 @@ public class TokenService {
         if (token == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:AToken not found in DB");
         }
-        try{
+        try {
             jwtUtil.isTokenExpired(accessToken);
-        }catch(ExpiredJwtException e) {
+        } catch (ExpiredJwtException e) {
             throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Token Expired:AToken Expired Request new token using RToken ");
         }
         return true;

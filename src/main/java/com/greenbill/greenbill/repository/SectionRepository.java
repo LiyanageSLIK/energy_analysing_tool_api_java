@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface SectionRepository extends JpaRepository<SectionEntity, Long> {
     SectionEntity getFirstById(Long id);
+
     @Override
     Optional<SectionEntity> findById(Long aLong);
 }

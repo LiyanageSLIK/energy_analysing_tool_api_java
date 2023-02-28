@@ -36,9 +36,9 @@ public class ProjectEntity {
     private List<SectionEntity> sections = new ArrayList<>();
 
     public ProjectEntity(AddProjectReqResDto addProjectReqResDto) {
-        this.name=addProjectReqResDto.getName();
-        this.projectType=addProjectReqResDto.getProjectType();
-        this.lastUpdated=new Date();
+        this.name = addProjectReqResDto.getName();
+        this.projectType = addProjectReqResDto.getProjectType();
+        this.lastUpdated = new Date();
     }
 
     public void setLastUpdated(Date lastUpdated) {

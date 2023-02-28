@@ -65,7 +65,7 @@ public class UserService implements UserDetailsService {
                 user.setToken(generatedToken);
                 userRepository.save(user);
             }
-            UserLoginResDto response=new UserLoginResDto(user);
+            UserLoginResDto response = new UserLoginResDto(user);
             response.setATExTime(jwtUtil.extractExpiration(user.getToken().getAccessToken()).getTime());
             return response;
         } else {
@@ -86,7 +86,7 @@ public class UserService implements UserDetailsService {
         newUser.setToken(tokenService.generateLoginToken(newUser));
         initialSubscription.setUser(userRepository.save(newUser));
         subscriptionRepository.save(initialSubscription);
-        UserLoginResDto response=new UserLoginResDto(newUser);
+        UserLoginResDto response = new UserLoginResDto(newUser);
         response.setATExTime(jwtUtil.extractExpiration(newUser.getToken().getAccessToken()).getTime());
         return response;
     }

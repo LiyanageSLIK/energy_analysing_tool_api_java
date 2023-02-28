@@ -1,13 +1,10 @@
 package com.greenbill.greenbill.entity;
 
 import com.greenbill.greenbill.enumerat.ApplianceType;
-import com.greenbill.greenbill.enumerat.ProjectType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -35,7 +32,6 @@ public class ApplianceEntity {
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private SectionEntity section;
-
 
 
 }
