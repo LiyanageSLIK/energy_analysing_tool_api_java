@@ -23,11 +23,11 @@ public class PlayGroundService {
     @Transactional
     public void addSection(AddSectionDto addSectionDto) {
         SectionEntity Ssection = new SectionEntity();
-        if (addSectionDto.getParentSectionId() == null) {
+        if (addSectionDto.getParentNodId() == null) {
             SectionEntity section = new SectionEntity(addSectionDto);
             Ssection = sectionRepository.save(section);
         } else {
-            SectionEntity parentSection = sectionRepository.getFirstById(addSectionDto.getParentSectionId());
+            SectionEntity parentSection = sectionRepository.getFirstById(addSectionDto.getParentNodId());
             SectionEntity section = new SectionEntity(addSectionDto);
             section.setParentSection(parentSection);
             Ssection = sectionRepository.save(section);

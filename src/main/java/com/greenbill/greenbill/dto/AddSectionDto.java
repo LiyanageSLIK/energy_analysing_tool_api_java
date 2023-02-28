@@ -12,8 +12,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AddSectionDto extends BaseDto {
 
-    private Long nodeId;
-    private Long parentSectionId;
+    private String nodeId;
+    private String parentNodId;
+    private Long projectId;
     private String name;
     private Status status;
 }

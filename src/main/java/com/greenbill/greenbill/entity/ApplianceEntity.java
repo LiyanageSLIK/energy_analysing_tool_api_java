@@ -16,6 +16,11 @@ public class ApplianceEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+    @Column(name = "parent_nod_id", insertable = false, updatable = false, nullable = true)
+    private String parentNodId;
+
+    @Column(name = "node_id", nullable = false)
+    private String nodeId;
 
     @Column(name = "appliance_name", nullable = false)
     private String name;
@@ -29,6 +34,9 @@ public class ApplianceEntity {
 
     @Column(name = "usage_per_day_h", nullable = false)
     private Integer usagePerDayH;
+
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private SectionEntity section;
