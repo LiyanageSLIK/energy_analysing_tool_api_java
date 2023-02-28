@@ -27,7 +27,7 @@ public class PlayGroundService {
             SectionEntity section = new SectionEntity(addSectionDto);
             Ssection = sectionRepository.save(section);
         } else {
-            SectionEntity parentSection = sectionRepository.getFirstById(addSectionDto.getParentNodId());
+            SectionEntity parentSection = sectionRepository.findFirstByParentNodIdAndProject_Id(addSectionDto.getParentNodId(), addSectionDto.getProjectId());
             SectionEntity section = new SectionEntity(addSectionDto);
             section.setParentSection(parentSection);
             Ssection = sectionRepository.save(section);
