@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,8 +40,15 @@ public class ApplianceEntity {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
+    @Column(name = "last_updated", nullable = false)
+    private Date lastUpdated= new Date();
+
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private SectionEntity section;
+
+    public void setLastUpdated() {
+        this.lastUpdated = new Date();
+    }
 
 
 }

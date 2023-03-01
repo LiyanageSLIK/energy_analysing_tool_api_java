@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -31,6 +32,9 @@ public class SectionEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Column(name = "last_updated", nullable = false)
+    private Date lastUpdated= new Date();
+
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private SectionEntity parentSection;
 
@@ -48,5 +52,9 @@ public class SectionEntity {
         this.parentNodId = addSectionDto.getParentNodId();
         this.name = addSectionDto.getName();
         this.status = addSectionDto.getStatus();
+    }
+
+    public void setLastUpdated() {
+        this.lastUpdated = new Date();
     }
 }
