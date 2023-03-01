@@ -30,10 +30,12 @@ public class ProjectEntity {
     private ProjectType projectType;
 
     @Column(name = "last_updated", nullable = false)
-    private Date lastUpdated;
+    private Date lastUpdated= new Date();
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<SectionEntity> sections = new ArrayList<>();
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    private UserEntity user;
 
     public ProjectEntity(AddProjectReqResDto addProjectReqResDto) {
         this.name = addProjectReqResDto.getName();
@@ -41,7 +43,14 @@ public class ProjectEntity {
         this.lastUpdated = new Date();
     }
 
-    public void setLastUpdated(Date lastUpdated) {
+    public void update(AddProjectReqResDto addProjectReqResDto){
+        this.setName(addProjectReqResDto.getName());
+        this.setLastUpdated(new Date());
+        this.setProjectType(addProjectReqResDto.getProjectType());
+
+    }
+
+    public void setLastUpdated() {
         this.lastUpdated = new Date();
     }
 }

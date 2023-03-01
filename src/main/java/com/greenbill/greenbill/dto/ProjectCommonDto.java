@@ -1,6 +1,5 @@
 package com.greenbill.greenbill.dto;
 
-import com.greenbill.greenbill.entity.ProjectEntity;
 import com.greenbill.greenbill.enumerat.ProjectType;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,18 +13,10 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddProjectReqResDto extends BaseDto {
-    @NotNull
+public class ProjectCommonDto extends BaseDto{
+
     private String name;
-    @NotNull
     private ProjectType projectType;
     private long projectId;
     private Date lastUpdated;
-
-    public AddProjectReqResDto(ProjectEntity project) {
-        this.name = project.getName();
-        this.projectType = project.getProjectType();
-        this.projectId=project.getId();
-        this.lastUpdated = project.getLastUpdated();
-    }
 }

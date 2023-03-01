@@ -45,6 +45,8 @@ public class UserEntity implements UserDetails {
     private TokenEntity token;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SubscriptionEntity> subscriptions = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<ProjectEntity> projects = new ArrayList<>();
 
     public UserEntity(UserRegisterDto userRegisterDto) {
         this.firstName = userRegisterDto.getFirstName();
