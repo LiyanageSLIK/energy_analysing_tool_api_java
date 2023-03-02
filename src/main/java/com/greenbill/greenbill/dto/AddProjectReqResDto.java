@@ -25,7 +25,7 @@ public class AddProjectReqResDto extends BaseDto {
     public AddProjectReqResDto(ProjectEntity project) {
         this.projectName = project.getName();
         this.projectType = project.getProjectType();
-        this.projectId=project.getId();
+        this.projectId = project.getId();
         this.lastUpdated = project.getLastUpdated();
     }
 }

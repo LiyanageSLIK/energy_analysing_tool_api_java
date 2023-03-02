@@ -1,6 +1,5 @@
 package com.greenbill.greenbill.entity;
 
-import com.greenbill.greenbill.dto.AddSectionDto;
 import com.greenbill.greenbill.dto.CommonNodReqDto;
 import com.greenbill.greenbill.enumerat.Status;
 import jakarta.persistence.*;
@@ -16,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "section")
+@Table(name = "section", uniqueConstraints = @UniqueConstraint(columnNames = {"node_id", "user_email"}))
 public class SectionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +23,7 @@ public class SectionEntity {
     private Long id;
 
     @Column(name = "node_id", nullable = false)
-    private String nodeId;
+    private String nodId;
     @Column(name = "parent_nod_id", updatable = false, nullable = true)
     private String parentNodId;
     @Column(name = "section_name", nullable = false)
@@ -34,7 +33,12 @@ public class SectionEntity {
     private Status status;
 
     @Column(name = "last_updated", nullable = false)
-    private Date lastUpdated= new Date();
+    private Date lastUpdated = new Date();
+
+    @Column(name = "reference_project_id", nullable = true)
+    private Long referenceProjectId;
+    @Column(name = "user_email", nullable = false)
+    private String userEmail;
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private SectionEntity parentSection;
@@ -49,11 +53,17 @@ public class SectionEntity {
     private List<ApplianceEntity> appliances = new ArrayList<>();
 
     public SectionEntity(CommonNodReqDto commonNodReqDto) {
-        this.nodeId = commonNodReqDto.getNodeId();
+        this.nodId = commonNodReqDto.getNodeId();
         this.parentNodId = commonNodReqDto.getParentNodId();
         this.name = commonNodReqDto.getName();
         this.status = commonNodReqDto.getStatus();
-        this.lastUpdated=new Date();
+        this.referenceProjectId = commonNodReqDto.getProjectId();
+        this.lastUpdated = new Date();
+    }
+
+    public void updateSection(CommonNodReqDto commonNodReqDto) {
+        this.name = commonNodReqDto.getName();
+        this.status = commonNodReqDto.getStatus();
     }
 
     public void setLastUpdated() {
