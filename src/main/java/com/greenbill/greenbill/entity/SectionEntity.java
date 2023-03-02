@@ -53,7 +53,7 @@ public class SectionEntity {
     private List<ApplianceEntity> appliances = new ArrayList<>();
 
     public SectionEntity(CommonNodReqDto commonNodReqDto) {
-        this.nodId = commonNodReqDto.getNodeId();
+        this.nodId = commonNodReqDto.getNodId();
         this.parentNodId = commonNodReqDto.getParentNodId();
         this.name = commonNodReqDto.getName();
         this.status = commonNodReqDto.getStatus();

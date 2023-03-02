@@ -9,16 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface TokenRepository extends JpaRepository<TokenEntity, Long> {
-    @Transactional
-    @Modifying
-    @Query("update TokenEntity t set t.accessToken = ?1, t.refreshToken = ?2")
-    int updateAccessTokenAndRefreshTokenBy(String accessToken, String refreshToken);
 
-    long deleteByIdAndAccessTokenAndRefreshToken(Long id, String accessToken, String refreshToken);
 
     TokenEntity findByAccessToken(String accessToken);
 
-    long deleteByRefreshToken(String refreshToken);
 
     TokenEntity findByRefreshToken(String refreshToken);
 }

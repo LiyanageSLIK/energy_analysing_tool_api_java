@@ -56,7 +56,7 @@ public class ApplianceEntity {
 
     public ApplianceEntity(CommonNodReqDto commonNodReqDto) {
         this.parentNodId = commonNodReqDto.getParentNodId();
-        this.nodId = commonNodReqDto.getNodeId();
+        this.nodId = commonNodReqDto.getNodId();
         this.name = commonNodReqDto.getName();
         this.applianceType = commonNodReqDto.getApplianceType();
         this.wattage = commonNodReqDto.getWattage();

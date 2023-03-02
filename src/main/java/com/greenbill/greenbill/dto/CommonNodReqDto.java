@@ -18,7 +18,7 @@ public class CommonNodReqDto extends BaseDto {
     @NotNull
     private NodType nodType;
     @NotNull
-    private String nodeId;
+    private String nodId;
     @NotNull
     private String parentNodId;
     @NotNull

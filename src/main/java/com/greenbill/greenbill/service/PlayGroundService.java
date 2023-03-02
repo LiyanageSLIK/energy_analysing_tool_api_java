@@ -1,14 +1,13 @@
 package com.greenbill.greenbill.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.greenbill.greenbill.dto.AddProjectReqResDto;
 import com.greenbill.greenbill.dto.CommonNodReqDto;
 import com.greenbill.greenbill.dto.NodDeleteReqDto;
+import com.greenbill.greenbill.dto.TreeViewReqResDto;
 import com.greenbill.greenbill.entity.*;
 import com.greenbill.greenbill.enumerat.NodType;
-import com.greenbill.greenbill.repository.ApplianceRepository;
-import com.greenbill.greenbill.repository.ProjectRepository;
-import com.greenbill.greenbill.repository.SectionRepository;
-import com.greenbill.greenbill.repository.SubscriptionPlanRepository;
+import com.greenbill.greenbill.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +27,8 @@ public class PlayGroundService {
     private SubscriptionPlanRepository subscriptionPlanRepository;
     @Autowired
     private ApplianceRepository applianceRepository;
+    @Autowired
+    private TreeViewRepository treeViewRepository;
     @Autowired
     private UserService userService;
 
@@ -82,7 +83,7 @@ public class PlayGroundService {
             } else {
                 String parentNodId = commonNodReqDto.getParentNodId();
                 long referenceProjectId = commonNodReqDto.getProjectId();
-                SectionEntity parentSection = sectionRepository.findByReferenceProjectIdAndNodeId(referenceProjectId, parentNodId);
+                SectionEntity parentSection = sectionRepository.findByReferenceProjectIdAndNodId(referenceProjectId, parentNodId);
                 if (parentSection == null) {
                     throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Cant map Nod:Parent Nod not Found ");
                 }
@@ -98,7 +99,7 @@ public class PlayGroundService {
             ApplianceEntity savedAppliance = new ApplianceEntity();
             String parentNodId = commonNodReqDto.getParentNodId();
             long referenceProjectId = commonNodReqDto.getProjectId();
-            SectionEntity parentSection = sectionRepository.findByReferenceProjectIdAndNodeId(referenceProjectId, parentNodId);
+            SectionEntity parentSection = sectionRepository.findByReferenceProjectIdAndNodId(referenceProjectId, parentNodId);
             if (parentSection == null) {
                 throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Cant map Nod:Parent Nod not Found ");
             }
@@ -116,9 +117,9 @@ public class PlayGroundService {
         NodType nodType = commonNodReqDto.getNodType();
         ProjectEntity project = projectRepository.getFirstById(commonNodReqDto.getProjectId());
         if (nodType == NodType.SECTION) {
-            String nodId = commonNodReqDto.getNodeId();
+            String nodId = commonNodReqDto.getNodId();
             long referenceProjectId = commonNodReqDto.getProjectId();
-            SectionEntity thisSection = sectionRepository.findByNodeIdAndReferenceProjectId(nodId, referenceProjectId);
+            SectionEntity thisSection = sectionRepository.findByNodIdAndReferenceProjectId(nodId, referenceProjectId);
             if (thisSection == null) {
                 throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Section not found");
             } else {
@@ -129,9 +130,9 @@ public class PlayGroundService {
             }
         }
         if (nodType == NodType.APPLIANCE) {
-            String nodId = commonNodReqDto.getNodeId();
+            String nodId = commonNodReqDto.getNodId();
             long referenceProjectId = commonNodReqDto.getProjectId();
-            ApplianceEntity thisAppliance = applianceRepository.findByNodeIdAndReferenceProjectId(nodId, referenceProjectId);
+            ApplianceEntity thisAppliance = applianceRepository.findByNodIdAndReferenceProjectId(nodId, referenceProjectId);
             if (thisAppliance == null) {
                 throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Appliance not found");
             } else {
@@ -144,8 +145,8 @@ public class PlayGroundService {
     }
 
     public void deleteNod(NodDeleteReqDto nodDeleteReqDto) {
-        SectionEntity section = sectionRepository.findByReferenceProjectIdAndNodeId(nodDeleteReqDto.getProjectId(), nodDeleteReqDto.getNodId());
-        ApplianceEntity appliance = applianceRepository.findByReferenceProjectIdAndNodeId(nodDeleteReqDto.getProjectId(), nodDeleteReqDto.getNodId());
+        SectionEntity section = sectionRepository.findByReferenceProjectIdAndNodId(nodDeleteReqDto.getProjectId(), nodDeleteReqDto.getNodId());
+        ApplianceEntity appliance = applianceRepository.findByReferenceProjectIdAndNodId(nodDeleteReqDto.getProjectId(), nodDeleteReqDto.getNodId());
         if (section != null) {
             sectionRepository.delete(section);
         }
@@ -173,6 +174,15 @@ public class PlayGroundService {
         int sectionCount = (int) sectionRepository.countByUserEmail(email);
         int currentNodCount = applianceCount + sectionCount;
         return (currentNodCount < maxNodAllow);
+    }
+
+    public TreeViewReqResDto updateTree(TreeViewReqResDto treeViewReqResDto,String userEmail) throws JsonProcessingException {
+        TreeViewEntity treeView = treeViewRepository.findByProjectIdAndUserEmail(treeViewReqResDto.getProjectId(), userEmail);
+        if(treeView==null){
+            treeView=new TreeViewEntity(treeViewReqResDto,userEmail);
+        }
+        treeView.setJson(treeViewReqResDto.getJson().toString());
+        return new TreeViewReqResDto(treeViewRepository.save(treeView));
     }
 
 }
