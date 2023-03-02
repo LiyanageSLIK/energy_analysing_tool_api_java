@@ -16,14 +16,14 @@ import java.util.Date;
 @AllArgsConstructor
 public class AddProjectReqResDto extends BaseDto {
     @NotNull
-    private String name;
+    private String projectName;
     @NotNull
     private ProjectType projectType;
     private long projectId;
     private Date lastUpdated;
 
     public AddProjectReqResDto(ProjectEntity project) {
-        this.name = project.getName();
+        this.projectName = project.getName();
         this.projectType = project.getProjectType();
         this.projectId=project.getId();
         this.lastUpdated = project.getLastUpdated();

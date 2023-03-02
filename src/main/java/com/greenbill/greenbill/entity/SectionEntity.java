@@ -1,6 +1,7 @@
 package com.greenbill.greenbill.entity;
 
 import com.greenbill.greenbill.dto.AddSectionDto;
+import com.greenbill.greenbill.dto.CommonNodReqDto;
 import com.greenbill.greenbill.enumerat.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -47,11 +48,12 @@ public class SectionEntity {
     @OneToMany(mappedBy = "section", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ApplianceEntity> appliances = new ArrayList<>();
 
-    public SectionEntity(AddSectionDto addSectionDto) {
-        this.nodeId = addSectionDto.getNodeId();
-        this.parentNodId = addSectionDto.getParentNodId();
-        this.name = addSectionDto.getName();
-        this.status = addSectionDto.getStatus();
+    public SectionEntity(CommonNodReqDto commonNodReqDto) {
+        this.nodeId = commonNodReqDto.getNodeId();
+        this.parentNodId = commonNodReqDto.getParentNodId();
+        this.name = commonNodReqDto.getName();
+        this.status = commonNodReqDto.getStatus();
+        this.lastUpdated=new Date();
     }
 
     public void setLastUpdated() {

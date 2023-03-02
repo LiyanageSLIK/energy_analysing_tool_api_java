@@ -38,13 +38,13 @@ public class ProjectEntity {
     private UserEntity user;
 
     public ProjectEntity(AddProjectReqResDto addProjectReqResDto) {
-        this.name = addProjectReqResDto.getName();
+        this.name = addProjectReqResDto.getProjectName();
         this.projectType = addProjectReqResDto.getProjectType();
         this.lastUpdated = new Date();
     }
 
     public void update(AddProjectReqResDto addProjectReqResDto){
-        this.setName(addProjectReqResDto.getName());
+        this.setName(addProjectReqResDto.getProjectName());
         this.setLastUpdated(new Date());
         this.setProjectType(addProjectReqResDto.getProjectType());
 

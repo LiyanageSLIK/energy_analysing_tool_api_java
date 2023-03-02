@@ -2,9 +2,12 @@ package com.greenbill.greenbill.service;
 
 import com.greenbill.greenbill.dto.AddProjectReqResDto;
 import com.greenbill.greenbill.dto.AddSectionDto;
+import com.greenbill.greenbill.dto.CommonNodReqDto;
+import com.greenbill.greenbill.entity.ApplianceEntity;
 import com.greenbill.greenbill.entity.ProjectEntity;
 import com.greenbill.greenbill.entity.SectionEntity;
 import com.greenbill.greenbill.entity.UserEntity;
+import com.greenbill.greenbill.enumerat.NodType;
 import com.greenbill.greenbill.repository.ApplianceRepository;
 import com.greenbill.greenbill.repository.ProjectRepository;
 import com.greenbill.greenbill.repository.SectionRepository;
@@ -26,23 +29,8 @@ public class PlayGroundService {
     @Autowired
     private UserService userService;
 
-    @Transactional
-    public void addSection(AddSectionDto addSectionDto) {
-        SectionEntity Ssection = new SectionEntity();
-        if (addSectionDto.getParentNodId() == null) {
-            SectionEntity section = new SectionEntity(addSectionDto);
-            Ssection = sectionRepository.save(section);
-        } else {
-            SectionEntity parentSection = sectionRepository.findFirstByParentNodIdAndProject_Id(addSectionDto.getParentNodId(), addSectionDto.getProjectId());
-            SectionEntity section = new SectionEntity(addSectionDto);
-            section.setParentSection(parentSection);
-            Ssection = sectionRepository.save(section);
-            for (SectionEntity sec : parentSection.getChildSections()
-            ) {
-                System.out.println(sec.getName());
-            }
-        }
-    }
+
+
     @Transactional
     public AddProjectReqResDto addProject(AddProjectReqResDto addProjectReqResDto,String userEmail) throws Exception {
         UserEntity user= (UserEntity) userService.loadUserByUsername(userEmail);
@@ -70,6 +58,31 @@ public class PlayGroundService {
     @Transactional
     public void deleteProject(long projectId){
         projectRepository.removeById(projectId);
+    }
+    @Transactional
+    public void addNod (CommonNodReqDto commonNodReqDto){
+        NodType nodType=commonNodReqDto.getNodType();
+        if(nodType==NodType.SECTION){
+            SectionEntity savedSection = new SectionEntity();
+            if (commonNodReqDto.getParentNodId() == null) {
+                SectionEntity section = new SectionEntity(commonNodReqDto);
+                savedSection = sectionRepository.save(section);
+            } else {
+                String parentNodId=commonNodReqDto.getParentNodId();
+                long projectId=commonNodReqDto.getProjectId();
+                SectionEntity parentSection = sectionRepository.findFirstByParentNodIdAndProject_Id(parentNodId,projectId);
+                SectionEntity section = new SectionEntity(commonNodReqDto);
+                section.setParentSection(parentSection);
+                savedSection = sectionRepository.save(section);
+            }
+        }
+        if(nodType==NodType.APPLIANCE){
+            ApplianceEntity savedAppliance=new ApplianceEntity();
+            String parentNodId=commonNodReqDto.getParentNodId();
+            long projectId=commonNodReqDto.getProjectId();
+            SectionEntity parentSection = sectionRepository.findFirstByParentNodIdAndProject_Id(parentNodId,projectId);
+            ApplianceEntity appliance=new ApplianceEntity();
+        }
     }
 
 }

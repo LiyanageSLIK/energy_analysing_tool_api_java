@@ -1,6 +1,7 @@
 package com.greenbill.greenbill.controller;
 
 import com.greenbill.greenbill.dto.AddSectionDto;
+import com.greenbill.greenbill.dto.CommonNodReqDto;
 import com.greenbill.greenbill.service.PlayGroundService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,9 +20,9 @@ public class SectionController {
     private PlayGroundService playGroundService;
 
     @PostMapping("/add")
-    public void addSection(@RequestBody AddSectionDto addSectionDto) {
+    public void addSection(@RequestBody CommonNodReqDto commonNodReqDto) {
         try {
-            playGroundService.addSection(addSectionDto);
+            playGroundService.addNod(commonNodReqDto);
         } catch (HttpClientErrorException e) {
             System.out.println(e.getMessage());
         }
