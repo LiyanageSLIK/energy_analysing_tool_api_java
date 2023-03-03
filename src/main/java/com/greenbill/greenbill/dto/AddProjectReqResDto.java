@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 @Getter
 @Setter
@@ -20,12 +22,22 @@ public class AddProjectReqResDto extends BaseDto {
     @NotNull
     private ProjectType projectType;
     private long projectId;
-    private Date lastUpdated;
+    private String lastUpdated;
+
+
+
+
+    public void setLastUpdated(Date lastUpdated) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
+        String istDate = sdf.format(lastUpdated);
+        this.lastUpdated = istDate;
+    }
 
     public AddProjectReqResDto(ProjectEntity project) {
         this.projectName = project.getName();
         this.projectType = project.getProjectType();
         this.projectId = project.getId();
-        this.lastUpdated = project.getLastUpdated();
+        this.setLastUpdated(project.getLastUpdated());
     }
 }
