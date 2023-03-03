@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TreeViewRepository extends JpaRepository<TreeViewEntity, Long> {
-    TreeViewEntity findByProjectIdAndUserEmail(long projectId, String userEmail);
+    TreeViewEntity findByProject_Id(Long id);
 }

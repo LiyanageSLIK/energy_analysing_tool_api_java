@@ -32,6 +32,9 @@ public class ProjectEntity {
     @Column(name = "last_updated", nullable = false)
     private Date lastUpdated = new Date();
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private TreeViewEntity treeView;
+
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<SectionEntity> sections = new ArrayList<>();
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)

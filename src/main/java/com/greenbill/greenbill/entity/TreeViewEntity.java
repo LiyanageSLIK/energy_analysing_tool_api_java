@@ -11,24 +11,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tree_view",uniqueConstraints = @UniqueConstraint(columnNames = {"user_email", "project_id"}))
+@Table(name = "tree_view")
 public class TreeViewEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "user_email",nullable = false)
-    private String userEmail;
-    @Column(name = "project_id", nullable = false)
-    private long projectId;
-
-    @Column(name = "json",columnDefinition="LONGTEXT", nullable = false)
+    @Column(name = "json",columnDefinition="LONGTEXT", nullable = true)
     private String json;
 
+    @OneToOne(mappedBy = "treeView", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    private ProjectEntity project;
+
     public TreeViewEntity(TreeViewReqResDto treeViewReqResDto,String email) {
-        this.userEmail=email;
-        this.projectId= treeViewReqResDto.getProjectId();
         this.json= treeViewReqResDto.getJson().toString();
     }
+
 }

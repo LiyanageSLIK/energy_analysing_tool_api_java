@@ -23,7 +23,7 @@ public class TokenEntity {
     @Column(name = "refresh_token", nullable = false)
     private String refreshToken;
 
-    @OneToOne(mappedBy = "token", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "token", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private UserEntity user;
 
 

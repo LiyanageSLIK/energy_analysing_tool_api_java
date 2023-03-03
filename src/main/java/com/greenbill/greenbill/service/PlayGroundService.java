@@ -1,6 +1,9 @@
 package com.greenbill.greenbill.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.greenbill.greenbill.dto.AddProjectReqResDto;
 import com.greenbill.greenbill.dto.CommonNodReqDto;
 import com.greenbill.greenbill.dto.NodDeleteReqDto;
@@ -41,6 +44,7 @@ public class PlayGroundService {
         UserEntity user = (UserEntity) userService.loadUserByUsername(userEmail);
         ProjectEntity project = new ProjectEntity(addProjectReqResDto);
         project.setUser(user);
+        project.setTreeView(new TreeViewEntity());
         return new AddProjectReqResDto(projectRepository.save(project));
     }
 
@@ -176,13 +180,22 @@ public class PlayGroundService {
         return (currentNodCount < maxNodAllow);
     }
 
-    public TreeViewReqResDto updateTree(TreeViewReqResDto treeViewReqResDto,String userEmail) throws JsonProcessingException {
-        TreeViewEntity treeView = treeViewRepository.findByProjectIdAndUserEmail(treeViewReqResDto.getProjectId(), userEmail);
+    public JsonNode updateTree(JsonNode jsonNode,long projectId) throws JsonProcessingException {
+        TreeViewEntity treeView = treeViewRepository.findByProject_Id(projectId);
         if(treeView==null){
-            treeView=new TreeViewEntity(treeViewReqResDto,userEmail);
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Project not found");
         }
-        treeView.setJson(treeViewReqResDto.getJson().toString());
-        return new TreeViewReqResDto(treeViewRepository.save(treeView));
+        treeView.setJson(jsonNode.toString());
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode responseJson=objectMapper.readTree(treeViewRepository.save(treeView).getJson());
+        return responseJson;
+    }
+
+    public JsonNode getTree(long projectId) throws JsonProcessingException {
+        TreeViewEntity treeView = treeViewRepository.findByProject_Id(projectId);
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode responseJson=objectMapper.readTree(treeView.getJson());
+        return responseJson;
     }
 
 }

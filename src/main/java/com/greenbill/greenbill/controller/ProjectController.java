@@ -56,10 +56,10 @@ public class ProjectController {
         }
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity deleteProject(@RequestBody ProjectCommonDto dto) {
+    @DeleteMapping("")
+    public ResponseEntity deleteProject(@RequestParam long projectId) {
         try {
-            playGroundService.deleteProject(dto.getProjectId());
+            playGroundService.deleteProject(projectId);
             return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully deleted");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));

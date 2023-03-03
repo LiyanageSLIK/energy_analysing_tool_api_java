@@ -1,5 +1,6 @@
 package com.greenbill.greenbill.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.greenbill.greenbill.dto.CommonNodReqDto;
 import com.greenbill.greenbill.dto.ResponseWrapper;
 import com.greenbill.greenbill.dto.TreeViewReqResDto;
@@ -22,12 +23,19 @@ public class TreeViewController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @PutMapping("/update")
-    public ResponseEntity updateTreeViewJson(@RequestBody TreeViewReqResDto treeViewReqResDto, @RequestHeader(value = "Authorization", required = true) String token) {
+    @PutMapping("")
+    public ResponseEntity updateTreeViewJson(@RequestBody JsonNode jsonNode,@RequestParam long projectId) {
         try {
-            String extractedToken = token.substring(7);
-            String userEmail = jwtUtil.extractEmail(extractedToken);
-            return ResponseEntity.status(HttpStatus.OK).body(playGroundService.updateTree(treeViewReqResDto,userEmail).getJson());
+            return ResponseEntity.status(HttpStatus.OK).body(playGroundService.updateTree(jsonNode,projectId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
+        }
+    }
+
+    @GetMapping("")
+    public ResponseEntity getTreeViewJson(@RequestParam long projectId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(playGroundService.getTree(projectId));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
         }

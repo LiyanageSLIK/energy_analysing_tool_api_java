@@ -17,12 +17,11 @@ import lombok.Setter;
 public class TreeViewReqResDto extends BaseDto{
     @NotNull
     private long projectId;
-
+    @NotNull
     private JsonNode json;
 
     public TreeViewReqResDto(TreeViewEntity treeViewEntity) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        this.projectId= treeViewEntity.getProjectId();
         this.json= objectMapper.readTree(treeViewEntity.getJson());
     }
 }
