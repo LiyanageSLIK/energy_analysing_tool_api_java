@@ -3,13 +3,11 @@ package com.greenbill.greenbill.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.greenbill.greenbill.dto.AddProjectReqResDto;
 import com.greenbill.greenbill.dto.CommonNodReqDto;
 import com.greenbill.greenbill.dto.NodDeleteReqDto;
-import com.greenbill.greenbill.dto.TreeViewReqResDto;
 import com.greenbill.greenbill.entity.*;
-import com.greenbill.greenbill.enumerat.NodType;
+import com.greenbill.greenbill.enumeration.NodeType;
 import com.greenbill.greenbill.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,9 +72,9 @@ public class PlayGroundService {
         if (!validatePlayGroundNodAccess(userEmail)) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Sorry You had reach your subscription limitations upgrade your plan for more benefits");
         }
-        NodType nodType = commonNodReqDto.getNodType();
+        NodeType nodeType = commonNodReqDto.getNodeType();
         ProjectEntity project = projectRepository.getFirstById(commonNodReqDto.getProjectId());
-        if (nodType == NodType.SECTION) {
+        if (nodeType == NodeType.SECTION) {
             SectionEntity savedSection = new SectionEntity();
             if (commonNodReqDto.getParentNodId().equals("root")) {
                 SectionEntity section = new SectionEntity(commonNodReqDto);
@@ -99,7 +97,7 @@ public class PlayGroundService {
                 savedSection = sectionRepository.save(section);
             }
         }
-        if (nodType == NodType.APPLIANCE) {
+        if (nodeType == NodeType.APPLIANCE) {
             ApplianceEntity savedAppliance = new ApplianceEntity();
             String parentNodId = commonNodReqDto.getParentNodId();
             long referenceProjectId = commonNodReqDto.getProjectId();
@@ -118,9 +116,9 @@ public class PlayGroundService {
 
     @Transactional
     public void updateNod(CommonNodReqDto commonNodReqDto) throws Exception {
-        NodType nodType = commonNodReqDto.getNodType();
+        NodeType nodeType = commonNodReqDto.getNodeType();
         ProjectEntity project = projectRepository.getFirstById(commonNodReqDto.getProjectId());
-        if (nodType == NodType.SECTION) {
+        if (nodeType == NodeType.SECTION) {
             String nodId = commonNodReqDto.getNodId();
             long referenceProjectId = commonNodReqDto.getProjectId();
             SectionEntity thisSection = sectionRepository.findByNodIdAndReferenceProjectId(nodId, referenceProjectId);
@@ -133,7 +131,7 @@ public class PlayGroundService {
                 thisSection = sectionRepository.save(thisSection);
             }
         }
-        if (nodType == NodType.APPLIANCE) {
+        if (nodeType == NodeType.APPLIANCE) {
             String nodId = commonNodReqDto.getNodId();
             long referenceProjectId = commonNodReqDto.getProjectId();
             ApplianceEntity thisAppliance = applianceRepository.findByNodIdAndReferenceProjectId(nodId, referenceProjectId);

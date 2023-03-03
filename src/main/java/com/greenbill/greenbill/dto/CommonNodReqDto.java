@@ -1,8 +1,8 @@
 package com.greenbill.greenbill.dto;
 
-import com.greenbill.greenbill.enumerat.ApplianceType;
-import com.greenbill.greenbill.enumerat.NodType;
-import com.greenbill.greenbill.enumerat.Status;
+import com.greenbill.greenbill.enumeration.ApplianceType;
+import com.greenbill.greenbill.enumeration.NodeType;
+import com.greenbill.greenbill.enumeration.Status;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import lombok.Setter;
 public class CommonNodReqDto extends BaseDto {
 
     @NotNull
-    private NodType nodType;
+    private NodeType nodeType;
     @NotNull
     private String nodId;
     @NotNull

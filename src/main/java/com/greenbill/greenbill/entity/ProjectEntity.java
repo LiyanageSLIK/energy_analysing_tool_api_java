@@ -1,7 +1,7 @@
 package com.greenbill.greenbill.entity;
 
 import com.greenbill.greenbill.dto.AddProjectReqResDto;
-import com.greenbill.greenbill.enumerat.ProjectType;
+import com.greenbill.greenbill.enumeration.ProjectType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.greenbill.greenbill.dto;
 
-import com.greenbill.greenbill.enumerat.ProjectType;
+import com.greenbill.greenbill.enumeration.ProjectType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,7 +1,7 @@
 package com.greenbill.greenbill.entity;
 
 import com.greenbill.greenbill.dto.CommonNodReqDto;
-import com.greenbill.greenbill.enumerat.Status;
+import com.greenbill.greenbill.enumeration.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

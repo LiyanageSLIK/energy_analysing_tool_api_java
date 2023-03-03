@@ -2,9 +2,9 @@ package com.greenbill.greenbill.repository;
 
 import com.greenbill.greenbill.entity.SubscriptionPlanEntity;
 import com.greenbill.greenbill.entity.UserEntity;
-import com.greenbill.greenbill.enumerat.PlanType;
-import com.greenbill.greenbill.enumerat.Status;
-import com.greenbill.greenbill.enumerat.SubscriptionPlan;
+import com.greenbill.greenbill.enumeration.PlanType;
+import com.greenbill.greenbill.enumeration.Status;
+import com.greenbill.greenbill.enumeration.SubscriptionPlan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,9 +1,9 @@
 package com.greenbill.greenbill.dto;
 
 import com.greenbill.greenbill.entity.SubscriptionPlanEntity;
-import com.greenbill.greenbill.enumerat.Cycle;
-import com.greenbill.greenbill.enumerat.PlanType;
-import com.greenbill.greenbill.enumerat.SubscriptionPlan;
+import com.greenbill.greenbill.enumeration.Cycle;
+import com.greenbill.greenbill.enumeration.PlanType;
+import com.greenbill.greenbill.enumeration.SubscriptionPlan;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

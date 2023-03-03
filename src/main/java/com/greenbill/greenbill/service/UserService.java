@@ -8,7 +8,7 @@ import com.greenbill.greenbill.entity.SubscriptionEntity;
 import com.greenbill.greenbill.entity.SubscriptionPlanEntity;
 import com.greenbill.greenbill.entity.TokenEntity;
 import com.greenbill.greenbill.entity.UserEntity;
-import com.greenbill.greenbill.enumerat.SubscriptionPlan;
+import com.greenbill.greenbill.enumeration.SubscriptionPlan;
 import com.greenbill.greenbill.repository.SubscriptionPlanRepository;
 import com.greenbill.greenbill.repository.SubscriptionRepository;
 import com.greenbill.greenbill.repository.UserRepository;

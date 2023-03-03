@@ -1,8 +1,8 @@
 package com.greenbill.greenbill.entity;
 
 import com.greenbill.greenbill.dto.UserRegisterDto;
-import com.greenbill.greenbill.enumerat.Role;
-import com.greenbill.greenbill.enumerat.VerifyType;
+import com.greenbill.greenbill.enumeration.Role;
+import com.greenbill.greenbill.enumeration.VerifyType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

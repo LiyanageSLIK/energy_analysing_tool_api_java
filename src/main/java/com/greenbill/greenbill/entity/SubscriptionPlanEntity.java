@@ -1,6 +1,6 @@
 package com.greenbill.greenbill.entity;
 
-import com.greenbill.greenbill.enumerat.*;
+import com.greenbill.greenbill.enumeration.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

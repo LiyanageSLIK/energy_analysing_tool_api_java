@@ -1,7 +1,7 @@
 package com.greenbill.greenbill.dto;
 
 import com.greenbill.greenbill.entity.ProjectEntity;
-import com.greenbill.greenbill.enumerat.ProjectType;
+import com.greenbill.greenbill.enumeration.ProjectType;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
