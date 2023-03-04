@@ -1,5 +1,6 @@
 package com.greenbill.greenbill.dto;
 
+import com.greenbill.greenbill.dto.refactor.BaseDto;
 import com.greenbill.greenbill.enumeration.ApplianceType;
 import com.greenbill.greenbill.enumeration.NodeType;
 import com.greenbill.greenbill.enumeration.Status;
@@ -9,10 +10,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+//@Getter
+//@Setter
+//@NoArgsConstructor
+//@AllArgsConstructor
 public class CommonNodReqDto extends BaseDto {
 
     @NotNull

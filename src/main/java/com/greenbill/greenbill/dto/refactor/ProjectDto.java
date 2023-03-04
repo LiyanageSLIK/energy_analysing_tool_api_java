@@ -1,4 +1,4 @@
-package com.greenbill.greenbill.dto.refector;
+package com.greenbill.greenbill.dto.refactor;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,8 +7,8 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class Project {
+public class ProjectDto extends BaseDto {
     private String id;
     private String name;
-    private List<Node> children;
+    private List<NodeDto> children;
 }

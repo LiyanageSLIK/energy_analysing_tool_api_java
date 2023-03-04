@@ -3,10 +3,12 @@ package com.greenbill.greenbill.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.greenbill.greenbill.dto.AddProjectReqResDto;
+import com.greenbill.greenbill.dto.refactor.AddProjectDto;
 import com.greenbill.greenbill.dto.CommonNodReqDto;
-import com.greenbill.greenbill.dto.NodDeleteReqDto;
+import com.greenbill.greenbill.dto.refactor.request.NodeDeleteRequestDto;
 import com.greenbill.greenbill.entity.*;
+import com.greenbill.greenbill.entity.refactor.SubscriptionPlanEntity;
+import com.greenbill.greenbill.entity.refactor.UserEntity;
 import com.greenbill.greenbill.enumeration.NodeType;
 import com.greenbill.greenbill.repository.*;
 import jakarta.transaction.Transactional;
@@ -35,31 +37,31 @@ public class PlayGroundService {
 
 
     @Transactional
-    public AddProjectReqResDto addProject(AddProjectReqResDto addProjectReqResDto, String userEmail) throws Exception {
+    public AddProjectDto addProject(AddProjectDto addProjectDto, String userEmail) throws Exception {
         if (!validatePlayGroundProjectAccess(userEmail)) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Sorry You had reach your subscription limitations upgrade your plan for more benefits");
         }
         UserEntity user = (UserEntity) userService.loadUserByUsername(userEmail);
-        ProjectEntity project = new ProjectEntity(addProjectReqResDto);
+        ProjectEntity project = new ProjectEntity(addProjectDto);
         project.setUser(user);
         project.setTreeView(new TreeViewEntity());
-        return new AddProjectReqResDto(projectRepository.save(project));
+        return new AddProjectDto(projectRepository.save(project));
     }
 
-    public List<AddProjectReqResDto> getAllProject(String userEmail) throws Exception {
+    public List<AddProjectDto> getAllProject(String userEmail) throws Exception {
         List<ProjectEntity> projecList = projectRepository.getByUser_EmailOrderByLastUpdatedDesc(userEmail);
-        List<AddProjectReqResDto> dtoList = new ArrayList<>();
+        List<AddProjectDto> dtoList = new ArrayList<>();
         for (ProjectEntity project : projecList) {
-            dtoList.add(new AddProjectReqResDto(project));
+            dtoList.add(new AddProjectDto(project));
         }
         return dtoList;
     }
 
     @Transactional
-    public AddProjectReqResDto updateProject(AddProjectReqResDto addProjectReqResDto) throws Exception {
-        ProjectEntity project = projectRepository.getFirstById(addProjectReqResDto.getProjectId());
-        project.update(addProjectReqResDto);
-        return new AddProjectReqResDto(projectRepository.save(project));
+    public AddProjectDto updateProject(AddProjectDto addProjectDto) throws Exception {
+        ProjectEntity project = projectRepository.getFirstById(addProjectDto.getProjectId());
+        project.update(addProjectDto);
+        return new AddProjectDto(projectRepository.save(project));
     }
 
     @Transactional
@@ -123,7 +125,7 @@ public class PlayGroundService {
             long referenceProjectId = commonNodReqDto.getProjectId();
             SectionEntity thisSection = sectionRepository.findByNodIdAndReferenceProjectId(nodId, referenceProjectId);
             if (thisSection == null) {
-                throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Section not found");
+                throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "SectionDto not found");
             } else {
                 thisSection.updateSection(commonNodReqDto);
                 project.setLastUpdated();
@@ -136,7 +138,7 @@ public class PlayGroundService {
             long referenceProjectId = commonNodReqDto.getProjectId();
             ApplianceEntity thisAppliance = applianceRepository.findByNodIdAndReferenceProjectId(nodId, referenceProjectId);
             if (thisAppliance == null) {
-                throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Appliance not found");
+                throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "ApplianceDto not found");
             } else {
                 thisAppliance.updateSection(commonNodReqDto);
                 project.setLastUpdated();
@@ -146,9 +148,9 @@ public class PlayGroundService {
         }
     }
 
-    public void deleteNod(NodDeleteReqDto nodDeleteReqDto) {
-        SectionEntity section = sectionRepository.findByReferenceProjectIdAndNodId(nodDeleteReqDto.getProjectId(), nodDeleteReqDto.getNodId());
-        ApplianceEntity appliance = applianceRepository.findByReferenceProjectIdAndNodId(nodDeleteReqDto.getProjectId(), nodDeleteReqDto.getNodId());
+    public void deleteNod(NodeDeleteRequestDto nodeDeleteRequestDto) {
+        SectionEntity section = sectionRepository.findByReferenceProjectIdAndNodId(nodeDeleteRequestDto.getProjectId(), nodeDeleteRequestDto.getNodId());
+        ApplianceEntity appliance = applianceRepository.findByReferenceProjectIdAndNodId(nodeDeleteRequestDto.getProjectId(), nodeDeleteRequestDto.getNodId());
         if (section != null) {
             sectionRepository.delete(section);
         }
@@ -181,7 +183,7 @@ public class PlayGroundService {
     public JsonNode updateTree(JsonNode jsonNode,long projectId) throws JsonProcessingException {
         TreeViewEntity treeView = treeViewRepository.findByProject_Id(projectId);
         if(treeView==null){
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Project not found");
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "ProjectEntity not found");
         }
         treeView.setJson(jsonNode.toString());
         ObjectMapper objectMapper = new ObjectMapper();

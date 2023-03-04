@@ -1,12 +1,12 @@
 package com.greenbill.greenbill.service;
 
-import com.greenbill.greenbill.dto.SubsPlanResDto;
-import com.greenbill.greenbill.entity.SubscriptionEntity;
-import com.greenbill.greenbill.entity.SubscriptionPlanEntity;
-import com.greenbill.greenbill.entity.UserEntity;
+import com.greenbill.greenbill.dto.refactor.response.SubscriptionPlanResponseDto;
+import com.greenbill.greenbill.entity.refactor.SubscriptionEntity;
+import com.greenbill.greenbill.entity.refactor.SubscriptionPlanEntity;
+import com.greenbill.greenbill.entity.refactor.UserEntity;
 import com.greenbill.greenbill.enumeration.PlanType;
 import com.greenbill.greenbill.enumeration.Status;
-import com.greenbill.greenbill.enumeration.SubscriptionPlan;
+import com.greenbill.greenbill.enumeration.SubscriptionPlanName;
 import com.greenbill.greenbill.repository.SubscriptionPlanRepository;
 import com.greenbill.greenbill.repository.SubscriptionRepository;
 import com.greenbill.greenbill.repository.UserRepository;
@@ -30,22 +30,22 @@ public class SubscriptionService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<SubsPlanResDto> getActiveSubsPlanList() throws HttpClientErrorException {
-        List<SubsPlanResDto> activeSubsPlanList = new ArrayList<>();
+    public List<SubscriptionPlanResponseDto> getActiveSubsPlanList() throws HttpClientErrorException {
+        List<SubscriptionPlanResponseDto> activeSubsPlanList = new ArrayList<>();
         List<SubscriptionPlanEntity> listOfPlan = subscriptionPlanRepository.findByStatusAndPlanTypeNotOrderByRateAsc(Status.ACTIVE, PlanType.ADMIN);
         for (SubscriptionPlanEntity subscriptionPlan : listOfPlan) {
-            activeSubsPlanList.add(new SubsPlanResDto(subscriptionPlan));
+            activeSubsPlanList.add(new SubscriptionPlanResponseDto(subscriptionPlan));
         }
         return activeSubsPlanList;
     }
 
 
-    public SubscriptionPlanEntity getPlanEntityByPlanName(SubscriptionPlan planName) throws HttpClientErrorException {
+    public SubscriptionPlanEntity getPlanEntityByPlanName(SubscriptionPlanName planName) throws HttpClientErrorException {
         return subscriptionPlanRepository.findByName(planName);
     }
 
     @Transactional
-    public SubscriptionEntity addSubscription(String email, SubscriptionPlan planName) throws HttpClientErrorException {
+    public SubscriptionEntity addSubscription(String email, SubscriptionPlanName planName) throws HttpClientErrorException {
         UserEntity user = userRepository.findByEmail(email);
         SubscriptionPlanEntity subscriptionPlan = subscriptionPlanRepository.findByName(planName);
         if (user == null) {
@@ -54,7 +54,7 @@ public class SubscriptionService {
         if (subscriptionPlan == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong planName: not found");
         }
-        if (planName.equals(SubscriptionPlan.FREE)) {
+        if (planName.equals(SubscriptionPlanName.FREE)) {
             SubscriptionEntity currentSubscription = subscriptionRepository.findFirstByUser_EmailAndStatus(email, Status.ACTIVE);
             currentSubscription.setStatus(Status.INACTIVE);
             SubscriptionEntity freeSubscription = subscriptionRepository.findFirstByUser_EmailAndSubscriptionPlan_Name(email, planName);

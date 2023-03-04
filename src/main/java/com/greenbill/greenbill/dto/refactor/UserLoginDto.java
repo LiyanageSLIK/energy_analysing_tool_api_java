@@ -1,14 +1,13 @@
-package com.greenbill.greenbill.dto;
+package com.greenbill.greenbill.dto.refactor;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.greenbill.greenbill.dto.refactor.BaseDto;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserLoginDto extends BaseDto {
     private String email;
     private String password;
-
 }

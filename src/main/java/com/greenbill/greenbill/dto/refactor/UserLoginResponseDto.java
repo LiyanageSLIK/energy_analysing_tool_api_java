@@ -1,15 +1,15 @@
-package com.greenbill.greenbill.dto;
+package com.greenbill.greenbill.dto.refactor;
 
-import com.greenbill.greenbill.entity.UserEntity;
+import com.greenbill.greenbill.dto.refactor.BaseDto;
+import com.greenbill.greenbill.entity.refactor.UserEntity;
 import com.greenbill.greenbill.enumeration.Role;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLoginResDto extends BaseDto {
+public class UserLoginResponseDto extends BaseDto {
 
     private String firstName;
     private String lastName;
@@ -18,7 +18,7 @@ public class UserLoginResDto extends BaseDto {
     private long aTExTime;
     private String refreshToken;
 
-    public UserLoginResDto(UserEntity userEntity) {
+    public UserLoginResponseDto(UserEntity userEntity) {
         this.firstName = userEntity.getFirstName();
         this.lastName = userEntity.getLastName();
         this.role = userEntity.getRole();

@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
-@Table(name = "section", uniqueConstraints = @UniqueConstraint(columnNames = {"node_id", "user_email"}))
+//@Data
+//@NoArgsConstructor
+//@AllArgsConstructor
+//@Entity
+//@Table(name = "section", uniqueConstraints = @UniqueConstraint(columnNames = {"node_id", "user_email"}))
 public class SectionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,14 +43,14 @@ public class SectionEntity {
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private SectionEntity parentSection;
 
-    @OneToMany(mappedBy = "parentSection", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<SectionEntity> childSections = new ArrayList<>();
-
-    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    private ProjectEntity project;
-
-    @OneToMany(mappedBy = "section", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<ApplianceEntity> appliances = new ArrayList<>();
+//    @OneToMany(mappedBy = "parentSection", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+//    private List<SectionEntity> childSections = new ArrayList<>();
+//
+//    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+//    private ProjectEntity project;
+//
+//    @OneToMany(mappedBy = "section", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+//    private List<ApplianceEntity> appliances = new ArrayList<>();
 
     public SectionEntity(CommonNodReqDto commonNodReqDto) {
         this.nodId = commonNodReqDto.getNodId();

@@ -1,17 +1,20 @@
-package com.greenbill.greenbill.entity;
+package com.greenbill.greenbill.entity.refactor;
 
-import com.greenbill.greenbill.enumeration.Cycle;
 import com.greenbill.greenbill.enumeration.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "subscription")
@@ -36,16 +39,17 @@ public class SubscriptionEntity {
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private SubscriptionPlanEntity subscriptionPlan;
 
-    public SubscriptionEntity() {
-        this.startDate = LocalDate.now();
-        this.status = Status.ACTIVE;
+    @OneToMany(mappedBy = "subscription", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<ProjectEntity> projects = new ArrayList<>();
 
-    }
-
-    public void setSubscriptionPlan(SubscriptionPlanEntity subscriptionPlan) {
-        this.subscriptionPlan = subscriptionPlan;
-        Cycle cycle = subscriptionPlan.getCycle();
-        this.endDate = this.startDate.plusMonths(cycle.getMonth());
-
-    }
+//    public SubscriptionEntity() {
+//        this.startDate = LocalDate.now();
+//        this.status = Status.ACTIVE;
+//    }
+//
+//    public void setSubscriptionPlan(SubscriptionPlanEntity subscriptionPlan) {
+//        this.subscriptionPlan = subscriptionPlan;
+//        Cycle cycle = subscriptionPlan.getCycle();
+//        this.endDate = this.startDate.plusMonths(cycle.getMonth());
+//    }
 }

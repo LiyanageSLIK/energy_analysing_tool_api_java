@@ -1,14 +1,14 @@
 package com.greenbill.greenbill.service;
 
-import com.greenbill.greenbill.dto.PasswordChangeReqDto;
-import com.greenbill.greenbill.dto.UserLoginDto;
-import com.greenbill.greenbill.dto.UserLoginResDto;
-import com.greenbill.greenbill.dto.UserRegisterDto;
-import com.greenbill.greenbill.entity.SubscriptionEntity;
-import com.greenbill.greenbill.entity.SubscriptionPlanEntity;
-import com.greenbill.greenbill.entity.TokenEntity;
-import com.greenbill.greenbill.entity.UserEntity;
-import com.greenbill.greenbill.enumeration.SubscriptionPlan;
+import com.greenbill.greenbill.dto.refactor.request.PasswordChangeRequestDto;
+import com.greenbill.greenbill.dto.refactor.UserLoginDto;
+import com.greenbill.greenbill.dto.refactor.UserLoginResponseDto;
+import com.greenbill.greenbill.dto.refactor.UserRegisterDto;
+import com.greenbill.greenbill.entity.refactor.SubscriptionEntity;
+import com.greenbill.greenbill.entity.refactor.SubscriptionPlanEntity;
+import com.greenbill.greenbill.entity.refactor.TokenEntity;
+import com.greenbill.greenbill.entity.refactor.UserEntity;
+import com.greenbill.greenbill.enumeration.SubscriptionPlanName;
 import com.greenbill.greenbill.repository.SubscriptionPlanRepository;
 import com.greenbill.greenbill.repository.SubscriptionRepository;
 import com.greenbill.greenbill.repository.UserRepository;
@@ -43,7 +43,7 @@ public class UserService implements UserDetailsService {
 
 
     @Transactional
-    public UserLoginResDto login(UserLoginDto userLoginDto) throws HttpClientErrorException {
+    public UserLoginResponseDto login(UserLoginDto userLoginDto) throws HttpClientErrorException {
         String email = userLoginDto.getEmail();
         String password = userLoginDto.getPassword();
         if (email == null || password == null) {
@@ -65,7 +65,7 @@ public class UserService implements UserDetailsService {
                 user.setToken(generatedToken);
                 userRepository.save(user);
             }
-            UserLoginResDto response = new UserLoginResDto(user);
+            UserLoginResponseDto response = new UserLoginResponseDto(user);
             response.setATExTime(jwtUtil.extractExpiration(user.getToken().getAccessToken()).getTime());
             return response;
         } else {
@@ -74,19 +74,19 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserLoginResDto register(UserRegisterDto userRegisterDto) throws HttpClientErrorException {
+    public UserLoginResponseDto register(UserRegisterDto userRegisterDto) throws HttpClientErrorException {
         UserEntity user = (UserEntity) loadUserByUsername(userRegisterDto.getEmail());
         if (user != null) {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Email already registered");
         }
         UserEntity newUser = new UserEntity(userRegisterDto);
-        SubscriptionPlanEntity initialPlan = subscriptionPlanRepository.findByName(SubscriptionPlan.FREE);
+        SubscriptionPlanEntity initialPlan = subscriptionPlanRepository.findByName(SubscriptionPlanName.FREE);
         SubscriptionEntity initialSubscription = new SubscriptionEntity();
         initialSubscription.setSubscriptionPlan(initialPlan);
         newUser.setToken(tokenService.generateLoginToken(newUser));
         initialSubscription.setUser(userRepository.save(newUser));
         subscriptionRepository.save(initialSubscription);
-        UserLoginResDto response = new UserLoginResDto(newUser);
+        UserLoginResponseDto response = new UserLoginResponseDto(newUser);
         response.setATExTime(jwtUtil.extractExpiration(newUser.getToken().getAccessToken()).getTime());
         return response;
     }
@@ -99,18 +99,18 @@ public class UserService implements UserDetailsService {
         return tokenService.ResetTokenAttributesByAccessToken(accessToken);
     }
 
-    public boolean changePassword(PasswordChangeReqDto passwordChangeReqDto, String token) throws HttpClientErrorException {
+    public boolean changePassword(PasswordChangeRequestDto passwordChangeRequestDto, String token) throws HttpClientErrorException {
         String accessToken = token.substring(7);
         if (accessToken == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Token is empty");
         }
-        String userEmail = passwordChangeReqDto.getEmail();
+        String userEmail = passwordChangeRequestDto.getEmail();
         String tokenEmail = jwtUtil.extractEmail(accessToken);
         if (!userEmail.equals(tokenEmail)) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Conflict With Email");
         }
-        String userOldPassword = passwordChangeReqDto.getOldPassword();
-        String userNewPassword = passwordChangeReqDto.getNewPassword();
+        String userOldPassword = passwordChangeRequestDto.getOldPassword();
+        String userNewPassword = passwordChangeRequestDto.getNewPassword();
         UserEntity user = (UserEntity) loadUserByUsername(userEmail);
         if (!user.checkPassword(userOldPassword)) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Conflict: Old Password is wrong");

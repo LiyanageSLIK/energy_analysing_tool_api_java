@@ -1,6 +1,6 @@
-package com.greenbill.greenbill.dto;
+package com.greenbill.greenbill.dto.refactor;
 
-import com.greenbill.greenbill.entity.ProjectEntity;
+import com.greenbill.greenbill.dto.refactor.BaseDto;
 import com.greenbill.greenbill.enumeration.ProjectType;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -8,23 +8,25 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.TimeZone;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddProjectReqResDto extends BaseDto {
+public class AddProjectDto extends BaseDto {
+
     @NotNull
     private String projectName;
+
     @NotNull
     private ProjectType projectType;
+
     private long projectId;
+
     private String lastUpdated;
-
-
 
 
     public void setLastUpdated(Date lastUpdated) {
@@ -34,10 +36,10 @@ public class AddProjectReqResDto extends BaseDto {
         this.lastUpdated = istDate;
     }
 
-    public AddProjectReqResDto(ProjectEntity project) {
-        this.projectName = project.getName();
-        this.projectType = project.getProjectType();
-        this.projectId = project.getId();
-        this.setLastUpdated(project.getLastUpdated());
-    }
+//    public AddProjectDto(ProjectEntity project) {
+//        this.projectName = project.getName();
+//        this.projectType = project.getProjectType();
+//        this.projectId = project.getId();
+//        this.setLastUpdated(project.getLastUpdated());
+//    }
 }

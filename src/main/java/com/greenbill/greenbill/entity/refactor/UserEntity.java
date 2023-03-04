@@ -1,12 +1,10 @@
-package com.greenbill.greenbill.entity;
+package com.greenbill.greenbill.entity.refactor;
 
-import com.greenbill.greenbill.dto.UserRegisterDto;
+import com.greenbill.greenbill.dto.refactor.UserRegisterDto;
 import com.greenbill.greenbill.enumeration.Role;
 import com.greenbill.greenbill.enumeration.VerifyType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,37 +14,45 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "user")
 public class UserEntity implements UserDetails {
     @Transient
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "first_name", nullable = false)
     private String firstName;
+
     @Column(name = "last_name", nullable = false)
     private String lastName;
+
     @Column(nullable = false, unique = true)
     private String email;
+
     @Column(nullable = false)
     private String password;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private VerifyType verifyType;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private TokenEntity token;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SubscriptionEntity> subscriptions = new ArrayList<>();
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<ProjectEntity> projects = new ArrayList<>();
 
     public UserEntity(UserRegisterDto userRegisterDto) {
         this.firstName = userRegisterDto.getFirstName();

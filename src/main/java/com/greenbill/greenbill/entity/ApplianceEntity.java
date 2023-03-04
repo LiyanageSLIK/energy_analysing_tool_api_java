@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
-@Table(name = "appliance", uniqueConstraints = @UniqueConstraint(columnNames = {"node_id", "user_email"}))
+//@Data
+//@NoArgsConstructor
+//@AllArgsConstructor
+//@Entity
+//@Table(name = "appliance", uniqueConstraints = @UniqueConstraint(columnNames = {"node_id", "user_email"}))
 public class ApplianceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,8 +51,8 @@ public class ApplianceEntity {
     private String userEmail;
 
 
-    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    private SectionEntity section;
+//    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+//    private SectionEntity section;
 
     public ApplianceEntity(CommonNodReqDto commonNodReqDto) {
         this.parentNodId = commonNodReqDto.getParentNodId();

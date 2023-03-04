@@ -1,4 +1,4 @@
-package com.greenbill.greenbill.entity;
+package com.greenbill.greenbill.entity.refactor;
 
 import com.greenbill.greenbill.enumeration.*;
 import jakarta.persistence.*;
@@ -24,7 +24,7 @@ public class SubscriptionPlanEntity {
 
     @Column(nullable = false, unique = true)
     @Enumerated(EnumType.STRING)
-    private SubscriptionPlan name;
+    private SubscriptionPlanName name;
 
     @Column(nullable = false)
     private Float rate;

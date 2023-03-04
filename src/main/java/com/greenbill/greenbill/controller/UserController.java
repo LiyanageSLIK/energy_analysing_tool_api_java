@@ -1,9 +1,9 @@
 package com.greenbill.greenbill.controller;
 
-import com.greenbill.greenbill.dto.PasswordChangeReqDto;
-import com.greenbill.greenbill.dto.ResponseWrapper;
-import com.greenbill.greenbill.dto.UserLoginDto;
-import com.greenbill.greenbill.dto.UserRegisterDto;
+import com.greenbill.greenbill.dto.refactor.request.PasswordChangeRequestDto;
+import com.greenbill.greenbill.dto.refactor.ResponseWrapper;
+import com.greenbill.greenbill.dto.refactor.UserLoginDto;
+import com.greenbill.greenbill.dto.refactor.UserRegisterDto;
 import com.greenbill.greenbill.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +50,9 @@ public class UserController {
     }
 
     @PutMapping("/password")
-    public ResponseEntity changePassword(@RequestBody @Valid PasswordChangeReqDto passwordChangeReqDto, @RequestHeader(value = "Authorization", required = true) String token) {
+    public ResponseEntity changePassword(@RequestBody @Valid PasswordChangeRequestDto passwordChangeRequestDto, @RequestHeader(value = "Authorization", required = true) String token) {
         try {
-            if (userService.changePassword(passwordChangeReqDto, token)) {
+            if (userService.changePassword(passwordChangeRequestDto, token)) {
                 return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully Changed Password");
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("UnSuccess: Password Not Changed");

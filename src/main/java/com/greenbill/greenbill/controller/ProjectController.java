@@ -1,19 +1,16 @@
 package com.greenbill.greenbill.controller;
 
-import com.greenbill.greenbill.dto.AddProjectReqResDto;
-import com.greenbill.greenbill.dto.ProjectCommonDto;
-import com.greenbill.greenbill.dto.ResponseWrapper;
-import com.greenbill.greenbill.dto.refector.Project;
+import com.greenbill.greenbill.dto.refactor.AddProjectDto;
+import com.greenbill.greenbill.dto.refactor.ResponseWrapper;
+import com.greenbill.greenbill.dto.refactor.ProjectDto;
 import com.greenbill.greenbill.service.PlayGroundService;
 import com.greenbill.greenbill.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
-@Controller
 @RestController
 @RequestMapping("/test/project")
 public class ProjectController {
@@ -25,7 +22,7 @@ public class ProjectController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/create")
-    public ResponseEntity<ResponseWrapper> addProject(@RequestBody Project projectDto, @RequestHeader(value = "Authorization", required = true) String token) {
+    public ResponseEntity<ResponseWrapper> addProject(@RequestBody ProjectDto projectDto, @RequestHeader(value = "Authorization", required = true) String token) {
         try {
             String extractedToken = token.substring(7);
             String userEmail = jwtUtil.extractEmail(extractedToken);
@@ -38,7 +35,7 @@ public class ProjectController {
     }
 
 //    @PostMapping("/create")
-//    public ResponseEntity<ResponseWrapper> addProject(@RequestBody AddProjectReqResDto addProjectReqResDto, @RequestHeader(value = "Authorization", required = true) String token) {
+//    public ResponseEntity<ResponseWrapper> addProject(@RequestBody AddProjectDto addProjectReqResDto, @RequestHeader(value = "Authorization", required = true) String token) {
 //        try {
 //            String extractedToken = token.substring(7);
 //            String userEmail = jwtUtil.extractEmail(extractedToken);
@@ -62,9 +59,9 @@ public class ProjectController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ResponseWrapper> updateProject(@RequestBody AddProjectReqResDto addProjectReqResDto) {
+    public ResponseEntity<ResponseWrapper> updateProject(@RequestBody AddProjectDto addProjectDto) {
         try {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(playGroundService.updateProject(addProjectReqResDto), HttpStatus.OK.value(), "Success: Successfully updated"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(playGroundService.updateProject(addProjectDto), HttpStatus.OK.value(), "Success: Successfully updated"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
         }

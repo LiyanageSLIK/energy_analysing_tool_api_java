@@ -1,8 +1,8 @@
 package com.greenbill.greenbill.service;
 
-import com.greenbill.greenbill.dto.AccessTokenResDto;
-import com.greenbill.greenbill.entity.TokenEntity;
-import com.greenbill.greenbill.entity.UserEntity;
+import com.greenbill.greenbill.dto.refactor.response.AccessTokenResponseDto;
+import com.greenbill.greenbill.entity.refactor.TokenEntity;
+import com.greenbill.greenbill.entity.refactor.UserEntity;
 import com.greenbill.greenbill.repository.TokenRepository;
 import com.greenbill.greenbill.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -29,7 +29,7 @@ public class TokenService {
         return newToken;
     }
 
-    public AccessTokenResDto requestNewAccessToken(@NonNull String refreshToken) throws HttpClientErrorException {
+    public AccessTokenResponseDto requestNewAccessToken(@NonNull String refreshToken) throws HttpClientErrorException {
         String extractedRefreshToken = refreshToken.substring(7);
         TokenEntity token = tokenRepository.findByRefreshToken(extractedRefreshToken);
         if (token == null) {
@@ -46,7 +46,7 @@ public class TokenService {
         tokenRepository.save(token);
         String accessToken = token.getAccessToken();
         long expireTime = jwtUtil.extractExpiration(accessToken).getTime();
-        return new AccessTokenResDto(accessToken, expireTime);
+        return new AccessTokenResponseDto(accessToken, expireTime);
     }
 
     public Boolean validateAccessToken(String accessToken) throws HttpClientErrorException {

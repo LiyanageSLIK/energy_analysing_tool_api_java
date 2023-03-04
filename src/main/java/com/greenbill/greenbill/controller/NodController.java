@@ -1,8 +1,8 @@
 package com.greenbill.greenbill.controller;
 
 import com.greenbill.greenbill.dto.CommonNodReqDto;
-import com.greenbill.greenbill.dto.NodDeleteReqDto;
-import com.greenbill.greenbill.dto.ResponseWrapper;
+import com.greenbill.greenbill.dto.refactor.request.NodeDeleteRequestDto;
+import com.greenbill.greenbill.dto.refactor.ResponseWrapper;
 import com.greenbill.greenbill.service.PlayGroundService;
 import com.greenbill.greenbill.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +49,9 @@ public class NodController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity updateNod(@RequestBody NodDeleteReqDto nodDeleteReqDto) {
+    public ResponseEntity updateNod(@RequestBody NodeDeleteRequestDto nodeDeleteRequestDto) {
         try {
-            playGroundService.deleteNod(nodDeleteReqDto);
+            playGroundService.deleteNod(nodeDeleteRequestDto);
             return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully deleted");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));

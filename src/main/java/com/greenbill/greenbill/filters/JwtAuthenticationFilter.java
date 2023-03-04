@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, HttpClientErrorException {
         try {
             final String jwt = getJwtFromRequest(request);
-            SecurityContextHolder.clearContext();/** Comment this to skip additional security :check token in database**/
+            SecurityContextHolder.clearContext();       // Comment this to skip additional security :check token in database
             if (StringUtils.hasText(jwt) && SecurityContextHolder.getContext().getAuthentication() == null && tokenService.validateAccessToken(jwt)) {
                 final String userEmail = jwtUtil.extractEmail(jwt);
                 UserDetails userDetails = userService.loadUserByUsername(userEmail);

@@ -1,12 +1,12 @@
 package com.greenbill.greenbill.repository;
 
 import com.greenbill.greenbill.entity.ApplianceEntity;
-import com.greenbill.greenbill.entity.UserEntity;
+import com.greenbill.greenbill.entity.refactor.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-@Repository
+//@Repository
 public interface ApplianceRepository extends JpaRepository<ApplianceEntity, Long> {
     ApplianceEntity findByReferenceProjectIdAndNodId(Long referenceProjectId, String nodId);
 

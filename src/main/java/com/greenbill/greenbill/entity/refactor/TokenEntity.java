@@ -1,4 +1,4 @@
-package com.greenbill.greenbill.entity;
+package com.greenbill.greenbill.entity.refactor;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
 package com.greenbill.greenbill.enumeration;
 
-public enum SubscriptionPlan {
+public enum SubscriptionPlanName {
     FREE,
     DOMESTIC_LITE,
     DOMESTIC_PRO,
