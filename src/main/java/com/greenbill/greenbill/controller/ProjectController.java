@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 @RestController
-@RequestMapping("/test/project")
+@RequestMapping("/project")
 public class ProjectController {
 
     @Autowired
@@ -21,12 +21,16 @@ public class ProjectController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @PostMapping("/create")
-    public ResponseEntity<ResponseWrapper> addProject(@RequestBody ProjectDto projectDto, @RequestHeader(value = "Authorization", required = true) String token) {
+    @PostMapping("/")
+    public ResponseEntity<ResponseWrapper> addProject(@RequestBody ProjectDto projectDto,
+                                                      @RequestHeader(value = "Authorization") String token) {
         try {
-            String extractedToken = token.substring(7);
-            String userEmail = jwtUtil.extractEmail(extractedToken);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(playGroundService.addProject(addProjectReqResDto, userEmail), HttpStatus.OK.value(), "Success: Successfully added"));
+            var extractedToken = token.substring(7);
+            var userEmail = jwtUtil.extractEmail(extractedToken);
+            var addProjectResponseDto = playGroundService.addProject(projectDto, userEmail);
+            var successResponse = new ResponseWrapper(addProjectResponseDto, HttpStatus.OK.value(), "Success: Successfully added");
+            return ResponseEntity.status(HttpStatus.OK).body(successResponse);
+
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(new ResponseWrapper(null, e.getStatusCode().value(), e.getMessage()));
         } catch (Exception e) {
@@ -75,6 +79,10 @@ public class ProjectController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
         }
+    }
+
+    private boolean isEmpty(String value) {
+        return value == null || value.isEmpty();
     }
 
 

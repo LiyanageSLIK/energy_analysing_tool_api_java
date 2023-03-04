@@ -12,9 +12,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
-@Controller
-@RestController
-@RequestMapping("/test/nod")
+//@Controller
+//@RestController
+//@RequestMapping("/test/nod")
+@Deprecated
 public class NodController {
 
     @Autowired

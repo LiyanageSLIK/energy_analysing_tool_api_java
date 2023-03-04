@@ -1,5 +1,6 @@
 package com.greenbill.greenbill.controller;
 
+import com.greenbill.greenbill.dto.refactor.UserLoginResponseDto;
 import com.greenbill.greenbill.dto.refactor.request.PasswordChangeRequestDto;
 import com.greenbill.greenbill.dto.refactor.ResponseWrapper;
 import com.greenbill.greenbill.dto.refactor.UserLoginDto;
@@ -24,14 +25,17 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<ResponseWrapper> login(@RequestBody @Valid UserLoginDto userLoginDto) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(userService.login(userLoginDto), HttpStatus.OK.value(), "Success: Successfully loggedIn"));
+            var loginResponseDto = userService.login(userLoginDto);
+            var successResponse = new ResponseWrapper(loginResponseDto, HttpStatus.OK.value(), "Success: Successfully loggedIn");
+            return ResponseEntity.status(HttpStatus.OK).body(successResponse);
         } catch (HttpClientErrorException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(new ResponseWrapper(null, e.getStatusCode().value(), e.getMessage()));
+            var errorResponse = new ResponseWrapper(null, e.getStatusCode().value(), e.getMessage());
+            return ResponseEntity.status(e.getStatusCode()).body(errorResponse);
         }
     }
 
     @PostMapping("/logout")
-    public ResponseEntity login(@RequestHeader(value = "Authorization", required = true) String token) {
+    public ResponseEntity<String> login(@RequestHeader(value = "Authorization", required = true) String token) {
         try {
             userService.logOut(token);
             return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully loggedOut");
@@ -43,14 +47,18 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<ResponseWrapper> register(@RequestBody @Valid UserRegisterDto userRegisterDto) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(userService.register(userRegisterDto), HttpStatus.OK.value(), "Success: Successfully Registered"));
+            var registerResponseDto = userService.register(userRegisterDto);
+            var successResponse = new ResponseWrapper(registerResponseDto, HttpStatus.OK.value(), "Success: Successfully Registered");
+            return ResponseEntity.status(HttpStatus.OK).body(successResponse);
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(new ResponseWrapper(null, e.getStatusCode().value(), e.getMessage()));
         }
     }
 
     @PutMapping("/password")
-    public ResponseEntity changePassword(@RequestBody @Valid PasswordChangeRequestDto passwordChangeRequestDto, @RequestHeader(value = "Authorization", required = true) String token) {
+    public ResponseEntity<String> changePassword(
+            @RequestBody @Valid PasswordChangeRequestDto passwordChangeRequestDto,
+            @RequestHeader(value = "Authorization", required = true) String token) {
         try {
             if (userService.changePassword(passwordChangeRequestDto, token)) {
                 return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully Changed Password");
@@ -62,7 +70,9 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity delete(@RequestBody @Valid UserLoginDto userLoginDto, @RequestHeader(value = "Authorization", required = true) String token) {
+    public ResponseEntity<String> delete(
+            @RequestBody @Valid UserLoginDto userLoginDto,
+            @RequestHeader(value = "Authorization", required = true) String token) {
         try {
             if (userService.delete(userLoginDto, token)) {
                 return ResponseEntity.status(HttpStatus.OK).body("Success: Account Successfully Deleted");

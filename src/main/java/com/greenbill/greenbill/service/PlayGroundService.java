@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greenbill.greenbill.dto.refactor.AddProjectDto;
 import com.greenbill.greenbill.dto.CommonNodReqDto;
+import com.greenbill.greenbill.dto.refactor.ProjectDto;
 import com.greenbill.greenbill.dto.refactor.request.NodeDeleteRequestDto;
 import com.greenbill.greenbill.entity.*;
 import com.greenbill.greenbill.entity.refactor.SubscriptionPlanEntity;
@@ -37,7 +38,7 @@ public class PlayGroundService {
 
 
     @Transactional
-    public AddProjectDto addProject(AddProjectDto addProjectDto, String userEmail) throws Exception {
+    public AddProjectDto addProject(ProjectDto projectDto, String userEmail) throws Exception {
         if (!validatePlayGroundProjectAccess(userEmail)) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Sorry You had reach your subscription limitations upgrade your plan for more benefits");
         }
