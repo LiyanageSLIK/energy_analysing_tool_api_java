@@ -1,6 +1,6 @@
 package com.greenbill.greenbill.repository;
 
-import com.greenbill.greenbill.entity.refactor.SubscriptionEntity;
+import com.greenbill.greenbill.entity.SubscriptionEntity;
 import com.greenbill.greenbill.enumeration.Status;
 import com.greenbill.greenbill.enumeration.SubscriptionPlanName;
 import org.springframework.data.jpa.repository.JpaRepository;

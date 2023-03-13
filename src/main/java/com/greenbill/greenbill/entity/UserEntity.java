@@ -1,10 +1,13 @@
-package com.greenbill.greenbill.entity.refactor;
+package com.greenbill.greenbill.entity;
 
-import com.greenbill.greenbill.dto.refactor.UserRegisterDto;
+import com.greenbill.greenbill.dto.UserRegisterDto;
 import com.greenbill.greenbill.enumeration.Role;
 import com.greenbill.greenbill.enumeration.VerifyType;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

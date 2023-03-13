@@ -1,10 +1,9 @@
 package com.greenbill.greenbill.controller;
 
-import com.greenbill.greenbill.dto.refactor.UserLoginResponseDto;
-import com.greenbill.greenbill.dto.refactor.request.PasswordChangeRequestDto;
-import com.greenbill.greenbill.dto.refactor.ResponseWrapper;
-import com.greenbill.greenbill.dto.refactor.UserLoginDto;
-import com.greenbill.greenbill.dto.refactor.UserRegisterDto;
+import com.greenbill.greenbill.dto.ResponseWrapper;
+import com.greenbill.greenbill.dto.UserRegisterDto;
+import com.greenbill.greenbill.dto.request.PasswordChangeRequestDto;
+import com.greenbill.greenbill.dto.request.UserLoginRequestDto;
 import com.greenbill.greenbill.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +22,9 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseWrapper> login(@RequestBody @Valid UserLoginDto userLoginDto) {
+    public ResponseEntity<ResponseWrapper> login(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto) {
         try {
-            var loginResponseDto = userService.login(userLoginDto);
+            var loginResponseDto = userService.login(userLoginRequestDto);
             var successResponse = new ResponseWrapper(loginResponseDto, HttpStatus.OK.value(), "Success: Successfully loggedIn");
             return ResponseEntity.status(HttpStatus.OK).body(successResponse);
         } catch (HttpClientErrorException e) {
@@ -71,10 +70,10 @@ public class UserController {
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> delete(
-            @RequestBody @Valid UserLoginDto userLoginDto,
+            @RequestBody @Valid UserLoginRequestDto userLoginRequestDto,
             @RequestHeader(value = "Authorization", required = true) String token) {
         try {
-            if (userService.delete(userLoginDto, token)) {
+            if (userService.delete(userLoginRequestDto, token)) {
                 return ResponseEntity.status(HttpStatus.OK).body("Success: Account Successfully Deleted");
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("UnSuccess: Delete Unsuccessful");

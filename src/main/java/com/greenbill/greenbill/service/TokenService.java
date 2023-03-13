@@ -1,8 +1,8 @@
 package com.greenbill.greenbill.service;
 
-import com.greenbill.greenbill.dto.refactor.response.AccessTokenResponseDto;
-import com.greenbill.greenbill.entity.refactor.TokenEntity;
-import com.greenbill.greenbill.entity.refactor.UserEntity;
+import com.greenbill.greenbill.dto.response.AccessTokenResponseDto;
+import com.greenbill.greenbill.entity.TokenEntity;
+import com.greenbill.greenbill.entity.UserEntity;
 import com.greenbill.greenbill.repository.TokenRepository;
 import com.greenbill.greenbill.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;

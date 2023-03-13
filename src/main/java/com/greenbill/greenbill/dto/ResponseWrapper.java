@@ -1,4 +1,4 @@
-package com.greenbill.greenbill.dto.refactor;
+package com.greenbill.greenbill.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

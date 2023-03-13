@@ -1,13 +1,13 @@
 package com.greenbill.greenbill.service;
 
-import com.greenbill.greenbill.dto.refactor.request.PasswordChangeRequestDto;
-import com.greenbill.greenbill.dto.refactor.UserLoginDto;
-import com.greenbill.greenbill.dto.refactor.UserLoginResponseDto;
-import com.greenbill.greenbill.dto.refactor.UserRegisterDto;
-import com.greenbill.greenbill.entity.refactor.SubscriptionEntity;
-import com.greenbill.greenbill.entity.refactor.SubscriptionPlanEntity;
-import com.greenbill.greenbill.entity.refactor.TokenEntity;
-import com.greenbill.greenbill.entity.refactor.UserEntity;
+import com.greenbill.greenbill.dto.UserRegisterDto;
+import com.greenbill.greenbill.dto.request.PasswordChangeRequestDto;
+import com.greenbill.greenbill.dto.request.UserLoginRequestDto;
+import com.greenbill.greenbill.dto.response.UserLoginResponseDto;
+import com.greenbill.greenbill.entity.SubscriptionEntity;
+import com.greenbill.greenbill.entity.SubscriptionPlanEntity;
+import com.greenbill.greenbill.entity.TokenEntity;
+import com.greenbill.greenbill.entity.UserEntity;
 import com.greenbill.greenbill.enumeration.SubscriptionPlanName;
 import com.greenbill.greenbill.repository.SubscriptionPlanRepository;
 import com.greenbill.greenbill.repository.SubscriptionRepository;
@@ -43,9 +43,9 @@ public class UserService implements UserDetailsService {
 
 
     @Transactional
-    public UserLoginResponseDto login(UserLoginDto userLoginDto) throws HttpClientErrorException {
-        String email = userLoginDto.getEmail();
-        String password = userLoginDto.getPassword();
+    public UserLoginResponseDto login(UserLoginRequestDto userLoginRequestDto) throws HttpClientErrorException {
+        String email = userLoginRequestDto.getEmail();
+        String password = userLoginRequestDto.getPassword();
         if (email == null || password == null) {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Empty Input Field:Please Enter Username & Password ");
         }
@@ -121,17 +121,17 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public boolean delete(UserLoginDto userLoginDto, String token) throws HttpClientErrorException {
+    public boolean delete(UserLoginRequestDto userLoginRequestDto, String token) throws HttpClientErrorException {
         String accessToken = token.substring(7);
         if (accessToken == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Token is empty");
         }
-        String userEmail = userLoginDto.getEmail();
+        String userEmail = userLoginRequestDto.getEmail();
         String tokenEmail = jwtUtil.extractEmail(accessToken);
         if (!userEmail.equals(tokenEmail)) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Conflict With Email");
         }
-        String userPassword = userLoginDto.getPassword();
+        String userPassword = userLoginRequestDto.getPassword();
         UserEntity user = (UserEntity) loadUserByUsername(userEmail);
         if (!user.checkPassword(userPassword)) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Conflict:Password is wrong");

@@ -1,9 +1,9 @@
 package com.greenbill.greenbill.service;
 
-import com.greenbill.greenbill.dto.refactor.response.SubscriptionPlanResponseDto;
-import com.greenbill.greenbill.entity.refactor.SubscriptionEntity;
-import com.greenbill.greenbill.entity.refactor.SubscriptionPlanEntity;
-import com.greenbill.greenbill.entity.refactor.UserEntity;
+import com.greenbill.greenbill.dto.response.SubscriptionPlanResponseDto;
+import com.greenbill.greenbill.entity.SubscriptionEntity;
+import com.greenbill.greenbill.entity.SubscriptionPlanEntity;
+import com.greenbill.greenbill.entity.UserEntity;
 import com.greenbill.greenbill.enumeration.PlanType;
 import com.greenbill.greenbill.enumeration.Status;
 import com.greenbill.greenbill.enumeration.SubscriptionPlanName;

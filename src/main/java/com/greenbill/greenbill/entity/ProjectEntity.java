@@ -1,15 +1,14 @@
-package com.greenbill.greenbill.entity.refactor;
+package com.greenbill.greenbill.entity;
 
+import com.greenbill.greenbill.dto.ProjectDto;
 import com.greenbill.greenbill.enumeration.ProjectType;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.Date;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @Entity
 @Table(name = "project")
@@ -34,4 +33,13 @@ public class ProjectEntity {
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private SubscriptionEntity subscription;
+
+    public ProjectEntity(ProjectDto projectDto) {
+        setName(projectDto.getName());
+        var rootEntity=new RootEntity();
+        rootEntity.setName(projectDto.getName()+"_root");
+        setRoot(rootEntity);
+        setProjectType(projectDto.getProjectType());
+        setLastUpdated(new Date());
+    }
 }

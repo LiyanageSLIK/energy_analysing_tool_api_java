@@ -1,11 +1,14 @@
-package com.greenbill.greenbill.dto.refactor.response;
+package com.greenbill.greenbill.dto.response;
 
-import com.greenbill.greenbill.dto.refactor.BaseDto;
-import com.greenbill.greenbill.entity.refactor.SubscriptionPlanEntity;
+import com.greenbill.greenbill.dto.BaseDto;
+import com.greenbill.greenbill.entity.SubscriptionPlanEntity;
 import com.greenbill.greenbill.enumeration.Cycle;
 import com.greenbill.greenbill.enumeration.PlanType;
 import com.greenbill.greenbill.enumeration.SubscriptionPlanName;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter

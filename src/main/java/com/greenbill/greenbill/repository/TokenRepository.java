@@ -1,6 +1,6 @@
 package com.greenbill.greenbill.repository;
 
-import com.greenbill.greenbill.entity.refactor.TokenEntity;
+import com.greenbill.greenbill.entity.TokenEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

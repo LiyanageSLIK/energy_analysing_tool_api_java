@@ -1,6 +1,6 @@
 package com.greenbill.greenbill.util;
 
-import com.greenbill.greenbill.entity.refactor.UserEntity;
+import com.greenbill.greenbill.entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

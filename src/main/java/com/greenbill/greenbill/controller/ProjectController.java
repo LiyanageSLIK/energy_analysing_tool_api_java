@@ -1,8 +1,8 @@
 package com.greenbill.greenbill.controller;
 
-import com.greenbill.greenbill.dto.refactor.AddProjectDto;
-import com.greenbill.greenbill.dto.refactor.ResponseWrapper;
-import com.greenbill.greenbill.dto.refactor.ProjectDto;
+
+import com.greenbill.greenbill.dto.ProjectDto;
+import com.greenbill.greenbill.dto.ResponseWrapper;
 import com.greenbill.greenbill.service.PlayGroundService;
 import com.greenbill.greenbill.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;

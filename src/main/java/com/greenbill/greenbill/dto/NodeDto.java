@@ -1,4 +1,4 @@
-package com.greenbill.greenbill.dto.refactor;
+package com.greenbill.greenbill.dto;
 
 import com.greenbill.greenbill.enumeration.NodeType;
 import lombok.Getter;
@@ -10,7 +10,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public abstract class NodeDto extends BaseDto {
     private String id;
-    private String parentId;
+    private String frontEndId;
+    private long projectId;
+    private String parentFrontEndId;
+
     private String name;
     private NodeType nodeType;
 }

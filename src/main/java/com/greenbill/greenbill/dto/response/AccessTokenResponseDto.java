@@ -1,6 +1,6 @@
-package com.greenbill.greenbill.dto.refactor.response;
+package com.greenbill.greenbill.dto.response;
 
-import com.greenbill.greenbill.dto.refactor.BaseDto;
+import com.greenbill.greenbill.dto.BaseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

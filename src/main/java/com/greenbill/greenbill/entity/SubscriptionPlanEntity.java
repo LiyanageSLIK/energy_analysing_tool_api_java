@@ -1,4 +1,4 @@
-package com.greenbill.greenbill.entity.refactor;
+package com.greenbill.greenbill.entity;
 
 import com.greenbill.greenbill.enumeration.*;
 import jakarta.persistence.*;

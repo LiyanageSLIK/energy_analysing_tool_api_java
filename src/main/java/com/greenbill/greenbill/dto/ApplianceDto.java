@@ -1,4 +1,4 @@
-package com.greenbill.greenbill.dto.refactor;
+package com.greenbill.greenbill.dto;
 
 import com.greenbill.greenbill.enumeration.ApplianceType;
 import lombok.Data;

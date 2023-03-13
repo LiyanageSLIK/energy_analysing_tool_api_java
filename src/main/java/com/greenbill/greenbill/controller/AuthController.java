@@ -1,6 +1,6 @@
 package com.greenbill.greenbill.controller;
 
-import com.greenbill.greenbill.dto.refactor.ResponseWrapper;
+import com.greenbill.greenbill.dto.ResponseWrapper;
 import com.greenbill.greenbill.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

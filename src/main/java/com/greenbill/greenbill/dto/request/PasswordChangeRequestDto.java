@@ -1,7 +1,10 @@
-package com.greenbill.greenbill.dto.refactor.request;
+package com.greenbill.greenbill.dto.request;
 
-import com.greenbill.greenbill.dto.refactor.BaseDto;
-import lombok.*;
+import com.greenbill.greenbill.dto.BaseDto;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter

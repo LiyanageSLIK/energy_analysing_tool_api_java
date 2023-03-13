@@ -1,7 +1,6 @@
-package com.greenbill.greenbill.dto.refactor;
+package com.greenbill.greenbill.dto;
 
-import com.greenbill.greenbill.dto.refactor.BaseDto;
-import com.greenbill.greenbill.entity.refactor.UserEntity;
+import com.greenbill.greenbill.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
