@@ -28,7 +28,7 @@ public class ProjectEntity {
     @Column(name = "last_updated", nullable = false)
     private Date lastUpdated = new Date();
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(mappedBy ="project" ,cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private RootEntity root;
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
@@ -36,9 +36,6 @@ public class ProjectEntity {
 
     public ProjectEntity(ProjectDto projectDto) {
         setName(projectDto.getName());
-        var rootEntity=new RootEntity();
-        rootEntity.setName(projectDto.getName()+"_root");
-        setRoot(rootEntity);
         setProjectType(projectDto.getProjectType());
         setLastUpdated(new Date());
     }

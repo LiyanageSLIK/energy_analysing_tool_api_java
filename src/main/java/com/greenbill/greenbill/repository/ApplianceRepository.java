@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ApplianceRepository extends JpaRepository<ApplianceEntity, Long> {
+    long countByFrontEndIdContains(String frontEndId);
+    ApplianceEntity findByFrontEndId(String frontEndId);
 
 
 }

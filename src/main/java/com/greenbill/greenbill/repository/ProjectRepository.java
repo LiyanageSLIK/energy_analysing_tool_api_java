@@ -10,12 +10,9 @@ import java.util.List;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
+    long countBySubscription_User_Email(String email);
     List<ProjectEntity> getBySubscription_StatusAndSubscription_User_EmailOrderByLastUpdatedDesc(Status status, String email);
-    long countByUser(UserEntity user);
-
     long removeById(Long id);
-
-
     ProjectEntity getFirstById(Long id);
 
 }

@@ -4,6 +4,7 @@ package com.greenbill.greenbill.controller;
 import com.greenbill.greenbill.dto.ProjectDto;
 import com.greenbill.greenbill.dto.ResponseWrapper;
 import com.greenbill.greenbill.service.PlayGroundService;
+import com.greenbill.greenbill.service.ProjectService;
 import com.greenbill.greenbill.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,7 @@ import org.springframework.web.client.HttpClientErrorException;
 public class ProjectController {
 
     @Autowired
-    private PlayGroundService playGroundService;
+    private ProjectService projectService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -27,7 +28,7 @@ public class ProjectController {
         try {
             var extractedToken = token.substring(7);
             var userEmail = jwtUtil.extractEmail(extractedToken);
-            var addProjectResponseDto = playGroundService.addProject(projectDto, userEmail);
+            var addProjectResponseDto = projectService.addProject(projectDto, userEmail);
             var successResponse = new ResponseWrapper(addProjectResponseDto, HttpStatus.OK.value(), "Success: Successfully added");
             return ResponseEntity.status(HttpStatus.OK).body(successResponse);
 
@@ -56,16 +57,16 @@ public class ProjectController {
         try {
             String extractedToken = token.substring(7);
             String userEmail = jwtUtil.extractEmail(extractedToken);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(playGroundService.getAllProject(userEmail), HttpStatus.OK.value(), "Success"));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(projectService.getAllProject(userEmail), HttpStatus.OK.value(), "Success"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
         }
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ResponseWrapper> updateProject(@RequestBody AddProjectDto addProjectDto) {
+    public ResponseEntity<ResponseWrapper> updateProject(@RequestBody ProjectDto projectDto) {
         try {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(playGroundService.updateProject(addProjectDto), HttpStatus.OK.value(), "Success: Successfully updated"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(projectService.updateProject(projectDto), HttpStatus.OK.value(), "Success: Successfully updated"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
         }
@@ -74,7 +75,7 @@ public class ProjectController {
     @DeleteMapping("")
     public ResponseEntity deleteProject(@RequestParam long projectId) {
         try {
-            playGroundService.deleteProject(projectId);
+            projectService.deleteProject(projectId);
             return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully deleted");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));

@@ -1,14 +1,11 @@
 package com.greenbill.greenbill.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.greenbill.greenbill.dto.ApplianceDto;
 import com.greenbill.greenbill.dto.NodeDto;
-import com.greenbill.greenbill.dto.ProjectDto;
 import com.greenbill.greenbill.dto.SectionDto;
 import com.greenbill.greenbill.entity.*;
 import com.greenbill.greenbill.enumeration.NodeType;
-import com.greenbill.greenbill.enumeration.Status;
 import com.greenbill.greenbill.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Service
 public class PlayGroundService {
@@ -31,45 +26,10 @@ public class PlayGroundService {
     @Autowired
     private SubscriptionPlanRepository subscriptionPlanRepository;
     @Autowired
-    private SubscriptionRepository subscriptionRepository;
-    @Autowired
     private ApplianceRepository applianceRepository;
     @Autowired
-    private UserService userService;
+    private UserRepository userRepository;
 
-
-    @Transactional
-    public ProjectDto addProject(ProjectDto projectDto, String userEmail) throws Exception {
-        if (!validatePlayGroundProjectAccess(userEmail)) {
-            throw new HttpClientErrorException(HttpStatus.CONFLICT, "Sorry You had reach your subscription limitations upgrade your plan for more benefits");
-        }
-        ProjectEntity project = new ProjectEntity(projectDto);
-        var activeSubscription=subscriptionRepository.findFirstByUser_EmailAndStatus(userEmail, Status.ACTIVE);
-        project.setSubscription(activeSubscription);
-        return new ProjectDto(projectRepository.save(project));
-    }
-
-    public List<ProjectDto> getAllProject(String userEmail) throws Exception {
-        List<ProjectEntity> projecList = projectRepository.getBySubscription_StatusAndSubscription_User_EmailOrderByLastUpdatedDesc(Status.ACTIVE,userEmail);
-        List<ProjectDto> dtoList = new ArrayList<>();
-        for (ProjectEntity project : projecList) {
-            dtoList.add(new ProjectDto(project));
-        }
-        return dtoList;
-    }
-
-    @Transactional
-    public ProjectDto updateProject(ProjectDto projectDto) throws Exception {
-        var project = projectRepository.getFirstById(projectDto.getProjectId());
-        project.setName(projectDto.getName());
-        project.setProjectType(projectDto.getProjectType());
-        return new ProjectDto(projectRepository.save(project));
-    }
-
-    @Transactional
-    public void deleteProject(long projectId) {
-        projectRepository.removeById(projectId);
-    }
 
     @Transactional
     public void addNode(NodeDto nodeDto, String userEmail) throws Exception {
@@ -77,83 +37,79 @@ public class PlayGroundService {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Sorry You had reach your subscription limitations upgrade your plan for more benefits");
         }
         NodeType nodeType = nodeDto.getNodeType();
-        RootEntity root=rootRepository.findByProject_Id(nodeDto.getProjectId());
+        long projectId=extractProjectIdFromFrontEndId(nodeDto.getFrontEndId());
+        var root=rootRepository.findByProject_Id(projectId);
+        var project=projectRepository.getReferenceById(projectId);
         if (nodeType == NodeType.SECTION) {
             SectionEntity savedSection = new SectionEntity();
             if (nodeDto.getParentFrontEndId().equals("root")) {
                 SectionEntity sectionToSave = new SectionEntity((SectionDto) nodeDto);
-                var project=root.getProject();
                 project.setLastUpdated(new Date());
                 root.setProject(project);
                 sectionToSave.setParent(root);
                 savedSection = sectionRepository.save(sectionToSave);
             } else {
                 String parentFrontEndId = nodeDto.getParentFrontEndId();
-                long referenceProjectId = nodeDto.getProjectId();
-                SectionEntity parentSection = sectionRepository.find
+                SectionEntity parentSection = sectionRepository.findByFrontEndId(parentFrontEndId);
                 if (parentSection == null) {
                     throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Cant map Nod:Parent Nod not Found ");
                 }
-                SectionEntity section = new SectionEntity(commonNodReqDto);
-                section.setParentSection(parentSection);
-                section.setUserEmail(userEmail);
-                project.setLastUpdated();
+                SectionEntity sectionToSave = new SectionEntity((SectionDto) nodeDto);
+                sectionToSave.setParent(parentSection);
+                project.setLastUpdated(new Date());
                 projectRepository.save(project);
-                savedSection = sectionRepository.save(section);
+                savedSection = sectionRepository.save(sectionToSave);
             }
         }
         if (nodeType == NodeType.APPLIANCE) {
             ApplianceEntity savedAppliance = new ApplianceEntity();
-            String parentNodId = commonNodReqDto.getParentNodId();
-            long referenceProjectId = commonNodReqDto.getProjectId();
-            SectionEntity parentSection = sectionRepository.findByReferenceProjectIdAndNodId(referenceProjectId, parentNodId);
+            String parentFrontEndId = nodeDto.getParentFrontEndId();
+            SectionEntity parentSection = sectionRepository.findByFrontEndId(parentFrontEndId);
             if (parentSection == null) {
                 throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Cant map Nod:Parent Nod not Found ");
             }
-            ApplianceEntity appliance = new ApplianceEntity(commonNodReqDto);
-            appliance.setSection(parentSection);
-            appliance.setUserEmail(userEmail);
-            project.setLastUpdated();
+            ApplianceEntity applianceToSave = new ApplianceEntity((ApplianceDto) nodeDto);
+            applianceToSave.setParent(parentSection);
+            project.setLastUpdated(new Date());
             projectRepository.save(project);
-            savedAppliance = applianceRepository.save(appliance);
+            savedAppliance = applianceRepository.save(applianceToSave);
         }
     }
 
     @Transactional
-    public void updateNod(CommonNodReqDto commonNodReqDto) throws Exception {
-        NodeType nodeType = commonNodReqDto.getNodeType();
-        ProjectEntity project = projectRepository.getFirstById(commonNodReqDto.getProjectId());
+    public void updateNode(NodeDto nodeDto) throws Exception {
+        NodeType nodeType = nodeDto.getNodeType();
+        long projectId=extractProjectIdFromFrontEndId(nodeDto.getFrontEndId());
+        var project=projectRepository.getReferenceById(projectId);
         if (nodeType == NodeType.SECTION) {
-            String nodId = commonNodReqDto.getNodId();
-            long referenceProjectId = commonNodReqDto.getProjectId();
-            SectionEntity thisSection = sectionRepository.findByNodIdAndReferenceProjectId(nodId, referenceProjectId);
+            String frontEndId= nodeDto.getFrontEndId();
+            var thisSection = sectionRepository.findByFrontEndId(frontEndId);
             if (thisSection == null) {
                 throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "SectionDto not found");
             } else {
-                thisSection.updateSection(commonNodReqDto);
-                project.setLastUpdated();
+                thisSection.update((SectionDto)nodeDto);
+                project.setLastUpdated(new Date());
                 projectRepository.save(project);
                 thisSection = sectionRepository.save(thisSection);
             }
         }
         if (nodeType == NodeType.APPLIANCE) {
-            String nodId = commonNodReqDto.getNodId();
-            long referenceProjectId = commonNodReqDto.getProjectId();
-            ApplianceEntity thisAppliance = applianceRepository.findByNodIdAndReferenceProjectId(nodId, referenceProjectId);
+            String frontEndId= nodeDto.getFrontEndId();
+            var thisAppliance = applianceRepository.findByFrontEndId(frontEndId);
             if (thisAppliance == null) {
                 throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "ApplianceDto not found");
             } else {
-                thisAppliance.updateSection(commonNodReqDto);
-                project.setLastUpdated();
+                thisAppliance.update((ApplianceDto)nodeDto);
+                project.setLastUpdated(new Date());
                 projectRepository.save(project);
                 thisAppliance = applianceRepository.save(thisAppliance);
             }
         }
     }
 
-    public void deleteNod(NodeDeleteRequestDto nodeDeleteRequestDto) {
-        SectionEntity section = sectionRepository.findByReferenceProjectIdAndNodId(nodeDeleteRequestDto.getProjectId(), nodeDeleteRequestDto.getNodId());
-        ApplianceEntity appliance = applianceRepository.findByReferenceProjectIdAndNodId(nodeDeleteRequestDto.getProjectId(), nodeDeleteRequestDto.getNodId());
+    public void deleteNod(String frontEndNodId) {
+        SectionEntity section = sectionRepository.findByFrontEndId(frontEndNodId);
+        ApplianceEntity appliance = applianceRepository.findByFrontEndId(frontEndNodId);
         if (section != null) {
             sectionRepository.delete(section);
         }
@@ -164,24 +120,21 @@ public class PlayGroundService {
 
 
     @Transactional
-    public boolean validatePlayGroundProjectAccess(String email) {
-        UserEntity user = (UserEntity) userService.loadUserByUsername(email);
-        SubscriptionPlanEntity activePlan = subscriptionPlanRepository.getBySubscriptions_User(user);
-        int maxProjectAllow = activePlan.getMaxNumProject();
-        int currentProjectCount = (int) projectRepository.countByUser(user);
-        return (currentProjectCount < maxProjectAllow);
-    }
-
-    @Transactional
     public boolean validatePlayGroundNodAccess(String email) {
-        UserEntity user = (UserEntity) userService.loadUserByUsername(email);
-        SubscriptionPlanEntity activePlan = subscriptionPlanRepository.getBySubscriptions_User(user);
+        SubscriptionPlanEntity activePlan = subscriptionPlanRepository.getBySubscriptions_User_Email(email);
+        String userId=userRepository.findByEmail(email).getId().toString();
         int maxNodAllow = activePlan.getMaxNumNode();
-        int applianceCount = (int) applianceRepository.countByUserEmail(email);
-        int sectionCount = (int) sectionRepository.countByUserEmail(email);
+        int applianceCount = (int) applianceRepository.countByFrontEndIdContains(userId);
+        int sectionCount = (int) sectionRepository.countByFrontEndIdContains(userId);
         int currentNodCount = applianceCount + sectionCount;
         return (currentNodCount < maxNodAllow);
     }
+
+    private long extractProjectIdFromFrontEndId(String frontEndId){
+        String projectId=frontEndId.split("_")[1];
+        return Long.parseLong(projectId);
+    }
+
 
 
 

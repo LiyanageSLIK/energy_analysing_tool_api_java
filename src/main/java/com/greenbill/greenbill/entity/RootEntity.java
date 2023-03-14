@@ -12,13 +12,14 @@ import java.util.List;
 @Entity
 public class RootEntity extends NodeEntity {
 
-    @OneToOne(mappedBy = "root", cascade = CascadeType.ALL)
+    @OneToOne( cascade = CascadeType.ALL)
     private ProjectEntity project;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<NodeEntity> children;
 
     public RootEntity() {
+        setName("root");
         setParent(null);
         setFrontEndId("root");
         setNodeType(NodeType.ROOT);

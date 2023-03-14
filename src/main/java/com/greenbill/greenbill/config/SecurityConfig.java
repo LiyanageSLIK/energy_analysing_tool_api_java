@@ -32,7 +32,7 @@ public class SecurityConfig {
         http
                 .cors().and().csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/user/register", "/user/login", "/auth/token", "/subscription/plan", "/report/*", "/test/**")
+                .requestMatchers("/user/register", "/user/login", "/auth/token", "/subscription/plans", "/report/*", "/test/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

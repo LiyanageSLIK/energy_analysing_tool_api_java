@@ -40,4 +40,12 @@ public class ApplianceEntity extends NodeEntity {
         setQuantity(applianceDto.getQuantity());
 
     }
+
+    public void update(ApplianceDto applianceDto){
+        setName(applianceDto.getName());
+        setApplianceType(applianceDto.getApplianceType());
+        setWattRate(applianceDto.getWattRate());
+        setHours(applianceDto.getHours());
+        setQuantity(applianceDto.getQuantity());
+    }
 }
