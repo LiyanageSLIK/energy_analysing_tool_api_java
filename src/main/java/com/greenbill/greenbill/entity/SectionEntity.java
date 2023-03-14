@@ -2,6 +2,7 @@ package com.greenbill.greenbill.entity;
 
 import com.greenbill.greenbill.dto.ApplianceDto;
 import com.greenbill.greenbill.dto.SectionDto;
+import com.greenbill.greenbill.dto.request.NodRequestDto;
 import com.greenbill.greenbill.enumeration.NodeType;
 import com.greenbill.greenbill.enumeration.Status;
 import jakarta.persistence.CascadeType;
@@ -22,15 +23,15 @@ public class SectionEntity extends NodeEntity {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<NodeEntity> children;
 
-    public SectionEntity(SectionDto sectionDto) {
-        setName(sectionDto.getName());
+    public SectionEntity(NodRequestDto nodRequestDto) {
+        setName(nodRequestDto.getName());
         setStatus(Status.ACTIVE);
         setNodeType(NodeType.SECTION);
-        setFrontEndId(sectionDto.getFrontEndId());
+        setFrontEndId(nodRequestDto.getFrontEndId());
 
     }
 
-    public void update(SectionDto sectionDto){
-        setName(sectionDto.getName());
+    public void update(NodRequestDto nodRequestDto){
+        setName(nodRequestDto.getName());
     }
 }

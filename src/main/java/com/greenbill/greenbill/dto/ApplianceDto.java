@@ -18,7 +18,6 @@ public class ApplianceDto extends NodeDto {
     public ApplianceDto(ApplianceEntity applianceEntity) {
         setId(applianceEntity.getId());
         setFrontEndId(applianceEntity.getFrontEndId());
-        setParentFrontEndId(applianceEntity.getFrontEndId());
         setName(applianceEntity.getName());
         setNodeType(applianceEntity.getNodeType());
         setWattRate(applianceEntity.getWattRate());

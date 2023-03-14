@@ -4,6 +4,7 @@ package com.greenbill.greenbill.service;
 import com.greenbill.greenbill.dto.ApplianceDto;
 import com.greenbill.greenbill.dto.NodeDto;
 import com.greenbill.greenbill.dto.SectionDto;
+import com.greenbill.greenbill.dto.request.NodRequestDto;
 import com.greenbill.greenbill.entity.*;
 import com.greenbill.greenbill.enumeration.NodeType;
 import com.greenbill.greenbill.repository.*;
@@ -32,29 +33,29 @@ public class PlayGroundService {
 
 
     @Transactional
-    public void addNode(NodeDto nodeDto, String userEmail) throws Exception {
+    public void addNode(NodRequestDto nodRequestDto, String userEmail) throws Exception {
         if (!validatePlayGroundNodAccess(userEmail)) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Sorry You had reach your subscription limitations upgrade your plan for more benefits");
         }
-        NodeType nodeType = nodeDto.getNodeType();
-        long projectId=extractProjectIdFromFrontEndId(nodeDto.getFrontEndId());
+        NodeType nodeType = nodRequestDto.getNodeType();
+        long projectId=extractProjectIdFromFrontEndId(nodRequestDto.getFrontEndId());
         var root=rootRepository.findByProject_Id(projectId);
         var project=projectRepository.getReferenceById(projectId);
         if (nodeType == NodeType.SECTION) {
             SectionEntity savedSection = new SectionEntity();
-            if (nodeDto.getParentFrontEndId().equals("root")) {
-                SectionEntity sectionToSave = new SectionEntity((SectionDto) nodeDto);
+            if (nodRequestDto.getParentFrontEndId().equals("root")) {
+                SectionEntity sectionToSave = new SectionEntity(nodRequestDto);
                 project.setLastUpdated(new Date());
                 root.setProject(project);
                 sectionToSave.setParent(root);
                 savedSection = sectionRepository.save(sectionToSave);
             } else {
-                String parentFrontEndId = nodeDto.getParentFrontEndId();
+                String parentFrontEndId = nodRequestDto.getParentFrontEndId();
                 SectionEntity parentSection = sectionRepository.findByFrontEndId(parentFrontEndId);
                 if (parentSection == null) {
                     throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Cant map Nod:Parent Nod not Found ");
                 }
-                SectionEntity sectionToSave = new SectionEntity((SectionDto) nodeDto);
+                SectionEntity sectionToSave = new SectionEntity(nodRequestDto);
                 sectionToSave.setParent(parentSection);
                 project.setLastUpdated(new Date());
                 projectRepository.save(project);
@@ -63,12 +64,12 @@ public class PlayGroundService {
         }
         if (nodeType == NodeType.APPLIANCE) {
             ApplianceEntity savedAppliance = new ApplianceEntity();
-            String parentFrontEndId = nodeDto.getParentFrontEndId();
+            String parentFrontEndId = nodRequestDto.getParentFrontEndId();
             SectionEntity parentSection = sectionRepository.findByFrontEndId(parentFrontEndId);
             if (parentSection == null) {
                 throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Cant map Nod:Parent Nod not Found ");
             }
-            ApplianceEntity applianceToSave = new ApplianceEntity((ApplianceDto) nodeDto);
+            ApplianceEntity applianceToSave = new ApplianceEntity(nodRequestDto);
             applianceToSave.setParent(parentSection);
             project.setLastUpdated(new Date());
             projectRepository.save(project);
@@ -77,29 +78,29 @@ public class PlayGroundService {
     }
 
     @Transactional
-    public void updateNode(NodeDto nodeDto) throws Exception {
-        NodeType nodeType = nodeDto.getNodeType();
-        long projectId=extractProjectIdFromFrontEndId(nodeDto.getFrontEndId());
+    public void updateNode(NodRequestDto nodRequestDto) throws Exception {
+        NodeType nodeType = nodRequestDto.getNodeType();
+        long projectId=extractProjectIdFromFrontEndId(nodRequestDto.getFrontEndId());
         var project=projectRepository.getReferenceById(projectId);
         if (nodeType == NodeType.SECTION) {
-            String frontEndId= nodeDto.getFrontEndId();
+            String frontEndId= nodRequestDto.getFrontEndId();
             var thisSection = sectionRepository.findByFrontEndId(frontEndId);
             if (thisSection == null) {
                 throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "SectionDto not found");
             } else {
-                thisSection.update((SectionDto)nodeDto);
+                thisSection.update(nodRequestDto);
                 project.setLastUpdated(new Date());
                 projectRepository.save(project);
                 thisSection = sectionRepository.save(thisSection);
             }
         }
         if (nodeType == NodeType.APPLIANCE) {
-            String frontEndId= nodeDto.getFrontEndId();
+            String frontEndId= nodRequestDto.getFrontEndId();
             var thisAppliance = applianceRepository.findByFrontEndId(frontEndId);
             if (thisAppliance == null) {
                 throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "ApplianceDto not found");
             } else {
-                thisAppliance.update((ApplianceDto)nodeDto);
+                thisAppliance.update(nodRequestDto);
                 project.setLastUpdated(new Date());
                 projectRepository.save(project);
                 thisAppliance = applianceRepository.save(thisAppliance);

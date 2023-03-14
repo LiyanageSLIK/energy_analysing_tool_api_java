@@ -1,6 +1,7 @@
 package com.greenbill.greenbill.entity;
 
 import com.greenbill.greenbill.dto.ApplianceDto;
+import com.greenbill.greenbill.dto.request.NodRequestDto;
 import com.greenbill.greenbill.enumeration.ApplianceType;
 import com.greenbill.greenbill.enumeration.NodeType;
 import com.greenbill.greenbill.enumeration.Status;
@@ -29,23 +30,23 @@ public class ApplianceEntity extends NodeEntity {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    public ApplianceEntity(ApplianceDto applianceDto) {
-        setName(applianceDto.getName());
+    public ApplianceEntity(NodRequestDto nodRequestDto) {
+        setName(nodRequestDto.getName());
         setNodeType(NodeType.APPLIANCE);
-        setFrontEndId(applianceDto.getFrontEndId());
+        setFrontEndId(nodRequestDto.getFrontEndId());
         setStatus(Status.ACTIVE);
-        setApplianceType(applianceDto.getApplianceType());
-        setWattRate(applianceDto.getWattRate());
-        setHours(applianceDto.getHours());
-        setQuantity(applianceDto.getQuantity());
+        setApplianceType(nodRequestDto.getApplianceType());
+        setWattRate(nodRequestDto.getWattRate());
+        setHours(nodRequestDto.getHours());
+        setQuantity(nodRequestDto.getQuantity());
 
     }
 
-    public void update(ApplianceDto applianceDto){
-        setName(applianceDto.getName());
-        setApplianceType(applianceDto.getApplianceType());
-        setWattRate(applianceDto.getWattRate());
-        setHours(applianceDto.getHours());
-        setQuantity(applianceDto.getQuantity());
+    public void update(NodRequestDto nodRequestDto){
+        setName(nodRequestDto.getName());
+        setApplianceType(nodRequestDto.getApplianceType());
+        setWattRate(nodRequestDto.getWattRate());
+        setHours(nodRequestDto.getHours());
+        setQuantity(nodRequestDto.getQuantity());
     }
 }

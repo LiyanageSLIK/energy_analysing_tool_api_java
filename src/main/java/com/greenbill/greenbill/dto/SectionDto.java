@@ -4,6 +4,7 @@ import com.greenbill.greenbill.entity.ApplianceEntity;
 import com.greenbill.greenbill.entity.NodeEntity;
 import com.greenbill.greenbill.entity.SectionEntity;
 import com.greenbill.greenbill.enumeration.NodeType;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,12 +19,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SectionDto extends NodeDto {
+
     private List<NodeDto> children;
 
     public SectionDto(SectionEntity sectionEntity) {
         setId(sectionEntity.getId());
         setFrontEndId(sectionEntity.getFrontEndId());
-        setParentFrontEndId(sectionEntity.getFrontEndId());
         setName(sectionEntity.getName());
         setNodeType(sectionEntity.getNodeType());
         setChildren(sectionEntity.getChildren());
@@ -41,4 +42,6 @@ public class SectionDto extends NodeDto {
         }
         this.children = childrenDto;
     }
+
+
 }

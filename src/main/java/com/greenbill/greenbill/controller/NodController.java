@@ -3,6 +3,7 @@ package com.greenbill.greenbill.controller;
 
 import com.greenbill.greenbill.dto.NodeDto;
 import com.greenbill.greenbill.dto.ResponseWrapper;
+import com.greenbill.greenbill.dto.request.NodRequestDto;
 import com.greenbill.greenbill.service.PlayGroundService;
 import com.greenbill.greenbill.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +25,11 @@ public class NodController {
 
 
     @PostMapping("/add")
-    public ResponseEntity addNod(@RequestBody NodeDto nodeDto, @RequestHeader(value = "Authorization", required = true) String token) {
+    public ResponseEntity addNod(@RequestBody NodRequestDto nodRequestDto, @RequestHeader(value = "Authorization", required = true) String token) {
         try {
             String extractedToken = token.substring(7);
             String userEmail = jwtUtil.extractEmail(extractedToken);
-            playGroundService.addNode(nodeDto, userEmail);
+            playGroundService.addNode(nodRequestDto, userEmail);
             return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully added");
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
@@ -39,9 +40,9 @@ public class NodController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity updateNod(@RequestBody NodeDto nodeDto) {
+    public ResponseEntity updateNod(@RequestBody NodRequestDto nodRequestDto) {
         try {
-            playGroundService.updateNode(nodeDto);
+            playGroundService.updateNode(nodRequestDto);
             return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully updated");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));

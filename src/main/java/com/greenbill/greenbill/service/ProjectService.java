@@ -40,8 +40,7 @@ public class ProjectService {
         RootEntity root =new RootEntity();
         root.setProject(project);
         project.setRoot(root);
-        ProjectEntity test=projectRepository.save(project);
-        return new ProjectDto(test);
+        return new ProjectDto(projectRepository.save(project));
     }
     @Transactional
     public List<ProjectDto> getAllProject(String userEmail) throws Exception {
