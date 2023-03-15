@@ -1,6 +1,5 @@
 package com.greenbill.greenbill.entity;
 
-import com.greenbill.greenbill.dto.ApplianceDto;
 import com.greenbill.greenbill.dto.request.NodRequestDto;
 import com.greenbill.greenbill.enumeration.ApplianceType;
 import com.greenbill.greenbill.enumeration.NodeType;
@@ -32,7 +31,7 @@ public class ApplianceEntity extends NodeEntity {
 
     public ApplianceEntity(NodRequestDto nodRequestDto) {
         setName(nodRequestDto.getName());
-        setNodeType(NodeType.APPLIANCE);
+        setNodeType(NodeType.Appliance);
         setFrontEndId(nodRequestDto.getFrontEndId());
         setStatus(Status.ACTIVE);
         setApplianceType(nodRequestDto.getApplianceType());
@@ -42,7 +41,7 @@ public class ApplianceEntity extends NodeEntity {
 
     }
 
-    public void update(NodRequestDto nodRequestDto){
+    public void update(NodRequestDto nodRequestDto) {
         setName(nodRequestDto.getName());
         setApplianceType(nodRequestDto.getApplianceType());
         setWattRate(nodRequestDto.getWattRate());

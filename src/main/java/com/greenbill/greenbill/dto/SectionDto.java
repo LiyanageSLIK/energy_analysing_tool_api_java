@@ -4,7 +4,6 @@ import com.greenbill.greenbill.entity.ApplianceEntity;
 import com.greenbill.greenbill.entity.NodeEntity;
 import com.greenbill.greenbill.entity.SectionEntity;
 import com.greenbill.greenbill.enumeration.NodeType;
-import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,12 +30,12 @@ public class SectionDto extends NodeDto {
     }
 
     public void setChildren(List<NodeEntity> children) {
-        List<NodeDto> childrenDto=new ArrayList<>();
-        for (var nodEntity:children) {
-            if(nodEntity.getNodeType()== NodeType.SECTION){
+        List<NodeDto> childrenDto = new ArrayList<>();
+        for (var nodEntity : children) {
+            if (nodEntity.getNodeType() == NodeType.Section) {
                 childrenDto.add(new SectionDto((SectionEntity) nodEntity));
             }
-            if(nodEntity.getNodeType()== NodeType.APPLIANCE){
+            if (nodEntity.getNodeType() == NodeType.Appliance) {
                 childrenDto.add(new ApplianceDto((ApplianceEntity) nodEntity));
             }
         }

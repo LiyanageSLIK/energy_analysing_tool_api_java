@@ -1,7 +1,5 @@
 package com.greenbill.greenbill.entity;
 
-import com.greenbill.greenbill.dto.ApplianceDto;
-import com.greenbill.greenbill.dto.SectionDto;
 import com.greenbill.greenbill.dto.request.NodRequestDto;
 import com.greenbill.greenbill.enumeration.NodeType;
 import com.greenbill.greenbill.enumeration.Status;
@@ -26,12 +24,12 @@ public class SectionEntity extends NodeEntity {
     public SectionEntity(NodRequestDto nodRequestDto) {
         setName(nodRequestDto.getName());
         setStatus(Status.ACTIVE);
-        setNodeType(NodeType.SECTION);
+        setNodeType(NodeType.Section);
         setFrontEndId(nodRequestDto.getFrontEndId());
 
     }
 
-    public void update(NodRequestDto nodRequestDto){
+    public void update(NodRequestDto nodRequestDto) {
         setName(nodRequestDto.getName());
     }
 }

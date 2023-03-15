@@ -14,14 +14,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserLoginResponseDto extends BaseDto {
 
+    private long userId;
     private String firstName;
     private String lastName;
     private Role role;
     private String accessToken;
-    private long aTExTime;
+    private long accessTokenExpireTime;
     private String refreshToken;
 
     public UserLoginResponseDto(UserEntity userEntity) {
+        this.userId = userEntity.getId();
         this.firstName = userEntity.getFirstName();
         this.lastName = userEntity.getLastName();
         this.role = userEntity.getRole();

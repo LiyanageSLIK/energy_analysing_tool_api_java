@@ -22,7 +22,7 @@ public class RootDto extends BaseDto {
 
     public void setChildren(List<NodeEntity> children) {
         List<SectionDto> childrenDto = new ArrayList<>();
-        if(children!=null) {
+        if (children != null) {
             for (var nodEntity : children) {
                 childrenDto.add(new SectionDto((SectionEntity) nodEntity));
             }

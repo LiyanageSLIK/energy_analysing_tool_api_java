@@ -1,11 +1,10 @@
 package com.greenbill.greenbill.service;
 
 
-import com.greenbill.greenbill.dto.ApplianceDto;
-import com.greenbill.greenbill.dto.NodeDto;
-import com.greenbill.greenbill.dto.SectionDto;
 import com.greenbill.greenbill.dto.request.NodRequestDto;
-import com.greenbill.greenbill.entity.*;
+import com.greenbill.greenbill.entity.ApplianceEntity;
+import com.greenbill.greenbill.entity.SectionEntity;
+import com.greenbill.greenbill.entity.SubscriptionPlanEntity;
 import com.greenbill.greenbill.enumeration.NodeType;
 import com.greenbill.greenbill.repository.*;
 import jakarta.transaction.Transactional;
@@ -38,10 +37,10 @@ public class PlayGroundService {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Sorry You had reach your subscription limitations upgrade your plan for more benefits");
         }
         NodeType nodeType = nodRequestDto.getNodeType();
-        long projectId=extractProjectIdFromFrontEndId(nodRequestDto.getFrontEndId());
-        var root=rootRepository.findByProject_Id(projectId);
-        var project=projectRepository.getReferenceById(projectId);
-        if (nodeType == NodeType.SECTION) {
+        long projectId = extractProjectIdFromFrontEndId(nodRequestDto.getFrontEndId());
+        var root = rootRepository.findByProject_Id(projectId);
+        var project = projectRepository.getReferenceById(projectId);
+        if (nodeType == NodeType.Section) {
             SectionEntity savedSection = new SectionEntity();
             if (nodRequestDto.getParentFrontEndId().equals("root")) {
                 SectionEntity sectionToSave = new SectionEntity(nodRequestDto);
@@ -62,11 +61,11 @@ public class PlayGroundService {
                 savedSection = sectionRepository.save(sectionToSave);
             }
         }
-        if (nodeType == NodeType.APPLIANCE) {
+        if (nodeType == NodeType.Appliance) {
             ApplianceEntity savedAppliance = new ApplianceEntity();
             String parentFrontEndId = nodRequestDto.getParentFrontEndId();
             SectionEntity parentSection = sectionRepository.findByFrontEndId(parentFrontEndId);
-            if (parentSection == null) {
+            if (parentSection == null || parentFrontEndId.equals("root")) {
                 throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Cant map Nod:Parent Nod not Found ");
             }
             ApplianceEntity applianceToSave = new ApplianceEntity(nodRequestDto);
@@ -80,10 +79,10 @@ public class PlayGroundService {
     @Transactional
     public void updateNode(NodRequestDto nodRequestDto) throws Exception {
         NodeType nodeType = nodRequestDto.getNodeType();
-        long projectId=extractProjectIdFromFrontEndId(nodRequestDto.getFrontEndId());
-        var project=projectRepository.getReferenceById(projectId);
-        if (nodeType == NodeType.SECTION) {
-            String frontEndId= nodRequestDto.getFrontEndId();
+        long projectId = extractProjectIdFromFrontEndId(nodRequestDto.getFrontEndId());
+        var project = projectRepository.getReferenceById(projectId);
+        if (nodeType == NodeType.Section) {
+            String frontEndId = nodRequestDto.getFrontEndId();
             var thisSection = sectionRepository.findByFrontEndId(frontEndId);
             if (thisSection == null) {
                 throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "SectionDto not found");
@@ -94,8 +93,8 @@ public class PlayGroundService {
                 thisSection = sectionRepository.save(thisSection);
             }
         }
-        if (nodeType == NodeType.APPLIANCE) {
-            String frontEndId= nodRequestDto.getFrontEndId();
+        if (nodeType == NodeType.Appliance) {
+            String frontEndId = nodRequestDto.getFrontEndId();
             var thisAppliance = applianceRepository.findByFrontEndId(frontEndId);
             if (thisAppliance == null) {
                 throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "ApplianceDto not found");
@@ -123,22 +122,46 @@ public class PlayGroundService {
     @Transactional
     public boolean validatePlayGroundNodAccess(String email) {
         SubscriptionPlanEntity activePlan = subscriptionPlanRepository.getBySubscriptions_User_Email(email);
-        String userId=userRepository.findByEmail(email).getId().toString();
         int maxNodAllow = activePlan.getMaxNumNode();
-        int applianceCount = (int) applianceRepository.countByFrontEndIdContains(userId);
-        int sectionCount = (int) sectionRepository.countByFrontEndIdContains(userId);
-        int currentNodCount = applianceCount + sectionCount;
+        int currentNodCount = countNodeCountByUserEmail(email);
         return (currentNodCount < maxNodAllow);
     }
 
-    private long extractProjectIdFromFrontEndId(String frontEndId){
-        String projectId=frontEndId.split("_")[1];
-        return Long.parseLong(projectId);
+    private int countNodeCountByUserEmail(String email) {
+        var rootList = rootRepository.findByProject_Subscription_User_Email(email);
+        int counter = 0;
+        if (rootList == null) {
+            return counter;
+        }
+        for (var root : rootList) {
+            var childSectionList = root.getChildren();
+            if (childSectionList == null) {
+                return counter;
+            }
+            for (var section : childSectionList) {
+                counter = counter + countChildNod((SectionEntity) section);
+            }
+        }
+        return counter;
     }
 
+    private int countChildNod(SectionEntity sectionEntity) {
+        int counter = 1;
+        var children = sectionEntity.getChildren();
+        for (var node : children) {
+            if (node.getNodeType() == NodeType.Appliance) {
+                counter = counter + 1;
+            }
+            if (node.getNodeType() == NodeType.Section) {
+                counter = counter + countChildNod((SectionEntity) node);
+            }
+        }
+        return counter;
+    }
 
-
-
-
+    private long extractProjectIdFromFrontEndId(String frontEndId) {
+        String projectId = frontEndId.split("_")[1];
+        return Long.parseLong(projectId);
+    }
 
 }

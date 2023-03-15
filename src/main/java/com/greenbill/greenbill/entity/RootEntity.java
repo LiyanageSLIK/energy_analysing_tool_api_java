@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 public class RootEntity extends NodeEntity {
 
-    @OneToOne( cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     private ProjectEntity project;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE, orphanRemoval = true)
@@ -22,7 +22,7 @@ public class RootEntity extends NodeEntity {
         setName("root");
         setParent(null);
         setFrontEndId("root");
-        setNodeType(NodeType.ROOT);
+        setNodeType(NodeType.Root);
         setStatus(Status.ACTIVE);
     }
 }

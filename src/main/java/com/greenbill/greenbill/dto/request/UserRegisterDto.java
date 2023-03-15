@@ -1,5 +1,6 @@
-package com.greenbill.greenbill.dto;
+package com.greenbill.greenbill.dto.request;
 
+import com.greenbill.greenbill.dto.BaseDto;
 import com.greenbill.greenbill.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +23,5 @@ public class UserRegisterDto extends BaseDto {
         this.lastName = userEntity.getLastName();
         this.email = userEntity.getEmail();
         this.password = userEntity.getPassword();
-
     }
 }

@@ -1,8 +1,8 @@
 package com.greenbill.greenbill.service;
 
-import com.greenbill.greenbill.dto.UserRegisterDto;
 import com.greenbill.greenbill.dto.request.PasswordChangeRequestDto;
 import com.greenbill.greenbill.dto.request.UserLoginRequestDto;
+import com.greenbill.greenbill.dto.request.UserRegisterDto;
 import com.greenbill.greenbill.dto.response.UserLoginResponseDto;
 import com.greenbill.greenbill.entity.SubscriptionEntity;
 import com.greenbill.greenbill.entity.SubscriptionPlanEntity;
@@ -66,7 +66,7 @@ public class UserService implements UserDetailsService {
                 userRepository.save(user);
             }
             UserLoginResponseDto response = new UserLoginResponseDto(user);
-            response.setATExTime(jwtUtil.extractExpiration(user.getToken().getAccessToken()).getTime());
+            response.setAccessTokenExpireTime(jwtUtil.extractExpiration(user.getToken().getAccessToken()).getTime());
             return response;
         } else {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Wrong Password:Enter Correct Password");
@@ -87,7 +87,7 @@ public class UserService implements UserDetailsService {
         initialSubscription.setUser(userRepository.save(newUser));
         subscriptionRepository.save(initialSubscription);
         UserLoginResponseDto response = new UserLoginResponseDto(newUser);
-        response.setATExTime(jwtUtil.extractExpiration(newUser.getToken().getAccessToken()).getTime());
+        response.setAccessTokenExpireTime(jwtUtil.extractExpiration(newUser.getToken().getAccessToken()).getTime());
         return response;
     }
 

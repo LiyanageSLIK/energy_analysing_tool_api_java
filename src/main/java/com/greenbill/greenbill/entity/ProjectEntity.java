@@ -28,7 +28,7 @@ public class ProjectEntity {
     @Column(name = "last_updated", nullable = false)
     private Date lastUpdated = new Date();
 
-    @OneToOne(mappedBy ="project" ,cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private RootEntity root;
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)

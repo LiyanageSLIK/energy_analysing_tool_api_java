@@ -3,7 +3,6 @@ package com.greenbill.greenbill.controller;
 
 import com.greenbill.greenbill.dto.ProjectDto;
 import com.greenbill.greenbill.dto.ResponseWrapper;
-import com.greenbill.greenbill.service.PlayGroundService;
 import com.greenbill.greenbill.service.ProjectService;
 import com.greenbill.greenbill.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,25 +38,21 @@ public class ProjectController {
         }
     }
 
-//    @PostMapping("/create")
-//    public ResponseEntity<ResponseWrapper> addProject(@RequestBody AddProjectDto addProjectReqResDto, @RequestHeader(value = "Authorization", required = true) String token) {
-//        try {
-//            String extractedToken = token.substring(7);
-//            String userEmail = jwtUtil.extractEmail(extractedToken);
-//            return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(playGroundService.addProject(addProjectReqResDto, userEmail), HttpStatus.OK.value(), "Success: Successfully added"));
-//        } catch (HttpClientErrorException e) {
-//            return ResponseEntity.status(e.getStatusCode()).body(new ResponseWrapper(null, e.getStatusCode().value(), e.getMessage()));
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
-//        }
-//    }
-
     @GetMapping("/getAll")
     public ResponseEntity<ResponseWrapper> getAllProject(@RequestHeader(value = "Authorization", required = true) String token) {
         try {
             String extractedToken = token.substring(7);
             String userEmail = jwtUtil.extractEmail(extractedToken);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(projectService.getAllProject(userEmail), HttpStatus.OK.value(), "Success"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
+        }
+    }
+
+    @GetMapping("/")
+    public ResponseEntity getProject(@RequestParam long projectId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(projectService.getProject(projectId));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
         }
@@ -72,7 +67,7 @@ public class ProjectController {
         }
     }
 
-    @DeleteMapping("")
+    @DeleteMapping("/")
     public ResponseEntity deleteProject(@RequestParam long projectId) {
         try {
             projectService.deleteProject(projectId);

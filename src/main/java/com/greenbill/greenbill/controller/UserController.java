@@ -1,9 +1,9 @@
 package com.greenbill.greenbill.controller;
 
 import com.greenbill.greenbill.dto.ResponseWrapper;
-import com.greenbill.greenbill.dto.UserRegisterDto;
 import com.greenbill.greenbill.dto.request.PasswordChangeRequestDto;
 import com.greenbill.greenbill.dto.request.UserLoginRequestDto;
+import com.greenbill.greenbill.dto.request.UserRegisterDto;
 import com.greenbill.greenbill.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

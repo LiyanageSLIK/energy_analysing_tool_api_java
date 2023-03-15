@@ -2,15 +2,13 @@ package com.greenbill.greenbill.dto.response;
 
 import com.greenbill.greenbill.dto.BaseDto;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccessTokenResponseDto extends BaseDto {
     private String accessToken;
-    private long aTExTime;
+    private long accessTokenExpireTime;
 }
