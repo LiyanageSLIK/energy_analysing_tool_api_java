@@ -5,13 +5,9 @@ import com.greenbill.greenbill.entity.SubscriptionPlanEntity;
 import com.greenbill.greenbill.enumeration.Cycle;
 import com.greenbill.greenbill.enumeration.PlanType;
 import com.greenbill.greenbill.enumeration.SubscriptionPlanName;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class SubscriptionPlanResponseDto extends BaseDto {

@@ -2,7 +2,7 @@ package com.greenbill.greenbill.controller;
 
 
 import com.greenbill.greenbill.dto.ResponseWrapper;
-import com.greenbill.greenbill.dto.request.NodRequestDto;
+import com.greenbill.greenbill.dto.request.NodeRequestDto;
 import com.greenbill.greenbill.service.PlayGroundService;
 import com.greenbill.greenbill.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,24 +24,23 @@ public class NodController {
 
 
     @PostMapping("/add")
-    public ResponseEntity addNod(@RequestBody NodRequestDto nodRequestDto, @RequestHeader(value = "Authorization", required = true) String token) {
+    public ResponseEntity addNod(@RequestBody NodeRequestDto nodeRequestDto, @RequestHeader(value = "Authorization", required = true) String token) {
         try {
             String extractedToken = token.substring(7);
             String userEmail = jwtUtil.extractEmail(extractedToken);
-            playGroundService.addNode(nodRequestDto, userEmail);
+            playGroundService.addNode(nodeRequestDto, userEmail);
             return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully added");
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
         } catch (Exception e) {
-            System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
         }
     }
 
     @PutMapping("/update")
-    public ResponseEntity updateNod(@RequestBody NodRequestDto nodRequestDto) {
+    public ResponseEntity updateNod(@RequestBody NodeRequestDto nodeRequestDto) {
         try {
-            playGroundService.updateNode(nodRequestDto);
+            playGroundService.updateNode(nodeRequestDto);
             return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully updated");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
@@ -51,7 +50,7 @@ public class NodController {
     @DeleteMapping("/")
     public ResponseEntity updateNod(@RequestParam String frontEndId) {
         try {
-            playGroundService.deleteNod(frontEndId);
+            playGroundService.deleteNode(frontEndId);
             return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully deleted");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
