@@ -29,6 +29,7 @@ public class NodeGraphDetails extends BaseDto {
     }
 
     public NodeGraphDetails(ApplianceEntity appliance) {
+        setName(appliance.getName());
         setFrontEndId(appliance.getFrontEndId());
         setTotalUnits(appliance.getWattRate(),appliance.getHours());
     }

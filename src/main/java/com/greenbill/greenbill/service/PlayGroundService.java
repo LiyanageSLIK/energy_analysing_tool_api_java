@@ -197,6 +197,7 @@ public class PlayGroundService {
             completedChildNodResults.add(child);
         }
         var result=new ProjectGraphDetails(project);
+        result.setTotalUnits(totalUnits);
         result.setChildren(completedChildNodResults);
         return result;
     }
