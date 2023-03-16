@@ -12,11 +12,15 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class RootDto extends BaseDto {
-    private long id;
+//    private long id;
+    private String frontEndId;
+    private String name;
     private List<SectionDto> children;
 
     public RootDto(RootEntity rootEntity) {
-        setId(rootEntity.getId());
+//        setId(rootEntity.getId());
+        setName(rootEntity.getName());
+        setFrontEndId(rootEntity.getFrontEndId());
         setChildren(rootEntity.getChildren());
     }
 

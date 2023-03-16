@@ -16,7 +16,7 @@ public class ApplianceDto extends NodeDto {
     private int quantity;
 
     public ApplianceDto(ApplianceEntity applianceEntity) {
-        setId(applianceEntity.getId());
+//        setId(applianceEntity.getId());
         setFrontEndId(applianceEntity.getFrontEndId());
         setName(applianceEntity.getName());
         setNodeType(applianceEntity.getNodeType());

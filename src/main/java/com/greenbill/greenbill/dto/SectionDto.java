@@ -22,7 +22,7 @@ public class SectionDto extends NodeDto {
     private List<NodeDto> children;
 
     public SectionDto(SectionEntity sectionEntity) {
-        setId(sectionEntity.getId());
+//        setId(sectionEntity.getId());
         setFrontEndId(sectionEntity.getFrontEndId());
         setName(sectionEntity.getName());
         setNodeType(sectionEntity.getNodeType());

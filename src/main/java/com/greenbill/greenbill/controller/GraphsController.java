@@ -16,7 +16,7 @@ public class GraphsController {
     @Autowired
     private PlayGroundService playGroundService;
 
-    @GetMapping("/section/")
+    @GetMapping("/section")
     public ResponseEntity getSectionGraphsDetails(@RequestParam String frontEndId) {
         try {
             var resultDto = playGroundService.getSectionGraphsDetails(frontEndId);
@@ -29,7 +29,7 @@ public class GraphsController {
         }
     }
 
-    @GetMapping("/project/")
+    @GetMapping("/project")
     public ResponseEntity getSectionGraphsDetails(@RequestParam long projectId) {
         try {
             var resultDtoList = playGroundService.getProjectGraphsDetails(projectId);

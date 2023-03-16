@@ -21,7 +21,7 @@ public class ProjectController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<ResponseWrapper> addProject(@RequestBody ProjectDto projectDto,
                                                       @RequestHeader(value = "Authorization") String token) {
         try {
@@ -67,7 +67,7 @@ public class ProjectController {
         }
     }
 
-    @DeleteMapping("/")
+    @DeleteMapping("")
     public ResponseEntity deleteProject(@RequestParam long projectId) {
         try {
             projectService.deleteProject(projectId);

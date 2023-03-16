@@ -47,7 +47,7 @@ public class NodController {
         }
     }
 
-    @DeleteMapping("/")
+    @DeleteMapping("")
     public ResponseEntity updateNod(@RequestParam String frontEndId) {
         try {
             playGroundService.deleteNode(frontEndId);

@@ -42,6 +42,7 @@ public class ProjectService {
         SubscriptionEntity activeSubscription = subscriptionRepository.findFirstByUser_EmailAndStatus(userEmail, Status.ACTIVE);
         project.setSubscription(activeSubscription);
         RootEntity root = new RootEntity();
+        root.setName(project.getName());
         root.setProject(project);
         project.setRoot(root);
         return new ProjectSummaryDto(projectRepository.save(project));

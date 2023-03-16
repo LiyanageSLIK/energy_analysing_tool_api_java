@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class NodeDto extends BaseDto {
 
-    private long id;
+//    private long id;
     private String frontEndId;
     private String name;
     private NodeType nodeType;
