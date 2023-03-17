@@ -11,12 +11,12 @@ import org.springframework.web.client.HttpClientErrorException;
 
 @Controller
 @RestController
-@RequestMapping("/graphs")
-public class GraphsController {
+@RequestMapping("/play_ground")
+public class PlayGroundController {
     @Autowired
     private PlayGroundService playGroundService;
 
-    @GetMapping("/section")
+    @GetMapping("graphs/section")
     public ResponseEntity getSectionGraphsDetails(@RequestParam String frontEndId) {
         try {
             var resultDto = playGroundService.getSectionGraphsDetails(frontEndId);
@@ -29,7 +29,7 @@ public class GraphsController {
         }
     }
 
-    @GetMapping("/project")
+    @GetMapping("graphs/project")
     public ResponseEntity getSectionGraphsDetails(@RequestParam long projectId) {
         try {
             var resultDtoList = playGroundService.getProjectGraphsDetails(projectId);
@@ -38,6 +38,20 @@ public class GraphsController {
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
         } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
+        }
+    }
+
+    @GetMapping("bill")
+    public ResponseEntity getCalculatedBill(@RequestParam long projectId) {
+        try {
+            var resultDtoList = playGroundService.calculateBill(projectId);
+            var successResponse = new ResponseWrapper(resultDtoList, HttpStatus.OK.value(), "Success: Successfully generated");
+            return ResponseEntity.status(HttpStatus.OK).body(successResponse);
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
+        } catch (Exception e) {
+            System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
         }
     }

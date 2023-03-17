@@ -2,15 +2,21 @@ package com.greenbill.greenbill.service;
 
 
 import com.greenbill.greenbill.dto.request.NodeRequestDto;
+import com.greenbill.greenbill.dto.response.CalculatedBillDto;
 import com.greenbill.greenbill.dto.response.NodeGraphDetails;
 import com.greenbill.greenbill.dto.response.ProjectGraphDetails;
 import com.greenbill.greenbill.entity.*;
 import com.greenbill.greenbill.enumeration.NodeType;
+import com.greenbill.greenbill.enumeration.ProjectType;
 import com.greenbill.greenbill.enumeration.Status;
 import com.greenbill.greenbill.repository.*;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -33,7 +39,7 @@ public class PlayGroundService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private TariffEntityRepository tariffEntityRepository;
+    private TariffRepository tariffRepository;
 
 
     @Transactional
@@ -131,6 +137,51 @@ public class PlayGroundService {
         return (currentNodCount < maxNodAllow);
     }
 
+    @Transactional
+    public NodeGraphDetails getSectionGraphsDetails(String frontEndSectionId) throws HttpClientErrorException{
+        SectionEntity section=sectionRepository.findByFrontEndId(frontEndSectionId);
+        if(section==null){
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No Such Section");
+        }
+        return calculateNodeGraphDetails(section);
+    }
+
+    @Transactional
+    public ProjectGraphDetails getProjectGraphsDetails(long projectId) throws HttpClientErrorException{
+        ProjectEntity project=projectRepository.getFirstById(projectId);
+        RootEntity root=project.getRoot();
+        double totalUnits=0;
+        if(root==null){
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No Such Project");
+        }
+        var children=root.getChildren();
+        if(root==null){
+            throw new HttpClientErrorException(HttpStatus.CONFLICT, "It's Empty Project");
+        }
+        List<NodeGraphDetails> resultsOfChildren=new ArrayList<>();
+        for (var child:children) {
+            var calculatedGraphDetails=calculateNodeGraphDetails(child);
+            resultsOfChildren.add(calculatedGraphDetails);
+            totalUnits=totalUnits+calculatedGraphDetails.getTotalUnits();
+        }
+        List<NodeGraphDetails> completedChildNodResults=new ArrayList<>();
+        for (var child:resultsOfChildren) {
+            child.setUnitPercentageOfParent(totalUnits);
+            completedChildNodResults.add(child);
+        }
+        var result=new ProjectGraphDetails(project);
+        result.setTotalUnits(totalUnits);
+        result.setChildren(completedChildNodResults);
+        return result;
+    }
+    @Transactional
+    public CalculatedBillDto calculateBill(long projectId)throws HttpClientErrorException{
+        var projectGraphDetails=getProjectGraphsDetails(projectId);
+        var billCalculatorInputs=new BillCalculatorInputs(projectGraphDetails);
+        return billCalculator(billCalculatorInputs);
+    }
+
+
     private int countNodeCountByUserEmail(String email) {
         var rootList = rootRepository.findByProject_Subscription_User_Email(email);
         int counter = 0;
@@ -167,42 +218,6 @@ public class PlayGroundService {
         String projectId = frontEndId.split("_")[1];
         return Long.parseLong(projectId);
     }
-    @Transactional
-    public NodeGraphDetails getSectionGraphsDetails(String frontEndSectionId) throws HttpClientErrorException{
-        SectionEntity section=sectionRepository.findByFrontEndId(frontEndSectionId);
-        if(section==null){
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No Such Section");
-        }
-        return calculateNodeGraphDetails(section);
-    }
-    @Transactional
-    public ProjectGraphDetails getProjectGraphsDetails(long projectId) throws HttpClientErrorException{
-        ProjectEntity project=projectRepository.getFirstById(projectId);
-        RootEntity root=project.getRoot();
-        double totalUnits=0;
-        if(root==null){
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No Such Project");
-        }
-        var children=root.getChildren();
-        if(root==null){
-            throw new HttpClientErrorException(HttpStatus.CONFLICT, "It's Empty Project");
-        }
-        List<NodeGraphDetails> resultsOfChildren=new ArrayList<>();
-        for (var child:children) {
-            var calculatedGraphDetails=calculateNodeGraphDetails(child);
-            resultsOfChildren.add(calculatedGraphDetails);
-            totalUnits=totalUnits+calculatedGraphDetails.getTotalUnits();
-        }
-        List<NodeGraphDetails> completedChildNodResults=new ArrayList<>();
-        for (var child:resultsOfChildren) {
-            child.setUnitPercentageOfParent(totalUnits);
-            completedChildNodResults.add(child);
-        }
-        var result=new ProjectGraphDetails(project);
-        result.setTotalUnits(totalUnits);
-        result.setChildren(completedChildNodResults);
-        return result;
-    }
 
     private NodeGraphDetails calculateNodeGraphDetails(NodeEntity node){
         if(node.getNodeType()==NodeType.Appliance && node.getStatus()== Status.ACTIVE){
@@ -231,5 +246,94 @@ public class PlayGroundService {
             return result;
         }
         return null;
+    }
+
+
+    private CalculatedBillDto billCalculator(BillCalculatorInputs inputs){
+        if(inputs.getCategory()==ProjectType.Domestic||inputs.getCategory()==ProjectType.ReligiousAndCharitable){
+            var category=inputs.getCategory();
+            var totalUnits=inputs.getTotalUnits();
+            double levy=0.00;
+            double billAmount=0.00;
+            double totalCharge=0.00;
+            double usageCharge=0.00;
+            double fixedCharge=0.00;
+            List<String> calculationSteps=new ArrayList<>();
+            var tariff= tariffRepository.getByLimitedFromLessThanEqualAndLimitedToGreaterThanEqualAndCategoryOrderByLowerLimitAsc(totalUnits,totalUnits,category);
+            calculationSteps.add(new String("Calculation:"));
+            for (var block:tariff) {
+                var lowerLimit=block.getLowerLimit();
+                var upperLimit=block.getUpperLimit();
+                if(!(lowerLimit<=totalUnits&&totalUnits<=upperLimit)&&totalUnits>upperLimit){
+                    if(lowerLimit==0){
+                        var charge=(upperLimit-lowerLimit)* block.getEnergyCharge();
+                        usageCharge+=charge;
+                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (upperLimit - lowerLimit), block.getEnergyCharge(), charge));
+                    }
+                    if(lowerLimit!=0) {
+                        var charge=(upperLimit - lowerLimit + 1) * block.getEnergyCharge();
+                        usageCharge += charge;
+                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (upperLimit - lowerLimit), block.getEnergyCharge(), charge));
+                    }
+                }if (lowerLimit<=totalUnits&&totalUnits<=upperLimit){
+                    if(lowerLimit==0){
+                        var charge=(totalUnits-lowerLimit)* block.getEnergyCharge();
+                        usageCharge+=charge;
+                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (totalUnits-lowerLimit), block.getEnergyCharge(), charge));
+                    }
+                    if(lowerLimit!=0) {
+                        var charge=(totalUnits - lowerLimit + 1) * block.getEnergyCharge();
+                        usageCharge += charge;
+                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (totalUnits-lowerLimit), block.getEnergyCharge(), charge));
+                    }
+                    fixedCharge += block.getFixedCharge();
+                    totalCharge=usageCharge+fixedCharge;
+                    levy=totalCharge*block.getLevy();
+                    billAmount=totalCharge+levy;
+                }
+            }
+            calculationSteps.add(String.format("Usage Charge  =%10.2f",usageCharge));
+            calculationSteps.add(String.format("Fixed Charge  =%10.2f",fixedCharge));
+            calculationSteps.add(String.format("Total Charge  =%10.2f",totalCharge));
+            calculationSteps.add(String.format("Levy(SSCL)    =%10.2f",levy));
+            calculationSteps.add(String.format("Bill Amount   =%10.2f",billAmount));
+            return new CalculatedBillDto(totalUnits,usageCharge,fixedCharge,totalCharge,levy,billAmount,calculationSteps);
+        }
+        return null;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private class BillCalculatorOutputs {
+
+        private double usageCharge;
+        private double fixedCharge;
+        private double totalCharge;
+        private double levy;
+        private double billAmount;
+        private List<String> calculationSteps;
+
+
+    }
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private class BillCalculatorInputs {
+
+        private double totalUnits;
+        private double dayUnits;
+        private double peakUnits;
+        private double offPeakUnits;
+        private ProjectType category;
+
+        public double getTotalUnits() {
+            return Math.round(totalUnits);
+        }
+
+        public BillCalculatorInputs(ProjectGraphDetails graphDetails) {
+            setTotalUnits(graphDetails.getTotalUnits());
+            setCategory(graphDetails.getProjectType());
+        }
     }
 }
