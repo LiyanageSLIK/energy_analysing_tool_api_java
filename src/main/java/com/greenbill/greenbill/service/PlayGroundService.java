@@ -32,6 +32,8 @@ public class PlayGroundService {
     private ApplianceRepository applianceRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TariffEntityRepository tariffEntityRepository;
 
 
     @Transactional
