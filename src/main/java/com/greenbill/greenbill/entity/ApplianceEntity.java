@@ -7,11 +7,15 @@ import com.greenbill.greenbill.enumeration.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "appliance")

@@ -3,12 +3,15 @@ package com.greenbill.greenbill.entity;
 import com.greenbill.greenbill.enumeration.NodeType;
 import com.greenbill.greenbill.enumeration.Status;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
 @Table(name = "root")
-@Data
+@Getter
+@Setter
 @Entity
 public class RootEntity extends NodeEntity {
 
@@ -16,6 +19,7 @@ public class RootEntity extends NodeEntity {
     private ProjectEntity project;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @ToString.Exclude
     private List<NodeEntity> children;
 
     public RootEntity() {

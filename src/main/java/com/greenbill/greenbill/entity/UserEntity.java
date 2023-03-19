@@ -25,7 +25,7 @@ import java.util.List;
 @Table(name = "user")
 public class UserEntity implements UserDetails {
     @Transient
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final transient BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,7 +69,6 @@ public class UserEntity implements UserDetails {
 
     public boolean checkPassword(String password) {
         return passwordEncoder.matches(password, this.password);
-//        return this.password.equals(password);
     }
 
     @Override
@@ -84,7 +83,6 @@ public class UserEntity implements UserDetails {
 
     public void setPassword(String password) {
         this.password = passwordEncoder.encode(password);
-//        this.password = password;
     }
 
     @Override

@@ -3,12 +3,13 @@ package com.greenbill.greenbill.entity;
 import com.greenbill.greenbill.dto.ProjectDto;
 import com.greenbill.greenbill.enumeration.ProjectType;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "project")
@@ -32,6 +33,7 @@ public class ProjectEntity {
     private RootEntity root;
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @ToString.Exclude
     private SubscriptionEntity subscription;
 
     public ProjectEntity(ProjectDto projectDto) {

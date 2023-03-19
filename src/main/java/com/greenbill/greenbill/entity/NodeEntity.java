@@ -3,10 +3,14 @@ package com.greenbill.greenbill.entity;
 import com.greenbill.greenbill.enumeration.NodeType;
 import com.greenbill.greenbill.enumeration.Status;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class NodeEntity {
     @Id
