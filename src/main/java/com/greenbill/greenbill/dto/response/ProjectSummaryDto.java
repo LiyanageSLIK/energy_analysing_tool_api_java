@@ -14,7 +14,7 @@ import java.util.TimeZone;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectSummaryDto extends BaseDto {
+public class ProjectSummaryDto implements BaseDto {
     private long projectId;
     private String name;
     private ProjectType projectType;

@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLoginResponseDto extends BaseDto {
+public class UserLoginResponseDto implements BaseDto {
 
     private long userId;
     private String firstName;

@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class NodeGraphDetails extends BaseDto {
+public class NodeGraphDetails implements BaseDto {
 
     private String frontEndId;
     private String name;

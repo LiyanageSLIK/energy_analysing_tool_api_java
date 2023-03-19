@@ -14,7 +14,8 @@ import org.springframework.web.client.HttpClientErrorException;
 
 @RestController
 @RequestMapping("/node")
-public class NodController {
+public class NodeController {
+    private static final String INTERNAL_SERVER_ERROR_MESSAGE = "Internal Server Error.";
 
     @Autowired
     private PlayGroundService playGroundService;
@@ -24,7 +25,8 @@ public class NodController {
 
 
     @PostMapping("/add")
-    public ResponseEntity addNod(@RequestBody NodeRequestDto nodeRequestDto, @RequestHeader(value = "Authorization", required = true) String token) {
+    public ResponseEntity addNode(@RequestBody NodeRequestDto nodeRequestDto,
+                                  @RequestHeader(value = "Authorization") String token) {
         try {
             String extractedToken = token.substring(7);
             String userEmail = jwtUtil.extractEmail(extractedToken);
@@ -33,7 +35,8 @@ public class NodController {
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
         }
     }
 
@@ -43,7 +46,8 @@ public class NodController {
             playGroundService.updateNode(nodeRequestDto);
             return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully updated");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
         }
     }
 
@@ -53,7 +57,8 @@ public class NodController {
             playGroundService.deleteNode(frontEndId);
             return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully deleted");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
         }
     }
 

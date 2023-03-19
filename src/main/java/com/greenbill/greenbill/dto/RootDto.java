@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class RootDto extends BaseDto {
+public class RootDto implements BaseDto {
 //    private long id;
     private String frontEndId;
     private String name;

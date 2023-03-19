@@ -3,6 +3,7 @@ package com.greenbill.greenbill.controller;
 
 import com.greenbill.greenbill.dto.ProjectDto;
 import com.greenbill.greenbill.dto.ResponseWrapper;
+import com.greenbill.greenbill.dto.response.ProjectSummaryDto;
 import com.greenbill.greenbill.service.ProjectService;
 import com.greenbill.greenbill.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/project")
 public class ProjectController {
+    private static final String INTERNAL_SERVER_ERROR_MESSAGE = "Internal Server Error";
 
     @Autowired
     private ProjectService projectService;
@@ -34,7 +38,7 @@ public class ProjectController {
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(new ResponseWrapper(null, e.getStatusCode().value(), e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
         }
     }
 
@@ -43,9 +47,11 @@ public class ProjectController {
         try {
             String extractedToken = token.substring(7);
             String userEmail = jwtUtil.extractEmail(extractedToken);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(projectService.getAllProject(userEmail), HttpStatus.OK.value(), "Success"));
+            List<ProjectSummaryDto> allProjects = projectService.getAllProject(userEmail);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper(allProjects, HttpStatus.OK.value(), "Success"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
         }
     }
 
@@ -54,16 +60,20 @@ public class ProjectController {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(projectService.getProject(projectId));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
         }
     }
 
     @PutMapping("/update")
     public ResponseEntity<ResponseWrapper> updateProject(@RequestBody ProjectDto projectDto) {
         try {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(projectService.updateProject(projectDto), HttpStatus.OK.value(), "Success: Successfully updated"));
+            ProjectSummaryDto updatedProject = projectService.updateProject(projectDto);
+            ResponseWrapper responseWrapper = new ResponseWrapper(updatedProject, HttpStatus.OK.value(), "Success: Successfully updated");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseWrapper);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
         }
     }
 
@@ -73,7 +83,8 @@ public class ProjectController {
             projectService.deleteProject(projectId);
             return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully deleted");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, "Internal Server Error"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
         }
     }
 

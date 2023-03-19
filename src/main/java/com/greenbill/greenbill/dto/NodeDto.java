@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class NodeDto extends BaseDto {
+public class NodeDto implements BaseDto {
 
 //    private long id;
     private String frontEndId;

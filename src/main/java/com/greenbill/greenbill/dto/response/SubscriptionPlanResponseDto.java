@@ -10,7 +10,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubscriptionPlanResponseDto extends BaseDto {
+public class SubscriptionPlanResponseDto implements BaseDto {
 
     private SubscriptionPlanName name;
     private Float rate;

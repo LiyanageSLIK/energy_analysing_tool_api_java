@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PasswordChangeRequestDto extends BaseDto {
+public class PasswordChangeRequestDto implements BaseDto {
 
     private String email;
     private String oldPassword;

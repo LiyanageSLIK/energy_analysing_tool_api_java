@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubscriptionDto extends BaseDto {
+public class SubscriptionDto implements BaseDto {
 
     private String userEmail;
 

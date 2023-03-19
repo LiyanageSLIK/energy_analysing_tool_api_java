@@ -13,7 +13,7 @@ import java.util.TimeZone;
 
 @Data
 @NoArgsConstructor
-public class ProjectDto extends BaseDto {
+public class ProjectDto implements BaseDto {
 
     private long projectId;
     @NotNull

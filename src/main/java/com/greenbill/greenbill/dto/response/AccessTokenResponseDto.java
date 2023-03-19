@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccessTokenResponseDto extends BaseDto {
+public class AccessTokenResponseDto implements BaseDto {
     private String accessToken;
     private long accessTokenExpireTime;
 }

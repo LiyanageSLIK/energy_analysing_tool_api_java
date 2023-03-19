@@ -7,8 +7,7 @@ import com.greenbill.greenbill.enumeration.NodeType;
 import lombok.Data;
 
 @Data
-public class NodeRequestDto extends BaseDto {
-
+public class NodeRequestDto implements BaseDto {
     private String frontEndId;
     private String parentFrontEndId;
     private String name;

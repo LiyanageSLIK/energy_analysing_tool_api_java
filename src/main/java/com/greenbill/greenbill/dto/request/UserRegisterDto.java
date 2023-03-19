@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRegisterDto extends BaseDto {
+public class UserRegisterDto implements BaseDto {
 
     private String firstName;
     private String lastName;

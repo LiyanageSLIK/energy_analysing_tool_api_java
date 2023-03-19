@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CalculatedBillDto extends BaseDto {
+public class CalculatedBillDto implements BaseDto {
     private double totalUnits;
     private double usageCharge;
     private double fixedCharge;
