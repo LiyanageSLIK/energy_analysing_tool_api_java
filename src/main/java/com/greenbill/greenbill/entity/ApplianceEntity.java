@@ -16,7 +16,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "appliance")
 public class ApplianceEntity extends NodeEntity {

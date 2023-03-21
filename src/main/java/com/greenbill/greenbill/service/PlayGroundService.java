@@ -6,6 +6,7 @@ import com.greenbill.greenbill.dto.response.CalculatedBillDto;
 import com.greenbill.greenbill.dto.response.NodeGraphDetails;
 import com.greenbill.greenbill.dto.response.ProjectGraphDetails;
 import com.greenbill.greenbill.entity.*;
+import com.greenbill.greenbill.enumeration.CurrencyCode;
 import com.greenbill.greenbill.enumeration.NodeType;
 import com.greenbill.greenbill.enumeration.ProjectType;
 import com.greenbill.greenbill.enumeration.Status;
@@ -20,9 +21,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.*;
 
 @Service
 public class PlayGroundService {
@@ -251,6 +252,7 @@ public class PlayGroundService {
 
     private CalculatedBillDto billCalculator(BillCalculatorInputs inputs){
         if(inputs.getCategory()==ProjectType.Domestic||inputs.getCategory()==ProjectType.ReligiousAndCharitable){
+            DecimalFormat decimalFormat = new DecimalFormat("#.##");
             var category=inputs.getCategory();
             var totalUnits=inputs.getTotalUnits();
             double levy=0.00;
@@ -258,33 +260,36 @@ public class PlayGroundService {
             double totalCharge=0.00;
             double usageCharge=0.00;
             double fixedCharge=0.00;
-            List<String> calculationSteps=new ArrayList<>();
+            List<Object> calculationSteps=new ArrayList<>();
             var tariff= tariffRepository.getByLimitedFromLessThanEqualAndLimitedToGreaterThanEqualAndCategoryOrderByLowerLimitAsc(totalUnits,totalUnits,category);
             calculationSteps.add(new String("Calculation:"));
+            CurrencyCode currencyCode = CurrencyCode.LKR;
             for (var block:tariff) {
                 var lowerLimit=block.getLowerLimit();
                 var upperLimit=block.getUpperLimit();
+                currencyCode=block.getCurrencyCode();
                 if(!(lowerLimit<=totalUnits&&totalUnits<=upperLimit)&&totalUnits>upperLimit){
                     if(lowerLimit==0){
                         var charge=(upperLimit-lowerLimit)* block.getEnergyCharge();
                         usageCharge+=charge;
-                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (upperLimit - lowerLimit), block.getEnergyCharge(), charge));
+//                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (upperLimit - lowerLimit), block.getEnergyCharge(), decimalFormat.format(charge)));
+                        calculationSteps.add((List.of((upperLimit - lowerLimit), block.getEnergyCharge(), decimalFormat.format(charge))));
                     }
                     if(lowerLimit!=0) {
                         var charge=(upperLimit - lowerLimit + 1) * block.getEnergyCharge();
                         usageCharge += charge;
-                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (upperLimit - lowerLimit), block.getEnergyCharge(), charge));
+                        calculationSteps.add((List.of((upperLimit - lowerLimit + 1), block.getEnergyCharge(), decimalFormat.format(charge))));
                     }
                 }if (lowerLimit<=totalUnits&&totalUnits<=upperLimit){
                     if(lowerLimit==0){
                         var charge=(totalUnits-lowerLimit)* block.getEnergyCharge();
                         usageCharge+=charge;
-                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (totalUnits-lowerLimit), block.getEnergyCharge(), charge));
+                        calculationSteps.add((List.of((totalUnits-lowerLimit), block.getEnergyCharge(), decimalFormat.format(charge))));
                     }
                     if(lowerLimit!=0) {
                         var charge=(totalUnits - lowerLimit + 1) * block.getEnergyCharge();
                         usageCharge += charge;
-                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (totalUnits-lowerLimit), block.getEnergyCharge(), charge));
+                        calculationSteps.add((List.of((totalUnits - lowerLimit + 1), block.getEnergyCharge(), decimalFormat.format(charge))));
                     }
                     fixedCharge += block.getFixedCharge();
                     totalCharge=usageCharge+fixedCharge;
@@ -292,12 +297,15 @@ public class PlayGroundService {
                     billAmount=totalCharge+levy;
                 }
             }
-            calculationSteps.add(String.format("Usage Charge  =%10.2f",usageCharge));
-            calculationSteps.add(String.format("Fixed Charge  =%10.2f",fixedCharge));
-            calculationSteps.add(String.format("Total Charge  =%10.2f",totalCharge));
-            calculationSteps.add(String.format("Levy(SSCL)    =%10.2f",levy));
-            calculationSteps.add(String.format("Bill Amount   =%10.2f",billAmount));
-            return new CalculatedBillDto(totalUnits,usageCharge,fixedCharge,totalCharge,levy,billAmount,calculationSteps);
+            var result = new CalculatedBillDto(currencyCode);
+            result.setTotalUnits(totalUnits);
+            result.setUsageCharge(usageCharge);
+            result.setFixedCharge(fixedCharge);
+            result.setTotalCharge(totalCharge);
+            result.setLevy(levy);
+            result.setBillAmount(billAmount);
+            result.setCalculationSteps(calculationSteps);
+            return result;
         }
         return null;
     }
