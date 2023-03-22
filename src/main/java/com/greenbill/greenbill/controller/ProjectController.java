@@ -55,7 +55,7 @@ public class ProjectController {
         }
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity getProject(@RequestParam long projectId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(projectService.getProject(projectId));

@@ -65,4 +65,14 @@ public class PlayGroundController {
         }
     }
 
+    @GetMapping("section")
+    public ResponseEntity getProject(@RequestParam String frontEndId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(playGroundService.getSectionSummary(frontEndId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
+        }
+    }
+
 }

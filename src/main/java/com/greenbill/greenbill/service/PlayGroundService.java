@@ -2,9 +2,7 @@ package com.greenbill.greenbill.service;
 
 
 import com.greenbill.greenbill.dto.request.NodeRequestDto;
-import com.greenbill.greenbill.dto.response.CalculatedBillDto;
-import com.greenbill.greenbill.dto.response.NodeGraphDetails;
-import com.greenbill.greenbill.dto.response.ProjectGraphDetails;
+import com.greenbill.greenbill.dto.response.*;
 import com.greenbill.greenbill.entity.*;
 import com.greenbill.greenbill.enumeration.CurrencyCode;
 import com.greenbill.greenbill.enumeration.NodeType;
@@ -147,6 +145,13 @@ public class PlayGroundService {
         return calculateNodeGraphDetails(section);
     }
 
+    @Transactional
+    public SectionSummaryDto getSectionSummary(String frontEndId) throws Exception {
+        SectionEntity section = sectionRepository.findByFrontEndId(frontEndId);
+        SectionSummaryDto sectionSummaryDto=new SectionSummaryDto(section);
+        sectionSummaryDto.setChildren(section.getChildren());
+        return sectionSummaryDto;
+    }
     @Transactional
     public ProjectGraphDetails getProjectGraphsDetails(long projectId) throws HttpClientErrorException{
         ProjectEntity project=projectRepository.getFirstById(projectId);
