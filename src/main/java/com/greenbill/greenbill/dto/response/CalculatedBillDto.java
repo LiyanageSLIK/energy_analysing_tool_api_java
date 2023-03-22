@@ -27,10 +27,8 @@ public class CalculatedBillDto implements BaseDto {
 
     public CalculatedBillDto(CurrencyCode currencyCode) {
         Currency currency = Currency.getInstance(String.valueOf(currencyCode));
-        double value = 1234.56;
         this. format = NumberFormat.getCurrencyInstance(new Locale("en", "LK"));
         format.setCurrency(currency);
-        String formattedValue = format.format(value);
     }
 
     public void setTotalUnits(double totalUnits) {
@@ -38,23 +36,23 @@ public class CalculatedBillDto implements BaseDto {
     }
 
     public void setUsageCharge(double usageCharge) {
-        this.usageCharge = format.format(usageCharge);
+        this.usageCharge = format.format(usageCharge).replace(format.getCurrency().getSymbol(), format.getCurrency().getSymbol() + " ");
     }
 
     public void setFixedCharge(double fixedCharge) {
-        this.fixedCharge = format.format(fixedCharge);
+        this.fixedCharge = format.format(fixedCharge).replace(format.getCurrency().getSymbol(), format.getCurrency().getSymbol() + " ");
     }
 
     public void setTotalCharge(double totalCharge) {
-        this.totalCharge = format.format(totalCharge);
+        this.totalCharge = format.format(totalCharge).replace(format.getCurrency().getSymbol(), format.getCurrency().getSymbol() + " ");
     }
 
     public void setLevy(double levy) {
-        this.levy = format.format(levy);
+        this.levy = format.format(levy).replace(format.getCurrency().getSymbol(), format.getCurrency().getSymbol() + " ");
     }
 
     public void setBillAmount(double billAmount) {
-        this.billAmount = format.format(billAmount);
+        this.billAmount = format.format(billAmount).replace(format.getCurrency().getSymbol(), format.getCurrency().getSymbol() + " ");
     }
 
     public void setCalculationSteps(List<Object> calculationSteps) {

@@ -59,6 +59,7 @@ public class PlayGroundController {
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
         } catch (Exception e) {
+            System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
         }

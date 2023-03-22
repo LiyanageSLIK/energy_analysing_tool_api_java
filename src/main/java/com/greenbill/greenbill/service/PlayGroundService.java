@@ -273,23 +273,23 @@ public class PlayGroundService {
                         var charge=(upperLimit-lowerLimit)* block.getEnergyCharge();
                         usageCharge+=charge;
 //                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (upperLimit - lowerLimit), block.getEnergyCharge(), decimalFormat.format(charge)));
-                        calculationSteps.add((List.of((upperLimit - lowerLimit), block.getEnergyCharge(), decimalFormat.format(charge))));
+                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f",(upperLimit - lowerLimit), block.getEnergyCharge(), (charge)));
                     }
                     if(lowerLimit!=0) {
                         var charge=(upperLimit - lowerLimit + 1) * block.getEnergyCharge();
                         usageCharge += charge;
-                        calculationSteps.add((List.of((upperLimit - lowerLimit + 1), block.getEnergyCharge(), decimalFormat.format(charge))));
+                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f",(upperLimit - lowerLimit + 1), block.getEnergyCharge(), (charge)));
                     }
                 }if (lowerLimit<=totalUnits&&totalUnits<=upperLimit){
                     if(lowerLimit==0){
                         var charge=(totalUnits-lowerLimit)* block.getEnergyCharge();
                         usageCharge+=charge;
-                        calculationSteps.add((List.of((totalUnits-lowerLimit), block.getEnergyCharge(), decimalFormat.format(charge))));
+                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f",(totalUnits-lowerLimit), block.getEnergyCharge(), (charge)));
                     }
                     if(lowerLimit!=0) {
                         var charge=(totalUnits - lowerLimit + 1) * block.getEnergyCharge();
                         usageCharge += charge;
-                        calculationSteps.add((List.of((totalUnits - lowerLimit + 1), block.getEnergyCharge(), decimalFormat.format(charge))));
+                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f",(totalUnits - lowerLimit + 1), block.getEnergyCharge(), (charge)));
                     }
                     fixedCharge += block.getFixedCharge();
                     totalCharge=usageCharge+fixedCharge;
