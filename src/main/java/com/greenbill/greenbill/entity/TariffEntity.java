@@ -3,7 +3,10 @@ package com.greenbill.greenbill.entity;
 import com.greenbill.greenbill.enumeration.CurrencyCode;
 import com.greenbill.greenbill.enumeration.ProjectType;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter

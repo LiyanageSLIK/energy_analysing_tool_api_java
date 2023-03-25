@@ -5,7 +5,6 @@ import com.greenbill.greenbill.dto.BaseDto;
 import com.greenbill.greenbill.enumeration.CurrencyCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.text.NumberFormat;
 import java.util.Currency;
@@ -27,7 +26,7 @@ public class CalculatedBillDto implements BaseDto {
 
     public CalculatedBillDto(CurrencyCode currencyCode) {
         Currency currency = Currency.getInstance(String.valueOf(currencyCode));
-        this. format = NumberFormat.getCurrencyInstance(new Locale("en", "LK"));
+        this.format = NumberFormat.getCurrencyInstance(new Locale("en", "LK"));
         format.setCurrency(currency);
     }
 

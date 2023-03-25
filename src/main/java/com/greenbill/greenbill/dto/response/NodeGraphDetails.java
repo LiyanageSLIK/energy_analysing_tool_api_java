@@ -20,22 +20,22 @@ public class NodeGraphDetails implements BaseDto {
     private double unitPercentageOfParent;
     private List<NodeGraphDetails> children;
 
-    public void setTotalUnits(double wattRate, double hours) {
-        this.totalUnits = (wattRate*hours)*30/1000;
-    }
-
-    public void setUnitPercentageOfParent(double totalUnitsOfParent) {
-        this.unitPercentageOfParent = (this.totalUnits /totalUnitsOfParent)*100;
-    }
-
     public NodeGraphDetails(ApplianceEntity appliance) {
         setName(appliance.getName());
         setFrontEndId(appliance.getFrontEndId());
-        setTotalUnits(appliance.getWattRate(),appliance.getHours());
+        setTotalUnits(appliance.getWattRate(), appliance.getHours());
     }
 
     public NodeGraphDetails(NodeEntity node) {
         setFrontEndId(node.getFrontEndId());
         setName(node.getName());
+    }
+
+    public void setTotalUnits(double wattRate, double hours) {
+        this.totalUnits = (wattRate * hours) * 30 / 1000;
+    }
+
+    public void setUnitPercentageOfParent(double totalUnitsOfParent) {
+        this.unitPercentageOfParent = (this.totalUnits / totalUnitsOfParent) * 100;
     }
 }

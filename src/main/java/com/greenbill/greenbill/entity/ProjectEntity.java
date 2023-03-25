@@ -3,7 +3,10 @@ package com.greenbill.greenbill.entity;
 import com.greenbill.greenbill.dto.ProjectDto;
 import com.greenbill.greenbill.enumeration.ProjectType;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
 

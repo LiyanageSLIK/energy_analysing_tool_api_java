@@ -2,7 +2,10 @@ package com.greenbill.greenbill.service;
 
 
 import com.greenbill.greenbill.dto.request.NodeRequestDto;
-import com.greenbill.greenbill.dto.response.*;
+import com.greenbill.greenbill.dto.response.CalculatedBillDto;
+import com.greenbill.greenbill.dto.response.NodeGraphDetails;
+import com.greenbill.greenbill.dto.response.ProjectGraphDetails;
+import com.greenbill.greenbill.dto.response.SectionSummaryDto;
 import com.greenbill.greenbill.entity.*;
 import com.greenbill.greenbill.enumeration.CurrencyCode;
 import com.greenbill.greenbill.enumeration.NodeType;
@@ -15,13 +18,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class PlayGroundService {
@@ -137,9 +140,9 @@ public class PlayGroundService {
     }
 
     @Transactional
-    public NodeGraphDetails getSectionGraphsDetails(String frontEndSectionId) throws HttpClientErrorException{
-        SectionEntity section=sectionRepository.findByFrontEndId(frontEndSectionId);
-        if(section==null){
+    public NodeGraphDetails getSectionGraphsDetails(String frontEndSectionId) throws HttpClientErrorException {
+        SectionEntity section = sectionRepository.findByFrontEndId(frontEndSectionId);
+        if (section == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No Such Section");
         }
         return calculateNodeGraphDetails(section);
@@ -148,42 +151,44 @@ public class PlayGroundService {
     @Transactional
     public SectionSummaryDto getSectionSummary(String frontEndId) throws Exception {
         SectionEntity section = sectionRepository.findByFrontEndId(frontEndId);
-        SectionSummaryDto sectionSummaryDto=new SectionSummaryDto(section);
+        SectionSummaryDto sectionSummaryDto = new SectionSummaryDto(section);
         sectionSummaryDto.setChildren(section.getChildren());
         return sectionSummaryDto;
     }
+
     @Transactional
-    public ProjectGraphDetails getProjectGraphsDetails(long projectId) throws HttpClientErrorException{
-        ProjectEntity project=projectRepository.getFirstById(projectId);
-        RootEntity root=project.getRoot();
-        double totalUnits=0;
-        if(root==null){
+    public ProjectGraphDetails getProjectGraphsDetails(long projectId) throws HttpClientErrorException {
+        ProjectEntity project = projectRepository.getFirstById(projectId);
+        RootEntity root = project.getRoot();
+        double totalUnits = 0;
+        if (root == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No Such Project");
         }
-        var children=root.getChildren();
-        if(root==null){
+        var children = root.getChildren();
+        if (root == null) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "It's Empty Project");
         }
-        List<NodeGraphDetails> resultsOfChildren=new ArrayList<>();
-        for (var child:children) {
-            var calculatedGraphDetails=calculateNodeGraphDetails(child);
+        List<NodeGraphDetails> resultsOfChildren = new ArrayList<>();
+        for (var child : children) {
+            var calculatedGraphDetails = calculateNodeGraphDetails(child);
             resultsOfChildren.add(calculatedGraphDetails);
-            totalUnits=totalUnits+calculatedGraphDetails.getTotalUnits();
+            totalUnits = totalUnits + calculatedGraphDetails.getTotalUnits();
         }
-        List<NodeGraphDetails> completedChildNodResults=new ArrayList<>();
-        for (var child:resultsOfChildren) {
+        List<NodeGraphDetails> completedChildNodResults = new ArrayList<>();
+        for (var child : resultsOfChildren) {
             child.setUnitPercentageOfParent(totalUnits);
             completedChildNodResults.add(child);
         }
-        var result=new ProjectGraphDetails(project);
+        var result = new ProjectGraphDetails(project);
         result.setTotalUnits(totalUnits);
         result.setChildren(completedChildNodResults);
         return result;
     }
+
     @Transactional
-    public CalculatedBillDto calculateBill(long projectId)throws HttpClientErrorException{
-        var projectGraphDetails=getProjectGraphsDetails(projectId);
-        var billCalculatorInputs=new BillCalculatorInputs(projectGraphDetails);
+    public CalculatedBillDto calculateBill(long projectId) throws HttpClientErrorException {
+        var projectGraphDetails = getProjectGraphsDetails(projectId);
+        var billCalculatorInputs = new BillCalculatorInputs(projectGraphDetails);
         return billCalculator(billCalculatorInputs);
     }
 
@@ -225,26 +230,28 @@ public class PlayGroundService {
         return Long.parseLong(projectId);
     }
 
-    private NodeGraphDetails calculateNodeGraphDetails(NodeEntity node){
-        if(node.getNodeType()==NodeType.Appliance && node.getStatus()== Status.ACTIVE){
-            var result =new NodeGraphDetails((ApplianceEntity) node);
+    private NodeGraphDetails calculateNodeGraphDetails(NodeEntity node) {
+        if (node.getNodeType() == NodeType.Appliance && node.getStatus() == Status.ACTIVE) {
+            var result = new NodeGraphDetails((ApplianceEntity) node);
             return result;
         }
-        if(node.getNodeType()==NodeType.Section && node.getStatus()== Status.ACTIVE){
-            var result =new NodeGraphDetails(node);
-            List<NodeGraphDetails> childrenOfResult=new ArrayList<>();
-            double totalUnitOfSection=0;
-            SectionEntity section= (SectionEntity) node;
-            var children=section.getChildren();
-            if(children==null){return result;}
-            for (var childNod:children) {
-                var resultOfChild= calculateNodeGraphDetails(childNod);
-                totalUnitOfSection=totalUnitOfSection+resultOfChild.getTotalUnits();
+        if (node.getNodeType() == NodeType.Section && node.getStatus() == Status.ACTIVE) {
+            var result = new NodeGraphDetails(node);
+            List<NodeGraphDetails> childrenOfResult = new ArrayList<>();
+            double totalUnitOfSection = 0;
+            SectionEntity section = (SectionEntity) node;
+            var children = section.getChildren();
+            if (children == null) {
+                return result;
+            }
+            for (var childNod : children) {
+                var resultOfChild = calculateNodeGraphDetails(childNod);
+                totalUnitOfSection = totalUnitOfSection + resultOfChild.getTotalUnits();
                 childrenOfResult.add(resultOfChild);
             }
             result.setTotalUnits(totalUnitOfSection);
-            List<NodeGraphDetails> completedChildNodResults=new ArrayList<>();
-            for (var child:childrenOfResult) {
+            List<NodeGraphDetails> completedChildNodResults = new ArrayList<>();
+            for (var child : childrenOfResult) {
                 child.setUnitPercentageOfParent(totalUnitOfSection);
                 completedChildNodResults.add(child);
             }
@@ -255,51 +262,52 @@ public class PlayGroundService {
     }
 
 
-    private CalculatedBillDto billCalculator(BillCalculatorInputs inputs){
-        if(inputs.getCategory()==ProjectType.Domestic||inputs.getCategory()==ProjectType.ReligiousAndCharitable){
+    private CalculatedBillDto billCalculator(BillCalculatorInputs inputs) {
+        if (inputs.getCategory() == ProjectType.Domestic || inputs.getCategory() == ProjectType.ReligiousAndCharitable) {
             DecimalFormat decimalFormat = new DecimalFormat("#.##");
-            var category=inputs.getCategory();
-            var totalUnits=inputs.getTotalUnits();
-            double levy=0.00;
-            double billAmount=0.00;
-            double totalCharge=0.00;
-            double usageCharge=0.00;
-            double fixedCharge=0.00;
-            List<Object> calculationSteps=new ArrayList<>();
-            var tariff= tariffRepository.getByLimitedFromLessThanEqualAndLimitedToGreaterThanEqualAndCategoryOrderByLowerLimitAsc(totalUnits,totalUnits,category);
-            calculationSteps.add(new String("Calculation:"));
+            var category = inputs.getCategory();
+            var totalUnits = inputs.getTotalUnits();
+            double levy = 0.00;
+            double billAmount = 0.00;
+            double totalCharge = 0.00;
+            double usageCharge = 0.00;
+            double fixedCharge = 0.00;
+            List<Object> calculationSteps = new ArrayList<>();
+            var tariff = tariffRepository.getByLimitedFromLessThanEqualAndLimitedToGreaterThanEqualAndCategoryOrderByLowerLimitAsc(totalUnits, totalUnits, category);
+//            calculationSteps.add(new String("Calculation:"));
             CurrencyCode currencyCode = CurrencyCode.LKR;
-            for (var block:tariff) {
-                var lowerLimit=block.getLowerLimit();
-                var upperLimit=block.getUpperLimit();
-                currencyCode=block.getCurrencyCode();
-                if(!(lowerLimit<=totalUnits&&totalUnits<=upperLimit)&&totalUnits>upperLimit){
-                    if(lowerLimit==0){
-                        var charge=(upperLimit-lowerLimit)* block.getEnergyCharge();
-                        usageCharge+=charge;
+            for (var block : tariff) {
+                var lowerLimit = block.getLowerLimit();
+                var upperLimit = block.getUpperLimit();
+                currencyCode = block.getCurrencyCode();
+                if (!(lowerLimit <= totalUnits && totalUnits <= upperLimit) && totalUnits > upperLimit) {
+                    if (lowerLimit == 0) {
+                        var charge = (upperLimit - lowerLimit) * block.getEnergyCharge();
+                        usageCharge += charge;
 //                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (upperLimit - lowerLimit), block.getEnergyCharge(), decimalFormat.format(charge)));
-                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f",(upperLimit - lowerLimit), block.getEnergyCharge(), (charge)));
+                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (upperLimit - lowerLimit), block.getEnergyCharge(), (charge)));
                     }
-                    if(lowerLimit!=0) {
-                        var charge=(upperLimit - lowerLimit + 1) * block.getEnergyCharge();
+                    if (lowerLimit != 0) {
+                        var charge = (upperLimit - lowerLimit + 1) * block.getEnergyCharge();
                         usageCharge += charge;
-                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f",(upperLimit - lowerLimit + 1), block.getEnergyCharge(), (charge)));
+                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (upperLimit - lowerLimit + 1), block.getEnergyCharge(), (charge)));
                     }
-                }if (lowerLimit<=totalUnits&&totalUnits<=upperLimit){
-                    if(lowerLimit==0){
-                        var charge=(totalUnits-lowerLimit)* block.getEnergyCharge();
-                        usageCharge+=charge;
-                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f",(totalUnits-lowerLimit), block.getEnergyCharge(), (charge)));
-                    }
-                    if(lowerLimit!=0) {
-                        var charge=(totalUnits - lowerLimit + 1) * block.getEnergyCharge();
+                }
+                if (lowerLimit <= totalUnits && totalUnits <= upperLimit) {
+                    if (lowerLimit == 0) {
+                        var charge = (totalUnits - lowerLimit) * block.getEnergyCharge();
                         usageCharge += charge;
-                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f",(totalUnits - lowerLimit + 1), block.getEnergyCharge(), (charge)));
+                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (totalUnits - lowerLimit), block.getEnergyCharge(), (charge)));
+                    }
+                    if (lowerLimit != 0) {
+                        var charge = (totalUnits - lowerLimit + 1) * block.getEnergyCharge();
+                        usageCharge += charge;
+                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (totalUnits - lowerLimit + 1), block.getEnergyCharge(), (charge)));
                     }
                     fixedCharge += block.getFixedCharge();
-                    totalCharge=usageCharge+fixedCharge;
-                    levy=totalCharge*block.getLevy();
-                    billAmount=totalCharge+levy;
+                    totalCharge = usageCharge + fixedCharge;
+                    levy = totalCharge * block.getLevy();
+                    billAmount = totalCharge + levy;
                 }
             }
             var result = new CalculatedBillDto(currencyCode);
@@ -329,6 +337,7 @@ public class PlayGroundService {
 
 
     }
+
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
@@ -340,13 +349,13 @@ public class PlayGroundService {
         private double offPeakUnits;
         private ProjectType category;
 
-        public double getTotalUnits() {
-            return Math.round(totalUnits);
-        }
-
         public BillCalculatorInputs(ProjectGraphDetails graphDetails) {
             setTotalUnits(graphDetails.getTotalUnits());
             setCategory(graphDetails.getProjectType());
+        }
+
+        public double getTotalUnits() {
+            return Math.round(totalUnits);
         }
     }
 }

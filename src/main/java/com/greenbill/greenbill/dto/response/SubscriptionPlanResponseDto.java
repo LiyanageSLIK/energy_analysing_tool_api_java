@@ -5,7 +5,9 @@ import com.greenbill.greenbill.entity.SubscriptionPlanEntity;
 import com.greenbill.greenbill.enumeration.Cycle;
 import com.greenbill.greenbill.enumeration.PlanType;
 import com.greenbill.greenbill.enumeration.SubscriptionPlanName;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
