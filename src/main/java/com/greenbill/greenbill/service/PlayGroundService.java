@@ -91,9 +91,15 @@ public class PlayGroundService {
 
     @Transactional
     public void updateNode(NodeRequestDto nodeRequestDto) throws Exception {
+
         NodeType nodeType = nodeRequestDto.getNodeType();
         long projectId = extractProjectIdFromFrontEndId(nodeRequestDto.getFrontEndId());
+        long userId = extractUserIdFromFrontEndId(nodeRequestDto.getFrontEndId());
         var project = projectRepository.getReferenceById(projectId);
+        var user = userRepository.getReferenceById(userId);
+        if (!validatePlayGroundNodeAccess(user.getEmail())) {
+            throw new HttpClientErrorException(HttpStatus.CONFLICT, "Sorry You had reach your subscription limitations upgrade your plan for more benefits");
+        }
         if (nodeType == NodeType.Section) {
             String frontEndId = nodeRequestDto.getFrontEndId();
             var thisSection = sectionRepository.findByFrontEndId(frontEndId);
@@ -228,6 +234,11 @@ public class PlayGroundService {
     private long extractProjectIdFromFrontEndId(String frontEndId) {
         String projectId = frontEndId.split("_")[1];
         return Long.parseLong(projectId);
+    }
+
+    private long extractUserIdFromFrontEndId(String frontEndId) {
+        String userId = frontEndId.split("_")[0];
+        return Long.parseLong(userId);
     }
 
     private NodeGraphDetails calculateNodeGraphDetails(NodeEntity node) {

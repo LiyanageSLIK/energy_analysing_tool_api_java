@@ -80,6 +80,9 @@ public class ProjectService {
     @Transactional
     public boolean validatePlayGroundProjectAccess(String email) {
         SubscriptionPlanEntity activePlan = subscriptionPlanRepository.getBySubscriptions_User_Email(email);
+        if (activePlan == null) {
+            throw new HttpClientErrorException(HttpStatus.CONFLICT, "Sorry You had no subscribe any subscription plan yet");
+        }
         int maxProjectAllow = activePlan.getMaxNumProject();
         int currentProjectCount = (int) projectRepository.countBySubscription_User_Email(email);
         return (currentProjectCount < maxProjectAllow);

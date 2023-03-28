@@ -1,10 +1,12 @@
 package com.greenbill.greenbill.service;
 
+import com.greenbill.greenbill.dto.request.SubscriptionDto;
 import com.greenbill.greenbill.dto.response.SubscriptionPlanResponseDto;
 import com.greenbill.greenbill.entity.SubscriptionEntity;
 import com.greenbill.greenbill.entity.SubscriptionPlanEntity;
 import com.greenbill.greenbill.entity.UserEntity;
 import com.greenbill.greenbill.enumeration.PlanType;
+import com.greenbill.greenbill.enumeration.Role;
 import com.greenbill.greenbill.enumeration.Status;
 import com.greenbill.greenbill.enumeration.SubscriptionPlanName;
 import com.greenbill.greenbill.repository.SubscriptionPlanRepository;
@@ -45,23 +47,42 @@ public class SubscriptionService {
     }
 
     @Transactional
-    public SubscriptionEntity addSubscription(String email, SubscriptionPlanName planName) throws HttpClientErrorException {
+    public SubscriptionEntity addSubscription(String email, SubscriptionDto subscriptionDto) throws HttpClientErrorException {
         UserEntity user = userRepository.findByEmail(email);
+        SubscriptionPlanName planName = subscriptionDto.getSubscriptionPlanName();
         SubscriptionPlanEntity subscriptionPlan = subscriptionPlanRepository.findByName(planName);
+        if (user.getRole() == Role.ADMIN) {
+            user = userRepository.findByEmail(subscriptionDto.getUserEmail());
+        }
         if (user == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Email:User not found");
         }
         if (subscriptionPlan == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong planName: not found");
         }
+        SubscriptionEntity currentSubscription = subscriptionRepository.findFirstByUser_EmailAndStatus(email, Status.ACTIVE);
+        if (currentSubscription == null) {
+            SubscriptionPlanEntity initialPlan = subscriptionPlanRepository.findByName(SubscriptionPlanName.FREE);
+            SubscriptionEntity initialSubscription = new SubscriptionEntity();
+            initialSubscription.setSubscriptionPlan(initialPlan);
+            initialSubscription.setUser(userRepository.save(user));
+            currentSubscription = subscriptionRepository.save(initialSubscription);
+        }
+        SubscriptionPlanEntity currentSubscriptionPlan = currentSubscription.getSubscriptionPlan();
         if (planName.equals(SubscriptionPlanName.FREE)) {
-            SubscriptionEntity currentSubscription = subscriptionRepository.findFirstByUser_EmailAndStatus(email, Status.ACTIVE);
+            if (currentSubscriptionPlan.getName() == SubscriptionPlanName.FREE) {
+                return currentSubscription;
+            }
             currentSubscription.setStatus(Status.INACTIVE);
             SubscriptionEntity freeSubscription = subscriptionRepository.findFirstByUser_EmailAndSubscriptionPlan_Name(email, planName);
             freeSubscription.setStatus(Status.ACTIVE);
             subscriptionRepository.save(currentSubscription);
             return subscriptionRepository.save(freeSubscription);
         } else {
+            if (user.getRole() != Role.ADMIN) {
+                throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Only Admin can change this");
+            }
+            currentSubscription.setStatus(Status.INACTIVE);
             SubscriptionEntity newSubscription = new SubscriptionEntity();
             newSubscription.setSubscriptionPlan(subscriptionPlan);
             newSubscription.setUser(user);
