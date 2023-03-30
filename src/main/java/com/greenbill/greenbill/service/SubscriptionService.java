@@ -1,6 +1,7 @@
 package com.greenbill.greenbill.service;
 
 import com.greenbill.greenbill.dto.request.SubscriptionDto;
+import com.greenbill.greenbill.dto.response.ActiveSubscriptionDto;
 import com.greenbill.greenbill.dto.response.SubscriptionPlanResponseDto;
 import com.greenbill.greenbill.entity.SubscriptionEntity;
 import com.greenbill.greenbill.entity.SubscriptionPlanEntity;
@@ -88,6 +89,11 @@ public class SubscriptionService {
             newSubscription.setUser(user);
             return subscriptionRepository.save(newSubscription);
         }
+    }
+    @Transactional
+    public ActiveSubscriptionDto getActiveSubscriptionOfUser(String userEmail){
+        SubscriptionEntity currentSubscription = subscriptionRepository.findFirstByUser_EmailAndStatus(userEmail, Status.ACTIVE);
+        return new ActiveSubscriptionDto(currentSubscription);
     }
 
 

@@ -33,6 +33,22 @@ public class SubscriptionController {
         }
     }
 
+    @GetMapping("")
+    public ResponseEntity<ResponseWrapper> getActiveSubscription(@RequestHeader(value = "Authorization") String token) {
+        try {
+            var extractedToken = token.substring(7);
+            var userEmail = jwtUtil.extractEmail(extractedToken);
+            var result=subscriptionService.getActiveSubscriptionOfUser(userEmail);
+            var successResponse = new ResponseWrapper(result, HttpStatus.OK.value(), "Success");
+            return ResponseEntity.status(HttpStatus.OK).body(successResponse);
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(new ResponseWrapper(null, e.getStatusCode().value(), e.getMessage()));
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
+        }
+    }
+
     @PostMapping("")
     public ResponseEntity<ResponseWrapper> addProject(@RequestBody @Valid SubscriptionDto subscriptionDto,
                                                       @RequestHeader(value = "Authorization") String token) {
@@ -49,6 +65,4 @@ public class SubscriptionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
         }
     }
-
-
 }
