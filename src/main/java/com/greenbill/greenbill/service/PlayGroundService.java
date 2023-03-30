@@ -171,7 +171,7 @@ public class PlayGroundService {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No Such Project");
         }
         var children = root.getChildren();
-        if (root == null) {
+        if (children == null) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "It's Empty Project");
         }
         List<NodeGraphDetails> resultsOfChildren = new ArrayList<>();
@@ -275,7 +275,7 @@ public class PlayGroundService {
 
     private CalculatedBillDto billCalculator(BillCalculatorInputs inputs) {
         if (inputs.getCategory() == ProjectType.Domestic || inputs.getCategory() == ProjectType.ReligiousAndCharitable) {
-            DecimalFormat decimalFormat = new DecimalFormat("#.##");
+//            DecimalFormat decimalFormat = new DecimalFormat("#.##");
             var category = inputs.getCategory();
             var totalUnits = inputs.getTotalUnits();
             double levy = 0.00;
@@ -334,20 +334,7 @@ public class PlayGroundService {
         return null;
     }
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    private class BillCalculatorOutputs {
 
-        private double usageCharge;
-        private double fixedCharge;
-        private double totalCharge;
-        private double levy;
-        private double billAmount;
-        private List<String> calculationSteps;
-
-
-    }
 
     @Data
     @AllArgsConstructor
