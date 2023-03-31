@@ -12,21 +12,21 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class NodeGraphDetails implements BaseDto {
+public class NodeEnergyConsumptionDetailsDto implements BaseDto {
 
     private String frontEndId;
     private String name;
     private double totalUnits;
     private double unitPercentageOfParent;
-    private List<NodeGraphDetails> children;
+    private List<NodeEnergyConsumptionDetailsDto> children;
 
-    public NodeGraphDetails(ApplianceEntity appliance) {
+    public NodeEnergyConsumptionDetailsDto(ApplianceEntity appliance) {
         setName(appliance.getName());
         setFrontEndId(appliance.getFrontEndId());
         setTotalUnits(appliance.getWattRate(), appliance.getHours());
     }
 
-    public NodeGraphDetails(NodeEntity node) {
+    public NodeEnergyConsumptionDetailsDto(NodeEntity node) {
         setFrontEndId(node.getFrontEndId());
         setName(node.getName());
     }

@@ -2,10 +2,7 @@ package com.greenbill.greenbill.service;
 
 
 import com.greenbill.greenbill.dto.request.NodeRequestDto;
-import com.greenbill.greenbill.dto.response.CalculatedBillDto;
-import com.greenbill.greenbill.dto.response.NodeGraphDetails;
-import com.greenbill.greenbill.dto.response.ProjectGraphDetails;
-import com.greenbill.greenbill.dto.response.SectionSummaryDto;
+import com.greenbill.greenbill.dto.response.*;
 import com.greenbill.greenbill.entity.*;
 import com.greenbill.greenbill.enumeration.CurrencyCode;
 import com.greenbill.greenbill.enumeration.NodeType;
@@ -21,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -146,12 +142,19 @@ public class PlayGroundService {
     }
 
     @Transactional
-    public NodeGraphDetails getSectionGraphsDetails(String frontEndSectionId) throws HttpClientErrorException {
+    public List<List<NestedPieChartDto>> getSectionGraphsDetails(String frontEndSectionId) throws HttpClientErrorException {
         SectionEntity section = sectionRepository.findByFrontEndId(frontEndSectionId);
         if (section == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No Such Section");
         }
-        return calculateNodeGraphDetails(section);
+        var nodeEnergyConsumptionDetailsDto=calculateNodeEnergyConsumptionDetails(section);
+        var result=nodGraphDetails(nodeEnergyConsumptionDetailsDto.getChildren());
+        NestedPieChartDto nodeGraphDetails=new NestedPieChartDto();
+        nodeGraphDetails.setName(nodeEnergyConsumptionDetailsDto.getName());
+        nodeGraphDetails.setTotalUnits(nodeEnergyConsumptionDetailsDto.getTotalUnits());
+        nodeGraphDetails.setUnitPercentageOfParent(1);
+        result.add(0,List.of(nodeGraphDetails));
+        return result;
     }
 
     @Transactional
@@ -161,9 +164,20 @@ public class PlayGroundService {
         sectionSummaryDto.setChildren(section.getChildren());
         return sectionSummaryDto;
     }
-
     @Transactional
-    public ProjectGraphDetails getProjectGraphsDetails(long projectId) throws HttpClientErrorException {
+    public List<List<NestedPieChartDto>> getProjectGraphsDetails(long projectId) throws HttpClientErrorException {
+        var projectEnergyConsumptionDetails=getProjectEnergyConsumptionDetails(projectId);
+        var result=nodGraphDetails(projectEnergyConsumptionDetails.getChildren());
+        NestedPieChartDto projectGraphDetails=new NestedPieChartDto();
+        projectGraphDetails.setName(projectEnergyConsumptionDetails.getName());
+        projectGraphDetails.setTotalUnits(projectEnergyConsumptionDetails.getTotalUnits());
+        projectGraphDetails.setUnitPercentageOfParent(1);
+        result.add(0,List.of(projectGraphDetails));
+        return result;
+    }
+
+
+    private ProjectEnergyConsumptionDetailsDto getProjectEnergyConsumptionDetails(long projectId) throws HttpClientErrorException {
         ProjectEntity project = projectRepository.getFirstById(projectId);
         RootEntity root = project.getRoot();
         double totalUnits = 0;
@@ -174,27 +188,83 @@ public class PlayGroundService {
         if (children == null) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "It's Empty Project");
         }
-        List<NodeGraphDetails> resultsOfChildren = new ArrayList<>();
+        List<NodeEnergyConsumptionDetailsDto> resultsOfChildren = new ArrayList<>();
         for (var child : children) {
-            var calculatedGraphDetails = calculateNodeGraphDetails(child);
+            var calculatedGraphDetails = calculateNodeEnergyConsumptionDetails(child);
             resultsOfChildren.add(calculatedGraphDetails);
             totalUnits = totalUnits + calculatedGraphDetails.getTotalUnits();
         }
-        List<NodeGraphDetails> completedChildNodResults = new ArrayList<>();
+        List<NodeEnergyConsumptionDetailsDto> completedChildNodResults = new ArrayList<>();
         for (var child : resultsOfChildren) {
             child.setUnitPercentageOfParent(totalUnits);
             completedChildNodResults.add(child);
         }
-        var result = new ProjectGraphDetails(project);
+        var result = new ProjectEnergyConsumptionDetailsDto(project);
         result.setTotalUnits(totalUnits);
         result.setChildren(completedChildNodResults);
         return result;
     }
 
+    private NodeEnergyConsumptionDetailsDto calculateNodeEnergyConsumptionDetails(NodeEntity node) {
+        if (node.getNodeType() == NodeType.Appliance && node.getStatus() == Status.ACTIVE) {
+            var result = new NodeEnergyConsumptionDetailsDto((ApplianceEntity) node);
+            return result;
+        }
+        if (node.getNodeType() == NodeType.Section && node.getStatus() == Status.ACTIVE) {
+            var result = new NodeEnergyConsumptionDetailsDto(node);
+            List<NodeEnergyConsumptionDetailsDto> childrenOfResult = new ArrayList<>();
+            double totalUnitOfSection = 0;
+            SectionEntity section = (SectionEntity) node;
+            var children = section.getChildren();
+            if (children == null) {
+                return result;
+            }
+            for (var childNod : children) {
+                var resultOfChild = calculateNodeEnergyConsumptionDetails(childNod);
+                totalUnitOfSection = totalUnitOfSection + resultOfChild.getTotalUnits();
+                childrenOfResult.add(resultOfChild);
+            }
+            result.setTotalUnits(totalUnitOfSection);
+            List<NodeEnergyConsumptionDetailsDto> completedChildNodResults = new ArrayList<>();
+            for (var child : childrenOfResult) {
+                child.setUnitPercentageOfParent(totalUnitOfSection);
+                completedChildNodResults.add(child);
+            }
+            result.setChildren(completedChildNodResults);
+            return result;
+        }
+        return null;
+    }
+
+    private List<List<NestedPieChartDto>>nodGraphDetails(List<NodeEnergyConsumptionDetailsDto> nodeEnergyConsumptionDetailsDtoList){
+        List<List<NestedPieChartDto>> pieChartDetailsList= new ArrayList<>();
+        List<NodeEnergyConsumptionDetailsDto> presentLevelNodeEnergyConsumptionDetailsDto = nodeEnergyConsumptionDetailsDtoList;
+        boolean haveAnotherLevel=true;
+        while (haveAnotherLevel){
+            List<NestedPieChartDto> presentLevelNestedPieChartDtoList=new ArrayList<>();
+            List<NodeEnergyConsumptionDetailsDto> nextLevelNodeEnergyConsumptionDetailsDto =new ArrayList<>();
+            haveAnotherLevel=false;
+            for (var node: presentLevelNodeEnergyConsumptionDetailsDto) {
+                if(node.getChildren()==null||node.getChildren().isEmpty()){
+                    presentLevelNestedPieChartDtoList.add(new NestedPieChartDto(node));
+                    nextLevelNodeEnergyConsumptionDetailsDto.add(node);
+                }else{
+                    presentLevelNestedPieChartDtoList.add(new NestedPieChartDto(node));
+                    for (var childNode:node.getChildren()) {
+                        nextLevelNodeEnergyConsumptionDetailsDto.add(childNode);
+                    }
+                    haveAnotherLevel=true;
+                }
+            }
+            presentLevelNodeEnergyConsumptionDetailsDto=nextLevelNodeEnergyConsumptionDetailsDto;
+            pieChartDetailsList.add(presentLevelNestedPieChartDtoList);
+        }
+        return pieChartDetailsList;
+    }
     @Transactional
     public CalculatedBillDto calculateBill(long projectId) throws HttpClientErrorException {
-        var projectGraphDetails = getProjectGraphsDetails(projectId);
-        var billCalculatorInputs = new BillCalculatorInputs(projectGraphDetails);
+        var projectEnergyConsumptionDetails = getProjectEnergyConsumptionDetails(projectId);
+        var billCalculatorInputs = new BillCalculatorInputs(projectEnergyConsumptionDetails);
         return billCalculator(billCalculatorInputs);
     }
 
@@ -241,36 +311,7 @@ public class PlayGroundService {
         return Long.parseLong(userId);
     }
 
-    private NodeGraphDetails calculateNodeGraphDetails(NodeEntity node) {
-        if (node.getNodeType() == NodeType.Appliance && node.getStatus() == Status.ACTIVE) {
-            var result = new NodeGraphDetails((ApplianceEntity) node);
-            return result;
-        }
-        if (node.getNodeType() == NodeType.Section && node.getStatus() == Status.ACTIVE) {
-            var result = new NodeGraphDetails(node);
-            List<NodeGraphDetails> childrenOfResult = new ArrayList<>();
-            double totalUnitOfSection = 0;
-            SectionEntity section = (SectionEntity) node;
-            var children = section.getChildren();
-            if (children == null) {
-                return result;
-            }
-            for (var childNod : children) {
-                var resultOfChild = calculateNodeGraphDetails(childNod);
-                totalUnitOfSection = totalUnitOfSection + resultOfChild.getTotalUnits();
-                childrenOfResult.add(resultOfChild);
-            }
-            result.setTotalUnits(totalUnitOfSection);
-            List<NodeGraphDetails> completedChildNodResults = new ArrayList<>();
-            for (var child : childrenOfResult) {
-                child.setUnitPercentageOfParent(totalUnitOfSection);
-                completedChildNodResults.add(child);
-            }
-            result.setChildren(completedChildNodResults);
-            return result;
-        }
-        return null;
-    }
+
 
 
     private CalculatedBillDto billCalculator(BillCalculatorInputs inputs) {
@@ -347,7 +388,7 @@ public class PlayGroundService {
         private double offPeakUnits;
         private ProjectType category;
 
-        public BillCalculatorInputs(ProjectGraphDetails graphDetails) {
+        public BillCalculatorInputs(ProjectEnergyConsumptionDetailsDto graphDetails) {
             setTotalUnits(graphDetails.getTotalUnits());
             setCategory(graphDetails.getProjectType());
         }

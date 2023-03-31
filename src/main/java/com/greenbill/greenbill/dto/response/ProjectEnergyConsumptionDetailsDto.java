@@ -11,14 +11,14 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectGraphDetails {
+public class ProjectEnergyConsumptionDetailsDto {
     private long projectId;
     private String name;
     private ProjectType projectType;
     private double totalUnits;
-    private List<NodeGraphDetails> children;
+    private List<NodeEnergyConsumptionDetailsDto> children;
 
-    public ProjectGraphDetails(ProjectEntity project) {
+    public ProjectEnergyConsumptionDetailsDto(ProjectEntity project) {
         setProjectId(project.getId());
         setName(project.getName());
         setProjectType(project.getProjectType());

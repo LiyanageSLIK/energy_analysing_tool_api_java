@@ -37,7 +37,7 @@ public class PlayGroundController {
     }
 
     @GetMapping("graphs/project")
-    public ResponseEntity getSectionGraphsDetails(@RequestParam long projectId) {
+    public ResponseEntity getProjectGraphsDetails(@RequestParam long projectId) {
         try {
             var resultDtoList = playGroundService.getProjectGraphsDetails(projectId);
             var successResponse = new ResponseWrapper(resultDtoList, HttpStatus.OK.value(), SUCCESSFULLY_GENERATE_MESSAGE);
