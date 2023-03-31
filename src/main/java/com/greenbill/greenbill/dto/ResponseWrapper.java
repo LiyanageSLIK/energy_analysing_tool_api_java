@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ResponseWrapper implements Serializable {
     private String message;
-    private List<Object> data=new ArrayList<>();
+    private List<Object> data = new ArrayList<>();
     private int status;
 
     public ResponseWrapper(Object body, int status, String message) {
@@ -24,12 +24,13 @@ public class ResponseWrapper implements Serializable {
         this.setStatus(status);
         this.setMessage(message);
     }
+
     public void setData(Object data) {
         try {
-            for (var element :(Collection)data) {
+            for (var element : (Collection) data) {
                 this.data.add(element);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             this.data.add(data);
         }
 

@@ -90,8 +90,9 @@ public class SubscriptionService {
             return subscriptionRepository.save(newSubscription);
         }
     }
+
     @Transactional
-    public ActiveSubscriptionDto getActiveSubscriptionOfUser(String userEmail){
+    public ActiveSubscriptionDto getActiveSubscriptionOfUser(String userEmail) {
         SubscriptionEntity currentSubscription = subscriptionRepository.findFirstByUser_EmailAndStatus(userEmail, Status.ACTIVE);
         return new ActiveSubscriptionDto(currentSubscription);
     }

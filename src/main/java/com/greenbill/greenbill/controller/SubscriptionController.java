@@ -38,7 +38,7 @@ public class SubscriptionController {
         try {
             var extractedToken = token.substring(7);
             var userEmail = jwtUtil.extractEmail(extractedToken);
-            var result=subscriptionService.getActiveSubscriptionOfUser(userEmail);
+            var result = subscriptionService.getActiveSubscriptionOfUser(userEmail);
             var successResponse = new ResponseWrapper(result, HttpStatus.OK.value(), "Success");
             return ResponseEntity.status(HttpStatus.OK).body(successResponse);
         } catch (HttpClientErrorException e) {

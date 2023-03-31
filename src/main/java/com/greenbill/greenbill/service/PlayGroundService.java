@@ -147,13 +147,13 @@ public class PlayGroundService {
         if (section == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No Such Section");
         }
-        var nodeEnergyConsumptionDetailsDto=calculateNodeEnergyConsumptionDetails(section);
-        var result=nodGraphDetails(nodeEnergyConsumptionDetailsDto.getChildren());
-        NestedPieChartDto nodeGraphDetails=new NestedPieChartDto();
+        var nodeEnergyConsumptionDetailsDto = calculateNodeEnergyConsumptionDetails(section);
+        var result = nodGraphDetails(nodeEnergyConsumptionDetailsDto.getChildren());
+        NestedPieChartDto nodeGraphDetails = new NestedPieChartDto();
         nodeGraphDetails.setName(nodeEnergyConsumptionDetailsDto.getName());
         nodeGraphDetails.setTotalUnits(nodeEnergyConsumptionDetailsDto.getTotalUnits());
         nodeGraphDetails.setUnitPercentageOfParent(1);
-        result.add(0,List.of(nodeGraphDetails));
+        result.add(0, List.of(nodeGraphDetails));
         return result;
     }
 
@@ -164,15 +164,16 @@ public class PlayGroundService {
         sectionSummaryDto.setChildren(section.getChildren());
         return sectionSummaryDto;
     }
+
     @Transactional
     public List<List<NestedPieChartDto>> getProjectGraphsDetails(long projectId) throws HttpClientErrorException {
-        var projectEnergyConsumptionDetails=getProjectEnergyConsumptionDetails(projectId);
-        var result=nodGraphDetails(projectEnergyConsumptionDetails.getChildren());
-        NestedPieChartDto projectGraphDetails=new NestedPieChartDto();
+        var projectEnergyConsumptionDetails = getProjectEnergyConsumptionDetails(projectId);
+        var result = nodGraphDetails(projectEnergyConsumptionDetails.getChildren());
+        NestedPieChartDto projectGraphDetails = new NestedPieChartDto();
         projectGraphDetails.setName(projectEnergyConsumptionDetails.getName());
         projectGraphDetails.setTotalUnits(projectEnergyConsumptionDetails.getTotalUnits());
-        projectGraphDetails.setUnitPercentageOfParent(1);
-        result.add(0,List.of(projectGraphDetails));
+        projectGraphDetails.setUnitPercentageOfParent(100.0);
+        result.add(0, List.of(projectGraphDetails));
         return result;
     }
 
@@ -236,31 +237,32 @@ public class PlayGroundService {
         return null;
     }
 
-    private List<List<NestedPieChartDto>>nodGraphDetails(List<NodeEnergyConsumptionDetailsDto> nodeEnergyConsumptionDetailsDtoList){
-        List<List<NestedPieChartDto>> pieChartDetailsList= new ArrayList<>();
+    private List<List<NestedPieChartDto>> nodGraphDetails(List<NodeEnergyConsumptionDetailsDto> nodeEnergyConsumptionDetailsDtoList) {
+        List<List<NestedPieChartDto>> pieChartDetailsList = new ArrayList<>();
         List<NodeEnergyConsumptionDetailsDto> presentLevelNodeEnergyConsumptionDetailsDto = nodeEnergyConsumptionDetailsDtoList;
-        boolean haveAnotherLevel=true;
-        while (haveAnotherLevel){
-            List<NestedPieChartDto> presentLevelNestedPieChartDtoList=new ArrayList<>();
-            List<NodeEnergyConsumptionDetailsDto> nextLevelNodeEnergyConsumptionDetailsDto =new ArrayList<>();
-            haveAnotherLevel=false;
-            for (var node: presentLevelNodeEnergyConsumptionDetailsDto) {
-                if(node.getChildren()==null||node.getChildren().isEmpty()){
+        boolean haveAnotherLevel = true;
+        while (haveAnotherLevel) {
+            List<NestedPieChartDto> presentLevelNestedPieChartDtoList = new ArrayList<>();
+            List<NodeEnergyConsumptionDetailsDto> nextLevelNodeEnergyConsumptionDetailsDto = new ArrayList<>();
+            haveAnotherLevel = false;
+            for (var node : presentLevelNodeEnergyConsumptionDetailsDto) {
+                if (node.getChildren() == null || node.getChildren().isEmpty()) {
                     presentLevelNestedPieChartDtoList.add(new NestedPieChartDto(node));
                     nextLevelNodeEnergyConsumptionDetailsDto.add(node);
-                }else{
+                } else {
                     presentLevelNestedPieChartDtoList.add(new NestedPieChartDto(node));
-                    for (var childNode:node.getChildren()) {
+                    for (var childNode : node.getChildren()) {
                         nextLevelNodeEnergyConsumptionDetailsDto.add(childNode);
                     }
-                    haveAnotherLevel=true;
+                    haveAnotherLevel = true;
                 }
             }
-            presentLevelNodeEnergyConsumptionDetailsDto=nextLevelNodeEnergyConsumptionDetailsDto;
+            presentLevelNodeEnergyConsumptionDetailsDto = nextLevelNodeEnergyConsumptionDetailsDto;
             pieChartDetailsList.add(presentLevelNestedPieChartDtoList);
         }
         return pieChartDetailsList;
     }
+
     @Transactional
     public CalculatedBillDto calculateBill(long projectId) throws HttpClientErrorException {
         var projectEnergyConsumptionDetails = getProjectEnergyConsumptionDetails(projectId);
@@ -310,8 +312,6 @@ public class PlayGroundService {
         String userId = frontEndId.split("_")[0];
         return Long.parseLong(userId);
     }
-
-
 
 
     private CalculatedBillDto billCalculator(BillCalculatorInputs inputs) {
@@ -374,7 +374,6 @@ public class PlayGroundService {
         }
         return null;
     }
-
 
 
     @Data
