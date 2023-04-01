@@ -149,11 +149,11 @@ public class PlayGroundService {
         }
         var nodeEnergyConsumptionDetailsDto = calculateNodeEnergyConsumptionDetails(section);
         var result = nodGraphDetails(nodeEnergyConsumptionDetailsDto.getChildren());
-        NestedPieChartDto nodeGraphDetails = new NestedPieChartDto();
-        nodeGraphDetails.setName(nodeEnergyConsumptionDetailsDto.getName());
-        nodeGraphDetails.setTotalUnits(nodeEnergyConsumptionDetailsDto.getTotalUnits());
-        nodeGraphDetails.setUnitPercentageOfParent(1);
-        result.add(0, List.of(nodeGraphDetails));
+//        NestedPieChartDto nodeGraphDetails = new NestedPieChartDto();
+//        nodeGraphDetails.setName(nodeEnergyConsumptionDetailsDto.getName());
+//        nodeGraphDetails.setTotalUnits(nodeEnergyConsumptionDetailsDto.getTotalUnits());
+//        nodeGraphDetails.setUnitPercentageOfParent(1);
+//        result.add(0, List.of(nodeGraphDetails));
         return result;
     }
 
@@ -169,11 +169,11 @@ public class PlayGroundService {
     public List<List<NestedPieChartDto>> getProjectGraphsDetails(long projectId) throws HttpClientErrorException {
         var projectEnergyConsumptionDetails = getProjectEnergyConsumptionDetails(projectId);
         var result = nodGraphDetails(projectEnergyConsumptionDetails.getChildren());
-        NestedPieChartDto projectGraphDetails = new NestedPieChartDto();
-        projectGraphDetails.setName(projectEnergyConsumptionDetails.getName());
-        projectGraphDetails.setTotalUnits(projectEnergyConsumptionDetails.getTotalUnits());
-        projectGraphDetails.setUnitPercentageOfParent(100.0);
-        result.add(0, List.of(projectGraphDetails));
+//        NestedPieChartDto projectGraphDetails = new NestedPieChartDto();
+//        projectGraphDetails.setName(projectEnergyConsumptionDetails.getName());
+//        projectGraphDetails.setTotalUnits(projectEnergyConsumptionDetails.getTotalUnits());
+//        projectGraphDetails.setUnitPercentageOfParent(100.0);
+//        result.add(0, List.of(projectGraphDetails));
         return result;
     }
 
