@@ -26,24 +26,24 @@ public class ApplicationConfig {
         return authProvider;
     }
 
-    @Bean
-    public DataSourceInitializer dataSourceInitializer(DataSource dataSource) {
-        DataSourceInitializer initializer = new DataSourceInitializer();
-        initializer.setDataSource(dataSource);
-        initializer.setDatabasePopulator(new ResourceDatabasePopulator(new ClassPathResource("data.sql")));
-        initializer.setEnabled(true);
-        return initializer;
-    }
+//    @Bean
+//    public DataSourceInitializer dataSourceInitializer(DataSource dataSource) {
+//        DataSourceInitializer initializer = new DataSourceInitializer();
+//        initializer.setDataSource(dataSource);
+//        initializer.setDatabasePopulator(new ResourceDatabasePopulator(new ClassPathResource("data.sql")));
+//        initializer.setEnabled(true);
+//        return initializer;
+//    }
 
-    @Bean
-    public DataSource dataSource() {
-        return DataSourceBuilder.create()
-                .driverClassName("com.mysql.cj.jdbc.Driver")
-                .url("jdbc:mysql://localhost:3306/greenbill?createDatabaseIfNotExist=true&useSSL=true")
-                .username("root")
-                .password("password")
-                .build();
-    }
+//    @Bean
+//    public DataSource dataSource() {
+//        return DataSourceBuilder.create()
+//                .driverClassName("com.mysql.cj.jdbc.Driver")
+//                .url("jdbc:mysql://localhost:3306/greenbill?createDatabaseIfNotExist=true&useSSL=true")
+//                .username("root")
+//                .password("password")
+//                .build();
+//    }
 
 
 }
