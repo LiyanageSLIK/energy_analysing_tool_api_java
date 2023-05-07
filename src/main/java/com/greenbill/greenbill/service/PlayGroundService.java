@@ -191,18 +191,32 @@ public class PlayGroundService {
         }
         List<NodeEnergyConsumptionDetailsDto> resultsOfChildren = new ArrayList<>();
         for (var child : children) {
-            var calculatedGraphDetails = calculateNodeEnergyConsumptionDetails(child);
-            resultsOfChildren.add(calculatedGraphDetails);
-            totalUnits = totalUnits + calculatedGraphDetails.getTotalUnits();
+            var calculatedEnergyConsumptionDetail = calculateNodeEnergyConsumptionDetails(child);
+            resultsOfChildren.add(calculatedEnergyConsumptionDetail);
+            totalUnits = totalUnits + calculatedEnergyConsumptionDetail.getTotalUnits();
         }
         List<NodeEnergyConsumptionDetailsDto> completedChildNodResults = new ArrayList<>();
         for (var child : resultsOfChildren) {
             child.setUnitPercentageOfParent(totalUnits);
-            completedChildNodResults.add(child);
+            var newChild=percentageReSetter(child,totalUnits);
+            completedChildNodResults.add(newChild);
         }
         var result = new ProjectEnergyConsumptionDetailsDto(project);
         result.setTotalUnits(totalUnits);
         result.setChildren(completedChildNodResults);
+        return result;
+    }
+
+    private NodeEnergyConsumptionDetailsDto percentageReSetter(NodeEnergyConsumptionDetailsDto input,double totalUnitsOfProject){
+        var result=input;
+        if(!input.getChildren().isEmpty()){
+            var children=result.getChildren();
+            for (var child:children) {
+                percentageReSetter(child,totalUnitsOfProject);
+            }
+        }else {
+            result.setUnitPercentageOfProject(totalUnitsOfProject);
+        }
         return result;
     }
 
@@ -325,7 +339,7 @@ public class PlayGroundService {
             double usageCharge = 0.00;
             double fixedCharge = 0.00;
             List<Object> calculationSteps = new ArrayList<>();
-            var tariff = tariffRepository.getByLimitedFromLessThanEqualAndLimitedToGreaterThanEqualAndCategoryOrderByLowerLimitAsc(totalUnits, totalUnits, category);
+            var tariff = tariffRepository.getByLimitedFromLessThanEqualAndLimitedToGreaterThanEqualAndCategoryAndStatusOrderByLowerLimitAsc(totalUnits, totalUnits, category,Status.ACTIVE);
 //            calculationSteps.add(new String("Calculation:"));
             CurrencyCode currencyCode = CurrencyCode.LKR;
             for (var block : tariff) {
