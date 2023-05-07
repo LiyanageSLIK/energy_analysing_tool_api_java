@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/user/register", "/user/login", "/auth/token", "/subscription/plans", "/report/*", "/test/**")
                 .permitAll()
+                .requestMatchers("/upload/**").hasAnyAuthority("ADMIN") // requires ADMIN role for  endpoints
                 .anyRequest()
                 .authenticated()
                 .and()

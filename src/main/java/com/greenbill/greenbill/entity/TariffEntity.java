@@ -2,11 +2,17 @@ package com.greenbill.greenbill.entity;
 
 import com.greenbill.greenbill.enumeration.CurrencyCode;
 import com.greenbill.greenbill.enumeration.ProjectType;
+import com.greenbill.greenbill.enumeration.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -21,6 +27,9 @@ public class TariffEntity {
 
     @Column(name = "batch_id", nullable = false)
     private String batchId;
+
+    @Column(name = "effective_from", nullable = false)
+    private Date effectiveFrom;
 
     @Column(nullable = false)
     private String country;
@@ -54,4 +63,30 @@ public class TariffEntity {
     @Column(name = "levy", nullable = false)
     private double Levy;
 
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+
+    public void setLimitedTo(double limitedTo) {
+        if(limitedTo==-1){
+            this.limitedTo = Integer.MAX_VALUE;
+        }else {
+            this.limitedTo = limitedTo;
+        }
+    }
+
+
+    public void setUpperLimit(double upperLimit) {
+        if(limitedTo==-1){
+            this.upperLimit = Integer.MAX_VALUE;
+        }else {
+            this.upperLimit = upperLimit;
+        }
+    }
+
+    public void setEffectiveFrom(String effectiveFrom) throws ParseException {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        this.effectiveFrom = dateFormat.parse(effectiveFrom);
+    }
 }

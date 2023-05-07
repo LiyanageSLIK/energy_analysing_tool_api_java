@@ -97,5 +97,12 @@ public class SubscriptionService {
         return new ActiveSubscriptionDto(currentSubscription);
     }
 
+    @Transactional
+    public void AddNewSubscriptionPlanList (List<SubscriptionPlanEntity> subscriptionPlanList){
+        List<SubscriptionPlanEntity> currentActivePlanList=subscriptionPlanRepository.findByStatus(Status.ACTIVE);
+        subscriptionPlanRepository.updateStatusByStatus(Status.INACTIVE,Status.ACTIVE);
+        subscriptionPlanRepository.saveAll(subscriptionPlanList);
+    }
+
 
 }

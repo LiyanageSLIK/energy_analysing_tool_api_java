@@ -22,7 +22,7 @@ public class SubscriptionPlanEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private SubscriptionPlanName name;
 
