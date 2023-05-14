@@ -38,30 +38,30 @@ public class ApplicationConfig {
 //        return initializer;
 //    }
 
-    @Bean
-    public DataSource dataSource() {
-        return DataSourceBuilder.create()
-                .driverClassName("com.mysql.cj.jdbc.Driver")
-                .url("jdbc:mysql://localhost:3306/greenbill?createDatabaseIfNotExist=true&useSSL=true")
-                .username("root")
-                .password("password")
-                .build();
-    }
+//    @Bean
+//    public DataSource dataSource() {
+//        return DataSourceBuilder.create()
+//                .driverClassName("com.mysql.cj.jdbc.Driver")
+//                .url("jdbc:mysql://localhost:3306/greenbill?createDatabaseIfNotExist=true&useSSL=true")
+//                .username("root")
+//                .password("password")
+//                .build();
+//    }
 
-    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
-        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource);
-        em.setPackagesToScan("com.greenbill.greenbill.entity");
-        em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-
-        Properties properties = new Properties();
-        properties.setProperty("hibernate.hbm2ddl.auto", "update");
-        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-
-        em.setJpaProperties(properties);
-        return em;
-    }
+//    @Bean
+//    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
+//        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+//        em.setDataSource(dataSource);
+//        em.setPackagesToScan("com.greenbill.greenbill.entity");
+//        em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+//
+//        Properties properties = new Properties();
+//        properties.setProperty("hibernate.hbm2ddl.auto", "update");
+//        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+//
+//        em.setJpaProperties(properties);
+//        return em;
+//    }
 
 
 }
