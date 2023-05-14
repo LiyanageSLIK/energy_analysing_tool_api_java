@@ -43,16 +43,13 @@ public class SubscriptionService {
     }
 
 
-    public SubscriptionPlanEntity getPlanEntityByPlanName(SubscriptionPlanName planName) throws HttpClientErrorException {
-        return subscriptionPlanRepository.findByName(planName);
-    }
 
     @Transactional
     public SubscriptionEntity addSubscription(String email, SubscriptionDto subscriptionDto) throws HttpClientErrorException {
         UserEntity user = userRepository.findByEmail(email);
         SubscriptionPlanName planName = subscriptionDto.getSubscriptionPlanName();
-        SubscriptionPlanEntity subscriptionPlan = subscriptionPlanRepository.findByName(planName);
-        if (user.getRole() == Role.ADMIN) {
+        SubscriptionPlanEntity subscriptionPlan = subscriptionPlanRepository.findByNameAndStatus(planName,Status.ACTIVE);
+        if (user.getRole().equals(Role.ADMIN) ) {
             user = userRepository.findByEmail(subscriptionDto.getUserEmail());
         }
         if (user == null) {
@@ -63,7 +60,7 @@ public class SubscriptionService {
         }
         SubscriptionEntity currentSubscription = subscriptionRepository.findFirstByUser_EmailAndStatus(email, Status.ACTIVE);
         if (currentSubscription == null) {
-            SubscriptionPlanEntity initialPlan = subscriptionPlanRepository.findByName(SubscriptionPlanName.FREE);
+            SubscriptionPlanEntity initialPlan = subscriptionPlanRepository.findByNameAndStatus(SubscriptionPlanName.FREE,Status.ACTIVE);
             SubscriptionEntity initialSubscription = new SubscriptionEntity();
             initialSubscription.setSubscriptionPlan(initialPlan);
             initialSubscription.setUser(userRepository.save(user));

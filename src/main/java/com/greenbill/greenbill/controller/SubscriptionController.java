@@ -50,7 +50,7 @@ public class SubscriptionController {
     }
 
     @PostMapping("")
-    public ResponseEntity<ResponseWrapper> addProject(@RequestBody @Valid SubscriptionDto subscriptionDto,
+    public ResponseEntity<ResponseWrapper> addProject(@RequestBody SubscriptionDto subscriptionDto,
                                                       @RequestHeader(value = "Authorization") String token) {
         try {
             var extractedToken = token.substring(7);
