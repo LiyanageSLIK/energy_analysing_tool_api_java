@@ -78,7 +78,7 @@ public class TariffEntity {
 
 
     public void setUpperLimit(double upperLimit) {
-        if(limitedTo==-1){
+        if(upperLimit==-1){
             this.upperLimit = Integer.MAX_VALUE;
         }else {
             this.upperLimit = upperLimit;

@@ -209,14 +209,12 @@ public class PlayGroundService {
 
     private NodeEnergyConsumptionDetailsDto percentageReSetter(NodeEnergyConsumptionDetailsDto input,double totalUnitsOfProject){
         var result=input;
-        if(!input.getChildren().isEmpty()){
-            var children=result.getChildren();
+        var children=result.getChildren();
+        result.setUnitPercentageOfProject(totalUnitsOfProject);
+        if(children!=null){
             for (var child:children) {
                 percentageReSetter(child,totalUnitsOfProject);
-            }
-        }else {
-            result.setUnitPercentageOfProject(totalUnitsOfProject);
-        }
+            }}
         return result;
     }
 
@@ -405,7 +403,6 @@ public class PlayGroundService {
             setTotalUnits(graphDetails.getTotalUnits());
             setCategory(graphDetails.getProjectType());
         }
-
         public double getTotalUnits() {
             return Math.round(totalUnits);
         }

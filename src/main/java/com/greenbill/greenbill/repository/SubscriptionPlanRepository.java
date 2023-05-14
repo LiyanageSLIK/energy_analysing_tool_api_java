@@ -14,6 +14,7 @@ import java.util.List;
 
 @Repository
 public interface SubscriptionPlanRepository extends JpaRepository<SubscriptionPlanEntity, Long> {
+    SubscriptionPlanEntity findByNameAndStatus(SubscriptionPlanName name, Status status);
     @Transactional
     @Modifying
     @Query("update SubscriptionPlanEntity s set s.status = ?1 where s.status = ?2")
@@ -22,7 +23,6 @@ public interface SubscriptionPlanRepository extends JpaRepository<SubscriptionPl
 
     SubscriptionPlanEntity getBySubscriptions_User_Email(String email);
 
-    SubscriptionPlanEntity findByName(SubscriptionPlanName name);
 
     List<SubscriptionPlanEntity> findByStatusAndPlanTypeNotOrderByRateAsc(Status status, PlanType planType);
 

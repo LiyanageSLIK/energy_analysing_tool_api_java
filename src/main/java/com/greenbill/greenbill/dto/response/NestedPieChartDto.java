@@ -12,10 +12,12 @@ public class NestedPieChartDto implements BaseDto {
     private String name;
     private double totalUnits;
     private double unitPercentageOfParent;
+    private double unitPercentageOfProject;
 
     public NestedPieChartDto(NodeEnergyConsumptionDetailsDto nodeEnergyConsumptionDetailsDto) {
         setName(nodeEnergyConsumptionDetailsDto.getName());
         setTotalUnits(nodeEnergyConsumptionDetailsDto.getTotalUnits());
         setUnitPercentageOfParent(nodeEnergyConsumptionDetailsDto.getUnitPercentageOfParent());
+        setUnitPercentageOfProject(nodeEnergyConsumptionDetailsDto.getUnitPercentageOfProject());
     }
 }
