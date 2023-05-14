@@ -282,6 +282,13 @@ public class PlayGroundService {
         return billCalculator(billCalculatorInputs);
     }
 
+    public CalculatedBillDto simpleBillCalculator(double units) throws HttpClientErrorException{
+        var inputs=new BillCalculatorInputs();
+        inputs.setCategory(ProjectType.Domestic);
+        inputs.setTotalUnits(units);
+        return billCalculator(inputs);
+    }
+
 
     private int countNodeCountByUserEmail(String email) {
         var rootList = rootRepository.findByProject_Subscription_User_Email(email);
@@ -386,6 +393,8 @@ public class PlayGroundService {
         }
         return null;
     }
+
+
 
 
     @Data
