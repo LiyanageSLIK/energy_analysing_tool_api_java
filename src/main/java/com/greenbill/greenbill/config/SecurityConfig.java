@@ -33,8 +33,9 @@ public class SecurityConfig {
         http
                 .cors().and().csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/user/register", "/user/login", "/auth/token", "/subscription/plans", "/report/*", "/test/**")
+                .requestMatchers("/user/register", "/user/login", "/auth/token", "/subscription/plans", "/report/*", "/playground/simpleBill")
                 .permitAll()
+                .requestMatchers("/upload/**").hasAnyAuthority("ADMIN") // requires ADMIN role for  endpoints
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -51,7 +52,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("http://3.111.156.196:80"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

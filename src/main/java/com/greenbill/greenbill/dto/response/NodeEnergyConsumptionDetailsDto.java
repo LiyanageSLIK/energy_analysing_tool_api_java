@@ -18,6 +18,7 @@ public class NodeEnergyConsumptionDetailsDto implements BaseDto {
     private String name;
     private double totalUnits;
     private double unitPercentageOfParent;
+    private double unitPercentageOfProject=0;
     private List<NodeEnergyConsumptionDetailsDto> children;
 
     public NodeEnergyConsumptionDetailsDto(ApplianceEntity appliance) {
@@ -37,5 +38,9 @@ public class NodeEnergyConsumptionDetailsDto implements BaseDto {
 
     public void setUnitPercentageOfParent(double totalUnitsOfParent) {
         this.unitPercentageOfParent = (this.totalUnits / totalUnitsOfParent) * 100;
+    }
+
+    public void setUnitPercentageOfProject(double totalUnitsOfProject) {
+        this.unitPercentageOfProject = (this.totalUnits / totalUnitsOfProject) * 100;
     }
 }

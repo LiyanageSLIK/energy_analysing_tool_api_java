@@ -191,18 +191,30 @@ public class PlayGroundService {
         }
         List<NodeEnergyConsumptionDetailsDto> resultsOfChildren = new ArrayList<>();
         for (var child : children) {
-            var calculatedGraphDetails = calculateNodeEnergyConsumptionDetails(child);
-            resultsOfChildren.add(calculatedGraphDetails);
-            totalUnits = totalUnits + calculatedGraphDetails.getTotalUnits();
+            var calculatedEnergyConsumptionDetail = calculateNodeEnergyConsumptionDetails(child);
+            resultsOfChildren.add(calculatedEnergyConsumptionDetail);
+            totalUnits = totalUnits + calculatedEnergyConsumptionDetail.getTotalUnits();
         }
         List<NodeEnergyConsumptionDetailsDto> completedChildNodResults = new ArrayList<>();
         for (var child : resultsOfChildren) {
             child.setUnitPercentageOfParent(totalUnits);
-            completedChildNodResults.add(child);
+            var newChild=percentageReSetter(child,totalUnits);
+            completedChildNodResults.add(newChild);
         }
         var result = new ProjectEnergyConsumptionDetailsDto(project);
         result.setTotalUnits(totalUnits);
         result.setChildren(completedChildNodResults);
+        return result;
+    }
+
+    private NodeEnergyConsumptionDetailsDto percentageReSetter(NodeEnergyConsumptionDetailsDto input,double totalUnitsOfProject){
+        var result=input;
+        var children=result.getChildren();
+        result.setUnitPercentageOfProject(totalUnitsOfProject);
+        if(children!=null){
+            for (var child:children) {
+                percentageReSetter(child,totalUnitsOfProject);
+            }}
         return result;
     }
 
@@ -270,6 +282,13 @@ public class PlayGroundService {
         return billCalculator(billCalculatorInputs);
     }
 
+    public CalculatedBillDto simpleBillCalculator(double units) throws HttpClientErrorException{
+        var inputs=new BillCalculatorInputs();
+        inputs.setCategory(ProjectType.Domestic);
+        inputs.setTotalUnits(units);
+        return billCalculator(inputs);
+    }
+
 
     private int countNodeCountByUserEmail(String email) {
         var rootList = rootRepository.findByProject_Subscription_User_Email(email);
@@ -325,7 +344,7 @@ public class PlayGroundService {
             double usageCharge = 0.00;
             double fixedCharge = 0.00;
             List<Object> calculationSteps = new ArrayList<>();
-            var tariff = tariffRepository.getByLimitedFromLessThanEqualAndLimitedToGreaterThanEqualAndCategoryOrderByLowerLimitAsc(totalUnits, totalUnits, category);
+            var tariff = tariffRepository.getByLimitedFromLessThanEqualAndLimitedToGreaterThanEqualAndCategoryAndStatusOrderByLowerLimitAsc(totalUnits, totalUnits, category,Status.ACTIVE);
 //            calculationSteps.add(new String("Calculation:"));
             CurrencyCode currencyCode = CurrencyCode.LKR;
             for (var block : tariff) {
@@ -376,6 +395,8 @@ public class PlayGroundService {
     }
 
 
+
+
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
@@ -391,7 +412,6 @@ public class PlayGroundService {
             setTotalUnits(graphDetails.getTotalUnits());
             setCategory(graphDetails.getProjectType());
         }
-
         public double getTotalUnits() {
             return Math.round(totalUnits);
         }

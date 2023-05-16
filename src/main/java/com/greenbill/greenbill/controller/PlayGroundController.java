@@ -65,6 +65,21 @@ public class PlayGroundController {
         }
     }
 
+    @GetMapping("simpleBill")
+    public ResponseEntity simpleBillCalculator(@RequestParam double units) {
+        try {
+            var resultDtoList = playGroundService.simpleBillCalculator(units);
+            var successResponse = new ResponseWrapper(resultDtoList, HttpStatus.OK.value(), SUCCESSFULLY_GENERATE_MESSAGE);
+            return ResponseEntity.status(HttpStatus.OK).body(successResponse);
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
+        } catch (Exception e) {
+            System.out.println(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
+        }
+    }
+
     @GetMapping("section")
     public ResponseEntity getProject(@RequestParam String frontEndId) {
         try {
