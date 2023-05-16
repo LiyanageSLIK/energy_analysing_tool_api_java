@@ -5,7 +5,7 @@ VOLUME /tmp
 
 # this does not publish a port, sort of a documentation about which in which port the service is running at
 # actual publishing happens when docker run command is called, with -P flag
-EXPOSE 8080
+#EXPOSE 8080
 
 # variables for image construction, containers don't have access to ARG variables
 ARG JAR_FILE=target/greenbill-0.0.1-SNAPSHOT.jar

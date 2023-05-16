@@ -1,21 +1,13 @@
 package com.greenbill.greenbill.config;
 
 import com.greenbill.greenbill.service.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.datasource.init.DataSourceInitializer;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.sql.DataSource;
-
 @Configuration
-@RequiredArgsConstructor
 public class ApplicationConfig {
 
     @Bean
@@ -44,6 +36,4 @@ public class ApplicationConfig {
 //                .password("password")
 //                .build();
 //    }
-
-
 }
