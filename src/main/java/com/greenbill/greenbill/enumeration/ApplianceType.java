@@ -2,7 +2,12 @@ package com.greenbill.greenbill.enumeration;
 
 public enum ApplianceType {
     Fan,
-    Tv,
     Light,
-    Other
+    Refrigerator,
+    Kitchen_Appliance,
+    AC,
+    TV,
+    Laptop,
+    PC,
+    Other,
 }

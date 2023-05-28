@@ -24,7 +24,7 @@ public class NodeEnergyConsumptionDetailsDto implements BaseDto {
     public NodeEnergyConsumptionDetailsDto(ApplianceEntity appliance) {
         setName(appliance.getName());
         setFrontEndId(appliance.getFrontEndId());
-        setTotalUnits(appliance.getWattRate(), appliance.getHours());
+        setTotalUnits(appliance.getWattRate(), appliance.getHours(),appliance.getQuantity());
     }
 
     public NodeEnergyConsumptionDetailsDto(NodeEntity node) {
@@ -32,8 +32,8 @@ public class NodeEnergyConsumptionDetailsDto implements BaseDto {
         setName(node.getName());
     }
 
-    public void setTotalUnits(double wattRate, double hours) {
-        this.totalUnits = (wattRate * hours) * 30 / 1000;
+    public void setTotalUnits(double wattRate, double hours,Integer quantity) {
+        this.totalUnits = (wattRate * hours * quantity) * 30 / 1000;
     }
 
     public void setUnitPercentageOfParent(double totalUnitsOfParent) {

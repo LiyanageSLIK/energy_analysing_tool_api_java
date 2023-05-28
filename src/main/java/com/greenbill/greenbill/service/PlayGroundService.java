@@ -177,7 +177,12 @@ public class PlayGroundService {
         return result;
     }
 
-
+    @Transactional
+    public CalculatedBillDto calculateBill(long projectId) throws HttpClientErrorException {
+        var projectEnergyConsumptionDetails = getProjectEnergyConsumptionDetails(projectId);
+        var billCalculatorInputs = new BillCalculatorInputs(projectEnergyConsumptionDetails);
+        return billCalculator(billCalculatorInputs);
+    }
     private ProjectEnergyConsumptionDetailsDto getProjectEnergyConsumptionDetails(long projectId) throws HttpClientErrorException {
         ProjectEntity project = projectRepository.getFirstById(projectId);
         RootEntity root = project.getRoot();
@@ -275,12 +280,7 @@ public class PlayGroundService {
         return pieChartDetailsList;
     }
 
-    @Transactional
-    public CalculatedBillDto calculateBill(long projectId) throws HttpClientErrorException {
-        var projectEnergyConsumptionDetails = getProjectEnergyConsumptionDetails(projectId);
-        var billCalculatorInputs = new BillCalculatorInputs(projectEnergyConsumptionDetails);
-        return billCalculator(billCalculatorInputs);
-    }
+
 
     public CalculatedBillDto simpleBillCalculator(double units) throws HttpClientErrorException{
         var inputs=new BillCalculatorInputs();

@@ -63,12 +63,12 @@ public class SubscriptionService {
             SubscriptionPlanEntity initialPlan = subscriptionPlanRepository.findByNameAndStatus(SubscriptionPlanName.FREE,Status.ACTIVE);
             SubscriptionEntity initialSubscription = new SubscriptionEntity();
             initialSubscription.setSubscriptionPlan(initialPlan);
-            initialSubscription.setUser(userRepository.save(user));
+            initialSubscription.setUser(user);
             currentSubscription = subscriptionRepository.save(initialSubscription);
         }
         SubscriptionPlanEntity currentSubscriptionPlan = currentSubscription.getSubscriptionPlan();
         if (planName.equals(SubscriptionPlanName.FREE)) {
-            if (currentSubscriptionPlan.getName() == SubscriptionPlanName.FREE) {
+            if (currentSubscriptionPlan.getName().equals(SubscriptionPlanName.FREE) ) {
                 return currentSubscription;
             }
             currentSubscription.setStatus(Status.INACTIVE);
@@ -77,7 +77,7 @@ public class SubscriptionService {
             subscriptionRepository.save(currentSubscription);
             return subscriptionRepository.save(freeSubscription);
         } else {
-            if (user.getRole() != Role.ADMIN) {
+            if (!user.getRole().equals(Role.ADMIN)) {
                 throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Only Admin can change this");
             }
             currentSubscription.setStatus(Status.INACTIVE);

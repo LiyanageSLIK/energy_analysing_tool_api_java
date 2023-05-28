@@ -33,13 +33,13 @@ public class TokenService {
         String extractedRefreshToken = refreshToken.substring(7);
         TokenEntity token = tokenRepository.findByRefreshToken(extractedRefreshToken);
         if (token == null) {
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:RToken not found in DB");
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:Refresh Token not found in DB");
         }
         try {
             jwtUtil.isTokenExpired(extractedRefreshToken);
         } catch (ExpiredJwtException e) {
             ResetTokenAttributesByRefreshToken(extractedRefreshToken);
-            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Token Expired:RToken Expired Please login");
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Token Expired:Refresh Token Expired Please login");
         }
         String userEmail = jwtUtil.extractEmail(extractedRefreshToken);
         token.setAccessToken(jwtUtil.generateAccessToken(userEmail));
@@ -52,12 +52,12 @@ public class TokenService {
     public Boolean validateAccessToken(String accessToken) throws HttpClientErrorException {
         TokenEntity token = tokenRepository.findByAccessToken(accessToken);
         if (token == null) {
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:AToken not found in DB");
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:Access Token not found in DB");
         }
         try {
             jwtUtil.isTokenExpired(accessToken);
         } catch (ExpiredJwtException e) {
-            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Token Expired:AToken Expired Request new token using RToken ");
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Token Expired:Access Token Expired Request new token using Refresh Token ");
         }
         return true;
     }
@@ -65,7 +65,7 @@ public class TokenService {
     public boolean ResetTokenAttributesByAccessToken(String accessToken) throws HttpClientErrorException {
         TokenEntity token = tokenRepository.findByAccessToken(accessToken);
         if (token == null) {
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:AToken not found in DB");
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:Access Token not found in DB");
         }
         token.setAccessToken("loggedOut");
         token.setRefreshToken("loggedOut");
@@ -76,7 +76,7 @@ public class TokenService {
     public boolean ResetTokenAttributesByRefreshToken(String refreshToken) throws HttpClientErrorException {
         TokenEntity token = tokenRepository.findByRefreshToken(refreshToken);
         if (token == null) {
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:AToken not found in DB");
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:Refresh Token not found in DB");
         }
         token.setAccessToken("loggedOut");
         token.setRefreshToken("loggedOut");
