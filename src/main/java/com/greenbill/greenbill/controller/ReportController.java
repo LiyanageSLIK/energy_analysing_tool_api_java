@@ -22,7 +22,6 @@ public class ReportController {
 
     @GetMapping("/pdf")
     public ResponseEntity<ByteArrayResource> generatePdfReport() throws DocumentException, IOException {
-//        List<MyEntity> entities = // get your entities from a database or other source
         ByteArrayOutputStream outputStream = reportGeneratorService.generateReport();
 
         HttpHeaders headers = new HttpHeaders();

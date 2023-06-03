@@ -65,6 +65,8 @@ public class ProjectController {
         }
     }
 
+
+
     @PutMapping("/update")
     public ResponseEntity<ResponseWrapper> updateProject(@RequestBody ProjectDto projectDto) {
         try {

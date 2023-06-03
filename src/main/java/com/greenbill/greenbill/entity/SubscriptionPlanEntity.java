@@ -19,7 +19,7 @@ import java.util.List;
 @Table(name = "subscription_plan")
 public class SubscriptionPlanEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
 
     @Column(nullable = false)
@@ -53,6 +53,17 @@ public class SubscriptionPlanEntity {
 
     @OneToMany(mappedBy = "subscriptionPlan", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private List<SubscriptionEntity> subscriptions = new ArrayList<>();
+
+    public void update(SubscriptionPlanEntity newPlan){
+        setName(newPlan.getName());
+        setRate(newPlan.getRate());
+        setCurrencyCode(newPlan.getCurrencyCode());
+        setCycle(newPlan.getCycle());
+        setPlanType(newPlan.getPlanType());
+        setMaxNumProject(newPlan.getMaxNumProject());
+        setMaxNumNode(newPlan.getMaxNumNode());
+        setStatus(newPlan.getStatus());
+    }
 
 }
 

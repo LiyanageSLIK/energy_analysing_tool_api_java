@@ -17,6 +17,7 @@ public class UserLoginResponseDto implements BaseDto {
     private long userId;
     private String firstName;
     private String lastName;
+    private String SubscriptionPlanName;
     private Role role;
     private String accessToken;
     private long accessTokenExpireTime;

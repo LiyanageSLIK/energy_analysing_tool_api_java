@@ -4,8 +4,10 @@ import com.greenbill.greenbill.dto.request.PasswordChangeRequestDto;
 import com.greenbill.greenbill.dto.request.UserLoginRequestDto;
 import com.greenbill.greenbill.dto.request.UserRegisterDto;
 import com.greenbill.greenbill.dto.response.UserLoginResponseDto;
+import com.greenbill.greenbill.entity.SubscriptionEntity;
 import com.greenbill.greenbill.entity.TokenEntity;
 import com.greenbill.greenbill.entity.UserEntity;
+import com.greenbill.greenbill.enumeration.Status;
 import com.greenbill.greenbill.repository.SubscriptionPlanRepository;
 import com.greenbill.greenbill.repository.SubscriptionRepository;
 import com.greenbill.greenbill.repository.UserRepository;
@@ -64,6 +66,12 @@ public class UserService implements UserDetailsService {
             }
             UserLoginResponseDto response = new UserLoginResponseDto(user);
             response.setAccessTokenExpireTime(jwtUtil.extractExpiration(user.getToken().getAccessToken()).getTime());
+            SubscriptionEntity subscription=subscriptionRepository.findFirstByUser_EmailAndStatus(email, Status.ACTIVE);
+            if(subscription==null){
+                response.setSubscriptionPlanName("UnSubscribe");
+            }else{
+                response.setSubscriptionPlanName(String.valueOf(subscription.getSubscriptionPlan().getName()));
+            }
             return response;
         } else {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Wrong Password:Enter Correct Password");
@@ -86,6 +94,12 @@ public class UserService implements UserDetailsService {
 //        subscriptionRepository.save(initialSubscription);
         UserLoginResponseDto response = new UserLoginResponseDto(newUser);
         response.setAccessTokenExpireTime(jwtUtil.extractExpiration(newUser.getToken().getAccessToken()).getTime());
+        SubscriptionEntity subscription=subscriptionRepository.findFirstByUser_EmailAndStatus(newUser.getEmail(), Status.ACTIVE);
+        if(subscription==null){
+            response.setSubscriptionPlanName("UnSubscribe");
+        }else{
+            response.setSubscriptionPlanName(String.valueOf(subscription.getSubscriptionPlan().getName()));
+        }
         return response;
     }
 

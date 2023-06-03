@@ -79,7 +79,7 @@ public class ProjectService {
 
     @Transactional
     public boolean validatePlayGroundProjectAccess(String email) {
-        SubscriptionPlanEntity activePlan = subscriptionPlanRepository.getBySubscriptions_User_Email(email);
+        SubscriptionPlanEntity activePlan = subscriptionPlanRepository.findBySubscriptions_StatusAndSubscriptions_User_Email(Status.ACTIVE,email);
         if (activePlan == null) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Sorry You had no subscribe any subscription plan yet");
         }

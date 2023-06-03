@@ -46,6 +46,7 @@ public class SubscriptionService {
 
     @Transactional
     public SubscriptionEntity addSubscription(String email, SubscriptionDto subscriptionDto) throws HttpClientErrorException {
+        UserEntity requestingUser = userRepository.findByEmail(email);
         UserEntity user = userRepository.findByEmail(email);
         SubscriptionPlanName planName = subscriptionDto.getSubscriptionPlanName();
         SubscriptionPlanEntity subscriptionPlan = subscriptionPlanRepository.findByNameAndStatus(planName,Status.ACTIVE);
@@ -58,7 +59,7 @@ public class SubscriptionService {
         if (subscriptionPlan == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong planName: not found");
         }
-        SubscriptionEntity currentSubscription = subscriptionRepository.findFirstByUser_EmailAndStatus(email, Status.ACTIVE);
+        SubscriptionEntity currentSubscription = subscriptionRepository.findFirstByUser_EmailAndStatus(user.getEmail(), Status.ACTIVE);
         if (currentSubscription == null) {
             SubscriptionPlanEntity initialPlan = subscriptionPlanRepository.findByNameAndStatus(SubscriptionPlanName.FREE,Status.ACTIVE);
             SubscriptionEntity initialSubscription = new SubscriptionEntity();
@@ -71,20 +72,23 @@ public class SubscriptionService {
             if (currentSubscriptionPlan.getName().equals(SubscriptionPlanName.FREE) ) {
                 return currentSubscription;
             }
-            currentSubscription.setStatus(Status.INACTIVE);
-            SubscriptionEntity freeSubscription = subscriptionRepository.findFirstByUser_EmailAndSubscriptionPlan_Name(email, planName);
-            freeSubscription.setStatus(Status.ACTIVE);
-            subscriptionRepository.save(currentSubscription);
-            return subscriptionRepository.save(freeSubscription);
+//            currentSubscription.setStatus(Status.INACTIVE);
+//            SubscriptionEntity freeSubscription = subscriptionRepository.findFirstByUser_EmailAndSubscriptionPlan_Name(email, planName);
+//            freeSubscription.setStatus(Status.ACTIVE);
+//            subscriptionRepository.save(currentSubscription);
+            currentSubscription.setSubscriptionPlan(subscriptionPlan);
+            return subscriptionRepository.save(currentSubscription);
         } else {
-            if (!user.getRole().equals(Role.ADMIN)) {
+            if (!requestingUser.getRole().equals(Role.ADMIN)) {
                 throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Only Admin can change this");
             }
-            currentSubscription.setStatus(Status.INACTIVE);
-            SubscriptionEntity newSubscription = new SubscriptionEntity();
-            newSubscription.setSubscriptionPlan(subscriptionPlan);
-            newSubscription.setUser(user);
-            return subscriptionRepository.save(newSubscription);
+//            currentSubscription.setStatus(Status.INACTIVE);
+//            SubscriptionEntity newSubscription = new SubscriptionEntity();
+//            newSubscription.setSubscriptionPlan(subscriptionPlan);
+//            newSubscription.setUser(user);
+            currentSubscription.setSubscriptionPlan(subscriptionPlan);
+
+            return subscriptionRepository.save(currentSubscription);
         }
     }
 
@@ -96,9 +100,15 @@ public class SubscriptionService {
 
     @Transactional
     public void AddNewSubscriptionPlanList (List<SubscriptionPlanEntity> subscriptionPlanList){
-        List<SubscriptionPlanEntity> currentActivePlanList=subscriptionPlanRepository.findByStatus(Status.ACTIVE);
-        subscriptionPlanRepository.updateStatusByStatus(Status.INACTIVE,Status.ACTIVE);
-        subscriptionPlanRepository.saveAll(subscriptionPlanList);
+        for (SubscriptionPlanEntity subscriptionPlan:subscriptionPlanList) {
+            SubscriptionPlanEntity currentPlan =subscriptionPlanRepository.findByName(subscriptionPlan.getName());
+            if(currentPlan==null||subscriptionPlan==null){continue;}
+            currentPlan.update(subscriptionPlan);
+            subscriptionPlanRepository.save(currentPlan);
+        }
+//        List<SubscriptionPlanEntity> currentActivePlanList=subscriptionPlanRepository.findByStatus(Status.ACTIVE);
+//        subscriptionPlanRepository.updateStatusByStatus(Status.INACTIVE,Status.ACTIVE);
+//        subscriptionPlanRepository.saveAll(subscriptionPlanList);
     }
 
 

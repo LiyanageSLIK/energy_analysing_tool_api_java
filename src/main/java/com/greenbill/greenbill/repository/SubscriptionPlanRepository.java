@@ -14,6 +14,8 @@ import java.util.List;
 
 @Repository
 public interface SubscriptionPlanRepository extends JpaRepository<SubscriptionPlanEntity, Long> {
+    SubscriptionPlanEntity findByName(SubscriptionPlanName name);
+    SubscriptionPlanEntity findBySubscriptions_StatusAndSubscriptions_User_Email(Status status, String email);
     SubscriptionPlanEntity findByNameAndStatus(SubscriptionPlanName name, Status status);
     @Transactional
     @Modifying
