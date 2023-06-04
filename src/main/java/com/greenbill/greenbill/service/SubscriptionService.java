@@ -102,7 +102,10 @@ public class SubscriptionService {
     public void AddNewSubscriptionPlanList (List<SubscriptionPlanEntity> subscriptionPlanList){
         for (SubscriptionPlanEntity subscriptionPlan:subscriptionPlanList) {
             SubscriptionPlanEntity currentPlan =subscriptionPlanRepository.findByName(subscriptionPlan.getName());
-            if(currentPlan==null||subscriptionPlan==null){continue;}
+            if(currentPlan==null||subscriptionPlan==null){
+                currentPlan=new SubscriptionPlanEntity();
+//                continue;
+            }
             currentPlan.update(subscriptionPlan);
             subscriptionPlanRepository.save(currentPlan);
         }
