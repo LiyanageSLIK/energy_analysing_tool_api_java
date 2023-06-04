@@ -53,8 +53,8 @@ public class PlayGroundController {
     @GetMapping("bill")
     public ResponseEntity getCalculatedBill(@RequestParam long projectId) {
         try {
-            var resultDtoList = playGroundService.calculateBill(projectId);
-            var successResponse = new ResponseWrapper(resultDtoList, HttpStatus.OK.value(), SUCCESSFULLY_GENERATE_MESSAGE);
+            var result = playGroundService.calculateBill(projectId);
+            var successResponse = new ResponseWrapper(result, HttpStatus.OK.value(), SUCCESSFULLY_GENERATE_MESSAGE);
             return ResponseEntity.status(HttpStatus.OK).body(successResponse);
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());

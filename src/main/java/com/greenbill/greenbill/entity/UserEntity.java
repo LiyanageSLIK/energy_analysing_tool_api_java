@@ -71,6 +71,11 @@ public class UserEntity implements UserDetails {
         return passwordEncoder.matches(password, this.password);
     }
 
+    public String getFullName(){
+        String fullName=this.firstName+" "+this.lastName;
+        return fullName;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.toString()));
