@@ -43,7 +43,7 @@ public class UploadHandlerService {
                         subscriptionPlan.setPlanType(PlanType.valueOf(row[4]));
                         subscriptionPlan.setMaxNumProject(Integer.valueOf(row[5]));
                         subscriptionPlan.setMaxNumNode(Integer.valueOf(row[6]));
-                        subscriptionPlan.setStatus(Status.ACTIVE);
+                        subscriptionPlan.setStatus(Status.valueOf(row[7]));
                         return subscriptionPlan;
                     })
                     .collect(Collectors.toList());
