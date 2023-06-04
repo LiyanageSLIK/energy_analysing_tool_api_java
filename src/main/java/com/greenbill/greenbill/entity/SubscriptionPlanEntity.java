@@ -65,5 +65,20 @@ public class SubscriptionPlanEntity {
         setStatus(newPlan.getStatus());
     }
 
+    public void setMaxNumProject(Integer maxNumProject) {
+        if(maxNumProject==-1){
+            this.maxNumProject = Integer.MAX_VALUE;
+        }else {
+            this.maxNumProject = maxNumProject;
+        }
+    }
+
+    public void setMaxNumNode(Integer maxNumNode) {
+        if(maxNumNode==-1){
+            this.maxNumNode = Integer.MAX_VALUE;
+        }else {
+            this.maxNumNode = maxNumProject;
+        }
+    }
 }
 
