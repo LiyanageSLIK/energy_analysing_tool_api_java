@@ -77,7 +77,7 @@ public class SubscriptionPlanEntity {
         if(maxNumNode==-1){
             this.maxNumNode = Integer.MAX_VALUE;
         }else {
-            this.maxNumNode = maxNumProject;
+            this.maxNumNode = maxNumNode;
         }
     }
 }
