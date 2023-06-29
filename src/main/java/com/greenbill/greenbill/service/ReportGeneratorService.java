@@ -93,53 +93,127 @@ public class ReportGeneratorService {
         projectDetails.setSpacingAfter(30);
         document.add(projectDetails);
 
-        Paragraph calculationDetails= new Paragraph();
 
+        String currencyCode=billDetails.getFormat().getCurrency().getSymbol();
+
+        // Create a table with 3 columns
+        float relativeWidth[]={50.0F,5.0F,35.0F,10.0F};
+        PdfPTable table1 = new PdfPTable(relativeWidth);
+        table1.setWidthPercentage(65);
+        table1.setSpacingBefore(10f);
+        table1.setSpacingAfter(10f);
+        table1.setHorizontalAlignment(0);
+
+        // Create a PdfPCell for each chunk of calculation details
+        PdfPCell cell1,cell2,cell3,cell4;
+
+        cell1 = new PdfPCell(new Phrase("TOTAL UNITS", heading2Font));
+        cell1.setBorder(Rectangle.NO_BORDER);
+        cell2 = new PdfPCell(new Phrase(":", bodyFont));
+        cell2.setBorder(Rectangle.NO_BORDER);
+        cell3 = new PdfPCell(new Phrase(billDetails.getTotalUnits()+"_", bodyFont));
+        cell3.setBorder(Rectangle.NO_BORDER);
+        cell3.setHorizontalAlignment(2);
+        cell4 = new PdfPCell(new Phrase("", bodyFont));
+        cell4.setBorder(Rectangle.NO_BORDER);
+        table1.addCell(cell1);
+        table1.addCell(cell2);
+        table1.addCell(cell3);
+        table1.addCell(cell4);
+
+        cell1 = new PdfPCell(new Phrase("MONTHLY FIXED CHARGE", heading2Font));
+        cell1.setBorder(Rectangle.NO_BORDER);
+        cell2 = new PdfPCell(new Phrase(":", bodyFont));
+        cell2.setBorder(Rectangle.NO_BORDER);
+        cell3 = new PdfPCell(new Phrase(billDetails.getFixedCharge().split(" ")[1], bodyFont));
+        cell3.setBorder(Rectangle.NO_BORDER);
+        cell3.setHorizontalAlignment(2);
+        cell4 = new PdfPCell(new Phrase( currencyCode, bodyFont));
+        cell4.setBorder(Rectangle.NO_BORDER);
+        table1.addCell(cell1);
+        table1.addCell(cell2);
+        table1.addCell(cell3);
+        table1.addCell(cell4);
+
+
+        document.add(table1);
+
+        // create a paragraph
+        Paragraph calculationDetails= new Paragraph();
         calculationDetails.setFont(bodyFont);
-        calculationDetails.add(new Chunk("TOTAL UNITS \t",heading2Font));
-        calculationDetails.add(new Chunk(":"+ String.valueOf(billDetails.getTotalUnits()) +"\n",bodyFont));
-        calculationDetails.add(new Chunk("MONTHLY FIXED CHARGE \t",heading2Font));
-        calculationDetails.add(new Chunk(":"+ String.valueOf(billDetails.getFixedCharge()) +"\n",bodyFont));
+
         for (Object line:billDetails.getCalculationSteps()) {
             calculationDetails.add(new Chunk(">"+ line.toString() +"\n",bodyFont));
         }
-        calculationDetails.add(new Chunk("CHARGE FOR CONSUMPTION \t",heading2Font));
-        calculationDetails.add(new Chunk(":"+ String.valueOf(billDetails.getUsageCharge()) +"\n",bodyFont));
-        calculationDetails.add(new Chunk("CHARGE FOR THE MONTH \t",heading2Font));
-        calculationDetails.add(new Chunk(":"+ String.valueOf(billDetails.getTotalCharge()) +"\n",bodyFont));
-        calculationDetails.add(new Chunk("SSCL LEVY \t",heading2Font));
-        calculationDetails.add(new Chunk(":"+ String.valueOf(billDetails.getLevy()) +"\n",bodyFont));
-        calculationDetails.add(new Chunk("TOTAL BILL AMOUNT \t",heading2Font));
-        calculationDetails.add(new Chunk(":"+ String.valueOf(billDetails.getBillAmount()) +"\n",bodyFont));
-
-        calculationDetails.setTabSettings(new TabSettings());
 
         document.add(calculationDetails);
 
+        // Create a table with 3 columns
+        PdfPTable table2 = new PdfPTable(relativeWidth);
+        table2.setWidthPercentage(65);
+        table2.setSpacingBefore(10f);
+        table2.setSpacingAfter(10f);
+        table2.setHorizontalAlignment(0);
+
+        cell1 = new PdfPCell(new Phrase("CHARGE FOR CONSUMPTION", heading2Font));
+        cell1.setBorder(Rectangle.NO_BORDER);
+        cell2 = new PdfPCell(new Phrase(":", bodyFont));
+        cell2.setBorder(Rectangle.NO_BORDER);
+        cell3 = new PdfPCell(new Phrase(billDetails.getUsageCharge().split(" ")[1], bodyFont));
+        cell3.setBorder(Rectangle.NO_BORDER);
+        cell3.setHorizontalAlignment(2);
+        cell4 = new PdfPCell(new Phrase(currencyCode, bodyFont));
+        cell4.setBorder(Rectangle.NO_BORDER);
+        table2.addCell(cell1);
+        table2.addCell(cell2);
+        table2.addCell(cell3);
+        table2.addCell(cell4);
+
+        cell1 = new PdfPCell(new Phrase("CHARGE FOR THE MONTH", heading2Font));
+        cell1.setBorder(Rectangle.NO_BORDER);
+        cell2 = new PdfPCell(new Phrase(":", bodyFont));
+        cell2.setBorder(Rectangle.NO_BORDER);
+        cell3 = new PdfPCell(new Phrase(billDetails.getTotalCharge().split(" ")[1], bodyFont));
+        cell3.setBorder(Rectangle.NO_BORDER);
+        cell3.setHorizontalAlignment(2);
+        cell4 = new PdfPCell(new Phrase(currencyCode, bodyFont));
+        cell4.setBorder(Rectangle.NO_BORDER);
+        table2.addCell(cell1);
+        table2.addCell(cell2);
+        table2.addCell(cell3);
+        table2.addCell(cell4);
+
+        cell1 = new PdfPCell(new Phrase("SSCL LEVY", heading2Font));
+        cell1.setBorder(Rectangle.NO_BORDER);
+        cell2 = new PdfPCell(new Phrase(":", bodyFont));
+        cell2.setBorder(Rectangle.NO_BORDER);
+        cell3 = new PdfPCell(new Phrase(billDetails.getLevy().split(" ")[1], bodyFont));
+        cell3.setBorder(Rectangle.NO_BORDER);
+        cell3.setHorizontalAlignment(2);
+        cell4 = new PdfPCell(new Phrase(currencyCode, bodyFont));
+        cell4.setBorder(Rectangle.NO_BORDER);
+        table2.addCell(cell1);
+        table2.addCell(cell2);
+        table2.addCell(cell3);
+        table2.addCell(cell4);
+
+        cell1 = new PdfPCell(new Phrase("TOTAL BILL AMOUNT", heading2Font));
+        cell1.setBorder(Rectangle.NO_BORDER);
+        cell2 = new PdfPCell(new Phrase(":", bodyFont));
+        cell2.setBorder(Rectangle.NO_BORDER);
+        cell3 = new PdfPCell(new Phrase(billDetails.getBillAmount().split(" ")[1], bodyFont));
+        cell3.setBorder(Rectangle.NO_BORDER);
+        cell3.setHorizontalAlignment(2);
+        cell4 = new PdfPCell(new Phrase(currencyCode, bodyFont));
+        cell4.setBorder(Rectangle.NO_BORDER);
+        table2.addCell(cell1);
+        table2.addCell(cell2);
+        table2.addCell(cell3);
+        table2.addCell(cell4);
+
+        document.add(table2);
 
 
-        // create a table
-//        PdfPTable table = new PdfPTable(3);
-//        table.setWidthPercentage(100);
-//        table.setSpacingBefore(10f);
-//        table.setSpacingAfter(10f);
-
-        // add table headers
-//        PdfPCell cell = new PdfPCell(new Paragraph("ID"));
-//        table.addCell(cell);
-//        cell = new PdfPCell(new Paragraph("Name"));
-//        table.addCell(cell);
-//        cell = new PdfPCell(new Paragraph("Value"));
-//        table.addCell(cell);
-
-        // add table data
-        // for (MyEntity entity : entities) {
-        //     table.addCell(String.valueOf(entity.getId()));
-        //     table.addCell(entity.getName());
-        //     table.addCell(String.valueOf(entity.getValue()));
-        // }
-
-//        document.add(table);
 
         // close the document
         document.close();
