@@ -158,7 +158,7 @@ public class PlayGroundService {
     }
 
     @Transactional
-    public SectionSummaryDto getSectionSummary(String frontEndId) throws Exception {
+    public SectionSummaryDto getSectionSummary(String frontEndId) {
         SectionEntity section = sectionRepository.findByFrontEndId(frontEndId);
         SectionSummaryDto sectionSummaryDto = new SectionSummaryDto(section);
         sectionSummaryDto.setChildren(section.getChildren());

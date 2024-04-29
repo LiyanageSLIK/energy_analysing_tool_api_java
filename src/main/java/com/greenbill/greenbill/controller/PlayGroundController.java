@@ -80,6 +80,11 @@ public class PlayGroundController {
         }
     }
 
+    /**
+     * get summary of a given section
+     * @param frontEndId    frontend id of the secion
+     * @return  section summary dao (section summary dto only contains a list of nodes)
+     */
     @GetMapping("section")
     public ResponseEntity getProject(@RequestParam String frontEndId) {
         try {
