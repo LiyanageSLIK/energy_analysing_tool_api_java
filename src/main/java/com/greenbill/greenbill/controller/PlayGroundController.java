@@ -22,25 +22,39 @@ public class PlayGroundController {
     @Autowired
     private PlayGroundService playGroundService;
 
-    @GetMapping("graphs/section")
-    public ResponseEntity getSectionGraphsDetails(@RequestParam String frontEndId) {
-        try {
-            var resultDto = playGroundService.getSectionGraphsDetails(frontEndId);
-            var successResponse = new ResponseWrapper(resultDto, HttpStatus.OK.value(), SUCCESSFULLY_GENERATE_MESSAGE);
-            return ResponseEntity.status(HttpStatus.OK).body(successResponse);
-        } catch (HttpClientErrorException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
-        }
-    }
+//    @GetMapping("graphs/section")
+//    public ResponseEntity getSectionGraphsDetails(@RequestParam String frontEndId) {
+//        try {
+//            var resultDto = playGroundService.getSectionGraphsDetails(frontEndId);
+//            var successResponse = new ResponseWrapper(resultDto, HttpStatus.OK.value(), SUCCESSFULLY_GENERATE_MESSAGE);
+//            return ResponseEntity.status(HttpStatus.OK).body(successResponse);
+//        } catch (HttpClientErrorException e) {
+//            return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
+//        }
+//    }
 
-    @GetMapping("graphs/project")
-    public ResponseEntity getProjectGraphsDetails(@RequestParam long projectId) {
+//    @GetMapping("graphs/project")
+//    public ResponseEntity getProjectGraphsDetails(@RequestParam long projectId) {
+//        try {
+//            var resultDtoList = playGroundService.getProjectGraphsDetails(projectId);
+//            var successResponse = new ResponseWrapper(resultDtoList, HttpStatus.OK.value(), SUCCESSFULLY_GENERATE_MESSAGE);
+//            return ResponseEntity.status(HttpStatus.OK).body(successResponse);
+//        } catch (HttpClientErrorException e) {
+//            return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
+//        }
+//    }
+
+    @GetMapping("graph")
+    public ResponseEntity getProjectGraphData(@RequestParam long projectId) {
         try {
-            var resultDtoList = playGroundService.getProjectGraphsDetails(projectId);
-            var successResponse = new ResponseWrapper(resultDtoList, HttpStatus.OK.value(), SUCCESSFULLY_GENERATE_MESSAGE);
+            var result = playGroundService.getProjectGraphData(projectId);
+            var successResponse = new ResponseWrapper(result, HttpStatus.OK.value(), SUCCESSFULLY_GENERATE_MESSAGE);
             return ResponseEntity.status(HttpStatus.OK).body(successResponse);
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
@@ -59,7 +73,6 @@ public class PlayGroundController {
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
         } catch (Exception e) {
-            System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
         }
@@ -74,7 +87,6 @@ public class PlayGroundController {
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
         } catch (Exception e) {
-            System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
         }

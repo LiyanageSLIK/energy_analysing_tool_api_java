@@ -43,13 +43,13 @@ public class SubscriptionService {
     }
 
 
-
+    // need to refactor this part
     @Transactional
     public SubscriptionEntity addSubscription(String email, SubscriptionDto subscriptionDto) throws HttpClientErrorException {
-        UserEntity requestingUser = userRepository.findByEmail(email);
+        UserEntity requestingUser = userRepository.findByEmail(email);  // why two objects ??
         UserEntity user = userRepository.findByEmail(email);
-        SubscriptionPlanName planName = subscriptionDto.getSubscriptionPlanName();
-        SubscriptionPlanEntity subscriptionPlan = subscriptionPlanRepository.findByNameAndStatus(planName,Status.ACTIVE);
+        SubscriptionPlanName newPlanName = subscriptionDto.getSubscriptionPlanName();
+        SubscriptionPlanEntity subscriptionPlan = subscriptionPlanRepository.findByNameAndStatus(newPlanName, Status.ACTIVE);
         if (user.getRole().equals(Role.ADMIN) ) {
             user = userRepository.findByEmail(subscriptionDto.getUserEmail());
         }
@@ -68,7 +68,7 @@ public class SubscriptionService {
             currentSubscription = subscriptionRepository.save(initialSubscription);
         }
         SubscriptionPlanEntity currentSubscriptionPlan = currentSubscription.getSubscriptionPlan();
-        if (planName.equals(SubscriptionPlanName.FREE)) {
+        if (newPlanName.equals(SubscriptionPlanName.FREE)) {
             if (currentSubscriptionPlan.getName().equals(SubscriptionPlanName.FREE) ) {
                 return currentSubscription;
             }

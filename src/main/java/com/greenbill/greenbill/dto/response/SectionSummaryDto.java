@@ -8,10 +8,12 @@ import com.greenbill.greenbill.entity.NodeEntity;
 import com.greenbill.greenbill.entity.SectionEntity;
 import com.greenbill.greenbill.enumeration.NodeType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class SectionSummaryDto extends NodeDto {
     private List<NodeDto> children;

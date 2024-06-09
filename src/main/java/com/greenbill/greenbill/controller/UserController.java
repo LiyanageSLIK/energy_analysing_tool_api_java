@@ -4,7 +4,11 @@ import com.greenbill.greenbill.dto.ResponseWrapper;
 import com.greenbill.greenbill.dto.request.PasswordChangeRequestDto;
 import com.greenbill.greenbill.dto.request.UserLoginRequestDto;
 import com.greenbill.greenbill.dto.request.UserRegisterDto;
+import com.greenbill.greenbill.service.TokenService;
 import com.greenbill.greenbill.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,11 +23,22 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private TokenService tokenService;
+
     @PostMapping("/login")
-    public ResponseEntity<ResponseWrapper> login(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto) {
+    public ResponseEntity<ResponseWrapper> login(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto, HttpServletRequest request, HttpServletResponse response) {
         try {
             var loginResponseDto = userService.login(userLoginRequestDto);
             var successResponse = new ResponseWrapper(loginResponseDto, HttpStatus.OK.value(), "Success: Successfully loggedIn");
+
+            var refreshTokenCookie = new Cookie("jwt", loginResponseDto.getRefreshToken());
+//            refreshTokenCookie.setSecure(true);
+//            refreshTokenCookie.setDomain("");
+//            refreshTokenCookie.
+            refreshTokenCookie.setHttpOnly(true);
+            response.addCookie(refreshTokenCookie);
+
             return ResponseEntity.status(HttpStatus.OK).body(successResponse);
         } catch (HttpClientErrorException e) {
             var errorResponse = new ResponseWrapper(null, e.getStatusCode().value(), e.getMessage());
@@ -32,9 +47,15 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> login(@RequestHeader(value = "Authorization", required = true) String token) {
+    public ResponseEntity<String> login(@RequestHeader(value = "Authorization", required = true) String token, HttpServletRequest request, HttpServletResponse response) {
         try {
             userService.logOut(token);
+
+            var refreshTokenCookie = new Cookie("jwt", "");
+            refreshTokenCookie.setSecure(true);
+            refreshTokenCookie.setHttpOnly(true);
+            response.addCookie(refreshTokenCookie);
+
             return ResponseEntity.status(HttpStatus.OK).body("Success: Successfully loggedOut");
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
@@ -80,5 +101,25 @@ public class UserController {
         }
     }
 
+    @GetMapping("/token")
+    public ResponseEntity<ResponseWrapper> login(HttpServletRequest request, HttpServletResponse response) {
+        if (request.getCookies() == null || request.getCookies().length < 1) {
+            var responseWrapper = new ResponseWrapper(null, HttpStatus.UNAUTHORIZED.value(), "Token Expired:Refresh Token Expired Please login");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseWrapper);
+        }
+        Cookie cookie = request.getCookies()[0];
+        // refactor this
+        try {
+            var accessTokenResponseDto = tokenService.requestNewAccessToken(cookie.getValue());
+            var responseWrapper = new ResponseWrapper(
+                    accessTokenResponseDto,
+                    HttpStatus.OK.value(),
+                    "Success: Access Token Successfully Generated");
 
+            return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
+        } catch (HttpClientErrorException e) {
+            var responseWrapper = new ResponseWrapper(null, e.getStatusCode().value(), e.getMessage());
+            return ResponseEntity.status(e.getStatusCode()).body(responseWrapper);
+        }
+    }
 }

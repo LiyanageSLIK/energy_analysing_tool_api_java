@@ -17,10 +17,10 @@ public class UserLoginResponseDto implements BaseDto {
     private long userId;
     private String firstName;
     private String lastName;
-    private String SubscriptionPlanName;
+    private String subscriptionPlanName;
     private Role role;
     private String accessToken;
-    private long accessTokenExpireTime;
+    private long accessTokenExpireTime;         // not required in frontend
     private String refreshToken;
 
     public UserLoginResponseDto(UserEntity userEntity) {
@@ -29,6 +29,6 @@ public class UserLoginResponseDto implements BaseDto {
         this.lastName = userEntity.getLastName();
         this.role = userEntity.getRole();
         this.accessToken = userEntity.getToken().getAccessToken();
-        this.refreshToken = userEntity.getToken().getRefreshToken();
+        this.refreshToken = userEntity.getToken().getRefreshToken();    // should not set refresh token here
     }
 }

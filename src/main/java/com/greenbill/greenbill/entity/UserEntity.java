@@ -72,8 +72,7 @@ public class UserEntity implements UserDetails {
     }
 
     public String getFullName(){
-        String fullName=this.firstName+" "+this.lastName;
-        return fullName;
+        return this.firstName + " " + this.lastName;
     }
 
     @Override
@@ -87,7 +86,7 @@ public class UserEntity implements UserDetails {
     }
 
     public void setPassword(String password) {
-        this.password = passwordEncoder.encode(password);
+        this.password = passwordEncoder.encode(password);   // should have encoded in the frontend
     }
 
     @Override

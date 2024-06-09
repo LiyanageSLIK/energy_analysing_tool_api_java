@@ -16,7 +16,7 @@ public class FileUploadController {
     @Autowired
     private UploadHandlerService uploadHandlerService;
 
-    @PostMapping("/subscription_plan")
+    @PostMapping(value = "/subscription_plan", consumes = { "multipart/form-data" })
     public ResponseEntity<ResponseWrapper> uploadSubscriptionPlanCsv(@RequestParam("file") MultipartFile file) {
         try {
             uploadHandlerService.uploadSubscriptionPlansAsCSV(file);

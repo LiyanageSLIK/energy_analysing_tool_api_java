@@ -66,12 +66,13 @@ public class UserService implements UserDetailsService {
             }
             UserLoginResponseDto response = new UserLoginResponseDto(user);
             response.setAccessTokenExpireTime(jwtUtil.extractExpiration(user.getToken().getAccessToken()).getTime());
-            SubscriptionEntity subscription=subscriptionRepository.findFirstByUser_EmailAndStatus(email, Status.ACTIVE);
-            if(subscription==null){
+            SubscriptionEntity subscription = subscriptionRepository.findFirstByUser_EmailAndStatus(email, Status.ACTIVE);
+            if (subscription == null) {
                 response.setSubscriptionPlanName("UnSubscribe");
-            }else{
+            } else {
                 response.setSubscriptionPlanName(String.valueOf(subscription.getSubscriptionPlan().getName()));
             }
+            // refresh token should not be returned here
             return response;
         } else {
             throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Wrong Password:Enter Correct Password");
@@ -82,9 +83,10 @@ public class UserService implements UserDetailsService {
     public UserLoginResponseDto register(UserRegisterDto userRegisterDto) throws HttpClientErrorException {
         UserEntity user = (UserEntity) loadUserByUsername(userRegisterDto.getEmail());
         if (user != null) {
-            throw new HttpClientErrorException(HttpStatus.NOT_ACCEPTABLE, "Email already registered");
+            throw new HttpClientErrorException(HttpStatus.CONFLICT, "Email already registered");
         }
         UserEntity newUser = new UserEntity(userRegisterDto);
+        //TODO: why initial subscription plan is not required here ???
 //        SubscriptionPlanEntity initialPlan = subscriptionPlanRepository.findByName(SubscriptionPlanName.FREE);
 //        SubscriptionEntity initialSubscription = new SubscriptionEntity();
 //        initialSubscription.setSubscriptionPlan(initialPlan);
@@ -94,10 +96,13 @@ public class UserService implements UserDetailsService {
 //        subscriptionRepository.save(initialSubscription);
         UserLoginResponseDto response = new UserLoginResponseDto(newUser);
         response.setAccessTokenExpireTime(jwtUtil.extractExpiration(newUser.getToken().getAccessToken()).getTime());
-        SubscriptionEntity subscription=subscriptionRepository.findFirstByUser_EmailAndStatus(newUser.getEmail(), Status.ACTIVE);
-        if(subscription==null){
+
+        //TODO: why search for subscription here
+        SubscriptionEntity subscription = subscriptionRepository.findFirstByUser_EmailAndStatus(newUser.getEmail(), Status.ACTIVE);
+        if (subscription == null) {
+            //TODO: why use this name ???
             response.setSubscriptionPlanName("UnSubscribe");
-        }else{
+        } else {
             response.setSubscriptionPlanName(String.valueOf(subscription.getSubscriptionPlan().getName()));
         }
         return response;

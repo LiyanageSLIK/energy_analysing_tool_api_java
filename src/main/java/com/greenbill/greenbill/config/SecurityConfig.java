@@ -34,7 +34,7 @@ public class SecurityConfig {
         http
                 .cors().and().csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/user/register", "/user/login", "/auth/token", "/subscription/plans", "/report/*", "/playground/simpleBill")
+                .requestMatchers("/user/register", "/user/login", "/user/token", "/subscription/plans", "/report/*", "/playground/simpleBill")
                 .permitAll()
                 .requestMatchers("/upload/**","/sudo/**").hasAnyAuthority("ADMIN") // requires ADMIN role for  endpoints
                 .anyRequest()

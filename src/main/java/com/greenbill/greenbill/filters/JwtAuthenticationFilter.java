@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             final String jwt = getJwtFromRequest(request);
             SecurityContextHolder.clearContext();       // Comment this to skip additional security :check token in database
-            if (StringUtils.hasText(jwt) && SecurityContextHolder.getContext().getAuthentication() == null && tokenService.validateAccessToken(jwt)) {
+            if (StringUtils.hasText(jwt) && !("undefined".equals(jwt)) && SecurityContextHolder.getContext().getAuthentication() == null && tokenService.validateAccessToken(jwt)) {
                 final String userEmail = jwtUtil.extractEmail(jwt);
                 UserDetails userDetails = userService.loadUserByUsername(userEmail);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

@@ -18,9 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class PlayGroundService {
@@ -38,7 +36,6 @@ public class PlayGroundService {
     private UserRepository userRepository;
     @Autowired
     private TariffRepository tariffRepository;
-
 
     @Transactional
     public void addNode(NodeRequestDto nodeRequestDto, String userEmail) throws Exception {
@@ -141,20 +138,50 @@ public class PlayGroundService {
         return (currentNodCount < maxNodAllow);
     }
 
-    @Transactional
-    public List<List<NestedPieChartDto>> getSectionGraphsDetails(String frontEndSectionId) throws HttpClientErrorException {
-        SectionEntity section = sectionRepository.findByFrontEndId(frontEndSectionId);
-        if (section == null) {
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No Such Section");
+//    @Transactional
+//    public List<List<NestedPieChartDto>> getSectionGraphsDetails(String frontEndSectionId) throws HttpClientErrorException {
+//        SectionEntity section = sectionRepository.findByFrontEndId(frontEndSectionId);
+//        if (section == null) {
+//            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No Such Section");
+//        }
+//        var nodeEnergyConsumptionDetailsDto = calculateNodeEnergyConsumptionDetails(section);
+//        return nodGraphDetails(nodeEnergyConsumptionDetailsDto.getChildren());
+//    }
+
+    public GraphNodeDto getProjectGraphData(long projectId) {
+        var project = projectRepository.getFirstById(projectId);
+        if (project == null || project.getRoot() == null) {
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No Such Project");
         }
-        var nodeEnergyConsumptionDetailsDto = calculateNodeEnergyConsumptionDetails(section);
-        var result = nodGraphDetails(nodeEnergyConsumptionDetailsDto.getChildren());
-//        NestedPieChartDto nodeGraphDetails = new NestedPieChartDto();
-//        nodeGraphDetails.setName(nodeEnergyConsumptionDetailsDto.getName());
-//        nodeGraphDetails.setTotalUnits(nodeEnergyConsumptionDetailsDto.getTotalUnits());
-//        nodeGraphDetails.setUnitPercentageOfParent(1);
-//        result.add(0, List.of(nodeGraphDetails));
-        return result;
+        var rootGraphNode = getNestedTotalUnits(project.getRoot());
+//        if (rootGraphNode.getTotalUnits() <= 0) {
+//            throw new HttpClientErrorException(HttpStatus.CONFLICT, "It's Empty Project");
+//        }
+        return rootGraphNode;
+    }
+
+    private GraphNodeDto getNestedTotalUnits(NodeEntity node) {
+        if (node == null || NodeType.Appliance.equals(node.getNodeType())) {
+            throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "No such node found");
+        }
+        var children = NodeType.Root.equals(node.getNodeType()) ?
+                ((RootEntity) node).getChildren() :
+                ((SectionEntity) node).getChildren();
+
+        var totalUnits = 0;
+        var childGraphNodes = new ArrayList<GraphNodeDto>();
+        for (var child: children) {
+            if (NodeType.Appliance.equals(child.getNodeType())) {
+                var appliance = (ApplianceEntity) child;
+                totalUnits += appliance.getQuantity() * appliance.getHours() * appliance.getWattRate() * 0.03;
+            } else {
+                var childGraphNode = getNestedTotalUnits(child);
+                childGraphNode.setParentName(node.getName());
+                totalUnits += childGraphNode.getTotalUnits();
+                childGraphNodes.add(childGraphNode);
+            }
+        }
+        return new GraphNodeDto(node.getFrontEndId(), node.getName(), totalUnits, childGraphNodes);
     }
 
     @Transactional
@@ -165,17 +192,11 @@ public class PlayGroundService {
         return sectionSummaryDto;
     }
 
-    @Transactional
-    public List<List<NestedPieChartDto>> getProjectGraphsDetails(long projectId) throws HttpClientErrorException {
-        var projectEnergyConsumptionDetails = getProjectEnergyConsumptionDetails(projectId);
-        var result = nodGraphDetails(projectEnergyConsumptionDetails.getChildren());
-//        NestedPieChartDto projectGraphDetails = new NestedPieChartDto();
-//        projectGraphDetails.setName(projectEnergyConsumptionDetails.getName());
-//        projectGraphDetails.setTotalUnits(projectEnergyConsumptionDetails.getTotalUnits());
-//        projectGraphDetails.setUnitPercentageOfParent(100.0);
-//        result.add(0, List.of(projectGraphDetails));
-        return result;
-    }
+//    @Transactional
+//    public List<List<NestedPieChartDto>> getProjectGraphsDetails(long projectId) throws HttpClientErrorException {
+//        var projectEnergyConsumptionDetails = getProjectEnergyConsumptionDetails(projectId);
+//        return nodGraphDetails(projectEnergyConsumptionDetails.getChildren());
+//    }
 
     @Transactional
     public CalculatedBillDto calculateBill(long projectId) throws HttpClientErrorException {
@@ -183,6 +204,7 @@ public class PlayGroundService {
         var billCalculatorInputs = new BillCalculatorInputs(projectEnergyConsumptionDetails);
         return billCalculator(billCalculatorInputs);
     }
+
     private ProjectEnergyConsumptionDetailsDto getProjectEnergyConsumptionDetails(long projectId) throws HttpClientErrorException {
         ProjectEntity project = projectRepository.getFirstById(projectId);
         RootEntity root = project.getRoot();
@@ -254,33 +276,31 @@ public class PlayGroundService {
         return null;
     }
 
-    private List<List<NestedPieChartDto>> nodGraphDetails(List<NodeEnergyConsumptionDetailsDto> nodeEnergyConsumptionDetailsDtoList) {
-        List<List<NestedPieChartDto>> pieChartDetailsList = new ArrayList<>();
-        List<NodeEnergyConsumptionDetailsDto> presentLevelNodeEnergyConsumptionDetailsDto = nodeEnergyConsumptionDetailsDtoList;
-        boolean haveAnotherLevel = true;
-        while (haveAnotherLevel) {
-            List<NestedPieChartDto> presentLevelNestedPieChartDtoList = new ArrayList<>();
-            List<NodeEnergyConsumptionDetailsDto> nextLevelNodeEnergyConsumptionDetailsDto = new ArrayList<>();
-            haveAnotherLevel = false;
-            for (var node : presentLevelNodeEnergyConsumptionDetailsDto) {
-                if (node.getChildren() == null || node.getChildren().isEmpty()) {
-                    presentLevelNestedPieChartDtoList.add(new NestedPieChartDto(node));
-                    nextLevelNodeEnergyConsumptionDetailsDto.add(node);
-                } else {
-                    presentLevelNestedPieChartDtoList.add(new NestedPieChartDto(node));
-                    for (var childNode : node.getChildren()) {
-                        nextLevelNodeEnergyConsumptionDetailsDto.add(childNode);
-                    }
-                    haveAnotherLevel = true;
-                }
-            }
-            presentLevelNodeEnergyConsumptionDetailsDto = nextLevelNodeEnergyConsumptionDetailsDto;
-            pieChartDetailsList.add(presentLevelNestedPieChartDtoList);
-        }
-        return pieChartDetailsList;
-    }
-
-
+//    private List<List<NestedPieChartDto>> nodGraphDetails(List<NodeEnergyConsumptionDetailsDto> nodeEnergyConsumptionDetailsDtoList) {
+//        List<List<NestedPieChartDto>> pieChartDetailsList = new ArrayList<>();
+//        List<NodeEnergyConsumptionDetailsDto> presentLevelNodeEnergyConsumptionDetailsDto = nodeEnergyConsumptionDetailsDtoList;
+//        boolean haveAnotherLevel = true;
+//        while (haveAnotherLevel) {
+//            List<NestedPieChartDto> presentLevelNestedPieChartDtoList = new ArrayList<>();
+//            List<NodeEnergyConsumptionDetailsDto> nextLevelNodeEnergyConsumptionDetailsDto = new ArrayList<>();
+//            haveAnotherLevel = false;
+//            for (var node : presentLevelNodeEnergyConsumptionDetailsDto) {
+//                if (node.getChildren() == null || node.getChildren().isEmpty()) {
+//                    presentLevelNestedPieChartDtoList.add(new NestedPieChartDto(node));
+//                    nextLevelNodeEnergyConsumptionDetailsDto.add(node);
+//                } else {
+//                    presentLevelNestedPieChartDtoList.add(new NestedPieChartDto(node));
+//                    for (var childNode : node.getChildren()) {
+//                        nextLevelNodeEnergyConsumptionDetailsDto.add(childNode);
+//                    }
+//                    haveAnotherLevel = true;
+//                }
+//            }
+//            presentLevelNodeEnergyConsumptionDetailsDto = nextLevelNodeEnergyConsumptionDetailsDto;
+//            pieChartDetailsList.add(presentLevelNestedPieChartDtoList);
+//        }
+//        return pieChartDetailsList;
+//    }
 
     public CalculatedBillDto simpleBillCalculator(double units) throws HttpClientErrorException{
         var inputs=new BillCalculatorInputs();
@@ -288,7 +308,6 @@ public class PlayGroundService {
         inputs.setTotalUnits(units);
         return billCalculator(inputs);
     }
-
 
     private int countNodeCountByUserEmail(String email) {
         var rootList = rootRepository.findByProject_Subscription_User_Email(email);
@@ -331,7 +350,6 @@ public class PlayGroundService {
         String userId = frontEndId.split("_")[0];
         return Long.parseLong(userId);
     }
-
 
     private CalculatedBillDto billCalculator(BillCalculatorInputs inputs) {
         if (inputs.getCategory() == ProjectType.Domestic || inputs.getCategory() == ProjectType.ReligiousAndCharitable) {
@@ -393,8 +411,6 @@ public class PlayGroundService {
         }
         return null;
     }
-
-
 
 
     @Data
