@@ -33,10 +33,9 @@ public class UserController {
             var successResponse = new ResponseWrapper(loginResponseDto, HttpStatus.OK.value(), "Success: Successfully loggedIn");
 
             var refreshTokenCookie = new Cookie("jwt", loginResponseDto.getRefreshToken());
-//            refreshTokenCookie.setSecure(true);
-//            refreshTokenCookie.setDomain("");
-//            refreshTokenCookie.
+            refreshTokenCookie.setSecure(true);
             refreshTokenCookie.setHttpOnly(true);
+            refreshTokenCookie.setAttribute("SameSite", "None");
             response.addCookie(refreshTokenCookie);
 
             return ResponseEntity.status(HttpStatus.OK).body(successResponse);
