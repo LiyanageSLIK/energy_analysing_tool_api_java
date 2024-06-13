@@ -32,11 +32,11 @@ public class UserController {
             var loginResponseDto = userService.login(userLoginRequestDto);
             var successResponse = new ResponseWrapper(loginResponseDto, HttpStatus.OK.value(), "Success: Successfully loggedIn");
 
-            var refreshTokenCookie = new Cookie("jwt", loginResponseDto.getRefreshToken());
-            refreshTokenCookie.setSecure(false);
-            refreshTokenCookie.setHttpOnly(true);
-            refreshTokenCookie.setAttribute("SameSite", "None");
-            response.addCookie(refreshTokenCookie);
+//            var refreshTokenCookie = new Cookie("jwt", loginResponseDto.getRefreshToken());
+//            refreshTokenCookie.setSecure(false);
+//            refreshTokenCookie.setHttpOnly(true);
+//            refreshTokenCookie.setAttribute("SameSite", "None");
+//            response.addCookie(refreshTokenCookie);
 
             return ResponseEntity.status(HttpStatus.OK).body(successResponse);
         } catch (HttpClientErrorException e) {
@@ -101,15 +101,15 @@ public class UserController {
     }
 
     @GetMapping("/token")
-    public ResponseEntity<ResponseWrapper> login(HttpServletRequest request, HttpServletResponse response) {
-        if (request.getCookies() == null || request.getCookies().length < 1) {
-            var responseWrapper = new ResponseWrapper(null, HttpStatus.UNAUTHORIZED.value(), "Token Expired:Refresh Token Expired Please login");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseWrapper);
-        }
-        Cookie cookie = request.getCookies()[0];
+    public ResponseEntity<ResponseWrapper> login(@RequestHeader(value = "Authorization", required = true) String refreshToken) {
+//        if (request.getCookies() == null || request.getCookies().length < 1) {
+//            var responseWrapper = new ResponseWrapper(null, HttpStatus.UNAUTHORIZED.value(), "Token Expired:Refresh Token Expired Please login");
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseWrapper);
+//        }
+//        Cookie cookie = request.getCookies()[0];
         // refactor this
         try {
-            var accessTokenResponseDto = tokenService.requestNewAccessToken(cookie.getValue());
+            var accessTokenResponseDto = tokenService.requestNewAccessToken(refreshToken);
             var responseWrapper = new ResponseWrapper(
                     accessTokenResponseDto,
                     HttpStatus.OK.value(),

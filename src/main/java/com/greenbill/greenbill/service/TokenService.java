@@ -95,7 +95,7 @@ public class TokenService {
         return true;
     }
 
-    public boolean resetTokenAttributes(String refreshToken) throws HttpClientErrorException {
+    public void resetTokenAttributes(String refreshToken) throws HttpClientErrorException {
         TokenEntity token = tokenRepository.findByRefreshToken(refreshToken);
         if (token == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong Token:Refresh Token not found in DB");
@@ -103,6 +103,5 @@ public class TokenService {
         token.setAccessToken("loggedOut");
         token.setRefreshToken("loggedOut");
         tokenRepository.save(token);
-        return (tokenRepository.save(token) != null);
     }
 }
