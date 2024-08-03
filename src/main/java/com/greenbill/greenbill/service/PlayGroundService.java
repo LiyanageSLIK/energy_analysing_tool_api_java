@@ -37,6 +37,9 @@ public class PlayGroundService {
     @Autowired
     private TariffRepository tariffRepository;
 
+    @Autowired
+    private SolarPanelRepository solarPanelRepository;
+
     @Transactional
     public void addNode(NodeRequestDto nodeRequestDto, String userEmail) throws Exception {
         if (!validatePlayGroundNodeAccess(userEmail)) {
@@ -138,26 +141,12 @@ public class PlayGroundService {
         return (currentNodCount < maxNodAllow);
     }
 
-//    @Transactional
-//    public List<List<NestedPieChartDto>> getSectionGraphsDetails(String frontEndSectionId) throws HttpClientErrorException {
-//        SectionEntity section = sectionRepository.findByFrontEndId(frontEndSectionId);
-//        if (section == null) {
-//            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No Such Section");
-//        }
-//        var nodeEnergyConsumptionDetailsDto = calculateNodeEnergyConsumptionDetails(section);
-//        return nodGraphDetails(nodeEnergyConsumptionDetailsDto.getChildren());
-//    }
-
     public GraphNodeDto getProjectGraphData(long projectId) {
         var project = projectRepository.getFirstById(projectId);
         if (project == null || project.getRoot() == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No Such Project");
         }
-        var rootGraphNode = getNestedTotalUnits(project.getRoot());
-//        if (rootGraphNode.getTotalUnits() <= 0) {
-//            throw new HttpClientErrorException(HttpStatus.CONFLICT, "It's Empty Project");
-//        }
-        return rootGraphNode;
+        return getNestedTotalUnits(project.getRoot());
     }
 
     private GraphNodeDto getNestedTotalUnits(NodeEntity node) {
@@ -168,9 +157,9 @@ public class PlayGroundService {
                 ((RootEntity) node).getChildren() :
                 ((SectionEntity) node).getChildren();
 
-        var totalUnits = 0;
+        double totalUnits = 0;
         var childGraphNodes = new ArrayList<GraphNodeDto>();
-        for (var child: children) {
+        for (var child : children) {
             if (NodeType.Appliance.equals(child.getNodeType())) {
                 var appliance = (ApplianceEntity) child;
                 totalUnits += appliance.getQuantity() * appliance.getHours() * appliance.getWattRate() * 0.03;
@@ -192,23 +181,41 @@ public class PlayGroundService {
         return sectionSummaryDto;
     }
 
-//    @Transactional
-//    public List<List<NestedPieChartDto>> getProjectGraphsDetails(long projectId) throws HttpClientErrorException {
-//        var projectEnergyConsumptionDetails = getProjectEnergyConsumptionDetails(projectId);
-//        return nodGraphDetails(projectEnergyConsumptionDetails.getChildren());
-//    }
-
     @Transactional
     public CalculatedBillDto calculateBill(long projectId) throws HttpClientErrorException {
         var projectEnergyConsumptionDetails = getProjectEnergyConsumptionDetails(projectId);
-        var billCalculatorInputs = new BillCalculatorInputs(projectEnergyConsumptionDetails);
+        var solarEnergyIncomeUnits = getSolarEnergyIncomeUnits(projectId);
+        var solarTariffRate = getSolarTariffRate(projectId);
+        var billCalculatorInputs = new BillCalculatorInputs(projectEnergyConsumptionDetails, solarEnergyIncomeUnits, solarTariffRate);
         return billCalculator(billCalculatorInputs);
+    }
+
+    private double getSolarTariffRate(long projectId) {
+        Optional<ProjectEntity> projectOptional = projectRepository.findById(projectId);
+        if (projectOptional.isEmpty()) {
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No Such Project");
+        }
+        ProjectEntity project = projectOptional.get();
+        SolarTariffEntity solarTariff = project.getSolarTariff();
+        if (solarTariff == null) {
+            return 0;
+        }
+        return solarTariff.getSolarTariffRate();
+    }
+
+    private double getSolarEnergyIncomeUnits(long projectId) {
+        List<SolarPanelEntity> solarPanels = solarPanelRepository.findByProject_Id(projectId);
+        if (solarPanels == null || solarPanels.isEmpty()) {
+            return 0;
+        }
+        return solarPanels.stream()
+                .map(panel -> panel.getQuantity() * panel.getWattRate() * panel.getHours() * 30 / 1000)
+                .reduce(0.0, Double::sum);
     }
 
     private ProjectEnergyConsumptionDetailsDto getProjectEnergyConsumptionDetails(long projectId) throws HttpClientErrorException {
         ProjectEntity project = projectRepository.getFirstById(projectId);
         RootEntity root = project.getRoot();
-        double totalUnits = 0;
         if (root == null) {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No Such Project");
         }
@@ -216,94 +223,69 @@ public class PlayGroundService {
         if (children == null) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "It's Empty Project");
         }
+
+        double totalUnits = 0;
         List<NodeEnergyConsumptionDetailsDto> resultsOfChildren = new ArrayList<>();
         for (var child : children) {
             var calculatedEnergyConsumptionDetail = calculateNodeEnergyConsumptionDetails(child);
-            resultsOfChildren.add(calculatedEnergyConsumptionDetail);
-            totalUnits = totalUnits + calculatedEnergyConsumptionDetail.getTotalUnits();
+            if (calculatedEnergyConsumptionDetail != null) {
+                resultsOfChildren.add(calculatedEnergyConsumptionDetail);
+                totalUnits = totalUnits + calculatedEnergyConsumptionDetail.getTotalUnits();
+                calculatedEnergyConsumptionDetail.setUnitPercentageOfParent(totalUnits);
+                percentageReSetter(calculatedEnergyConsumptionDetail, totalUnits);
+            }
         }
-        List<NodeEnergyConsumptionDetailsDto> completedChildNodResults = new ArrayList<>();
-        for (var child : resultsOfChildren) {
-            child.setUnitPercentageOfParent(totalUnits);
-            var newChild=percentageReSetter(child,totalUnits);
-            completedChildNodResults.add(newChild);
-        }
+
         var result = new ProjectEnergyConsumptionDetailsDto(project);
         result.setTotalUnits(totalUnits);
-        result.setChildren(completedChildNodResults);
+        result.setChildren(resultsOfChildren);
         return result;
     }
 
-    private NodeEnergyConsumptionDetailsDto percentageReSetter(NodeEnergyConsumptionDetailsDto input,double totalUnitsOfProject){
-        var result=input;
-        var children=result.getChildren();
-        result.setUnitPercentageOfProject(totalUnitsOfProject);
-        if(children!=null){
-            for (var child:children) {
-                percentageReSetter(child,totalUnitsOfProject);
-            }}
-        return result;
+    private void percentageReSetter(NodeEnergyConsumptionDetailsDto input, double totalUnitsOfProject) {
+        var children = input.getChildren();
+        input.setUnitPercentageOfProject(totalUnitsOfProject);
+        if (children != null) {
+            for (var child : children) {
+                percentageReSetter(child, totalUnitsOfProject);
+            }
+        }
     }
 
     private NodeEnergyConsumptionDetailsDto calculateNodeEnergyConsumptionDetails(NodeEntity node) {
         if (node.getNodeType() == NodeType.Appliance && node.getStatus() == Status.ACTIVE) {
-            var result = new NodeEnergyConsumptionDetailsDto((ApplianceEntity) node);
-            return result;
+            return new NodeEnergyConsumptionDetailsDto((ApplianceEntity) node);
         }
         if (node.getNodeType() == NodeType.Section && node.getStatus() == Status.ACTIVE) {
             var result = new NodeEnergyConsumptionDetailsDto(node);
-            List<NodeEnergyConsumptionDetailsDto> childrenOfResult = new ArrayList<>();
-            double totalUnitOfSection = 0;
             SectionEntity section = (SectionEntity) node;
             var children = section.getChildren();
-            if (children == null) {
+            if (children == null || children.isEmpty()) {
                 return result;
             }
+
+            double totalUnitOfSection = 0;
+            List<NodeEnergyConsumptionDetailsDto> childrenOfResult = new ArrayList<>();
             for (var childNod : children) {
                 var resultOfChild = calculateNodeEnergyConsumptionDetails(childNod);
-                totalUnitOfSection = totalUnitOfSection + resultOfChild.getTotalUnits();
-                childrenOfResult.add(resultOfChild);
+                if (resultOfChild != null) {
+                    totalUnitOfSection = totalUnitOfSection + resultOfChild.getTotalUnits();
+                    childrenOfResult.add(resultOfChild);
+                }
             }
             result.setTotalUnits(totalUnitOfSection);
-            List<NodeEnergyConsumptionDetailsDto> completedChildNodResults = new ArrayList<>();
             for (var child : childrenOfResult) {
                 child.setUnitPercentageOfParent(totalUnitOfSection);
-                completedChildNodResults.add(child);
             }
-            result.setChildren(completedChildNodResults);
+            result.setChildren(childrenOfResult);
             return result;
         }
         return null;
     }
 
-//    private List<List<NestedPieChartDto>> nodGraphDetails(List<NodeEnergyConsumptionDetailsDto> nodeEnergyConsumptionDetailsDtoList) {
-//        List<List<NestedPieChartDto>> pieChartDetailsList = new ArrayList<>();
-//        List<NodeEnergyConsumptionDetailsDto> presentLevelNodeEnergyConsumptionDetailsDto = nodeEnergyConsumptionDetailsDtoList;
-//        boolean haveAnotherLevel = true;
-//        while (haveAnotherLevel) {
-//            List<NestedPieChartDto> presentLevelNestedPieChartDtoList = new ArrayList<>();
-//            List<NodeEnergyConsumptionDetailsDto> nextLevelNodeEnergyConsumptionDetailsDto = new ArrayList<>();
-//            haveAnotherLevel = false;
-//            for (var node : presentLevelNodeEnergyConsumptionDetailsDto) {
-//                if (node.getChildren() == null || node.getChildren().isEmpty()) {
-//                    presentLevelNestedPieChartDtoList.add(new NestedPieChartDto(node));
-//                    nextLevelNodeEnergyConsumptionDetailsDto.add(node);
-//                } else {
-//                    presentLevelNestedPieChartDtoList.add(new NestedPieChartDto(node));
-//                    for (var childNode : node.getChildren()) {
-//                        nextLevelNodeEnergyConsumptionDetailsDto.add(childNode);
-//                    }
-//                    haveAnotherLevel = true;
-//                }
-//            }
-//            presentLevelNodeEnergyConsumptionDetailsDto = nextLevelNodeEnergyConsumptionDetailsDto;
-//            pieChartDetailsList.add(presentLevelNestedPieChartDtoList);
-//        }
-//        return pieChartDetailsList;
-//    }
 
-    public CalculatedBillDto simpleBillCalculator(double units) throws HttpClientErrorException{
-        var inputs=new BillCalculatorInputs();
+    public CalculatedBillDto simpleBillCalculator(double units) throws HttpClientErrorException {
+        var inputs = new BillCalculatorInputs();
         inputs.setCategory(ProjectType.Domestic);
         inputs.setTotalUnits(units);
         return billCalculator(inputs);
@@ -352,82 +334,110 @@ public class PlayGroundService {
     }
 
     private CalculatedBillDto billCalculator(BillCalculatorInputs inputs) {
-        if (inputs.getCategory() == ProjectType.Domestic || inputs.getCategory() == ProjectType.ReligiousAndCharitable) {
-//            DecimalFormat decimalFormat = new DecimalFormat("#.##");
-            var category = inputs.getCategory();
-            var totalUnits = inputs.getTotalUnits();
-            double levy = 0.00;
-            double billAmount = 0.00;
-            double totalCharge = 0.00;
-            double usageCharge = 0.00;
-            double fixedCharge = 0.00;
-            List<Object> calculationSteps = new ArrayList<>();
-            var tariff = tariffRepository.getByLimitedFromLessThanEqualAndLimitedToGreaterThanEqualAndCategoryAndStatusOrderByLowerLimitAsc(totalUnits, totalUnits, category,Status.ACTIVE);
-//            calculationSteps.add(new String("Calculation:"));
-            CurrencyCode currencyCode = CurrencyCode.LKR;
-            for (var block : tariff) {
-                var lowerLimit = block.getLowerLimit();
-                var upperLimit = block.getUpperLimit();
-                currencyCode = block.getCurrencyCode();
-                if (!(lowerLimit <= totalUnits && totalUnits <= upperLimit) && totalUnits > upperLimit) {
-                    if (lowerLimit == 0) {
-                        var charge = (upperLimit - lowerLimit) * block.getEnergyCharge();
-                        usageCharge += charge;
-//                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (upperLimit - lowerLimit), block.getEnergyCharge(), decimalFormat.format(charge)));
-                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (upperLimit - lowerLimit), block.getEnergyCharge(), (charge)));
-                    }
-                    if (lowerLimit != 0) {
-                        var charge = (upperLimit - lowerLimit + 1) * block.getEnergyCharge();
-                        usageCharge += charge;
-                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (upperLimit - lowerLimit + 1), block.getEnergyCharge(), (charge)));
-                    }
-                }
-                if (lowerLimit <= totalUnits && totalUnits <= upperLimit) {
-                    if (lowerLimit == 0) {
-                        var charge = (totalUnits - lowerLimit) * block.getEnergyCharge();
-                        usageCharge += charge;
-                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (totalUnits - lowerLimit), block.getEnergyCharge(), (charge)));
-                    }
-                    if (lowerLimit != 0) {
-                        var charge = (totalUnits - lowerLimit + 1) * block.getEnergyCharge();
-                        usageCharge += charge;
-                        calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (totalUnits - lowerLimit + 1), block.getEnergyCharge(), (charge)));
-                    }
-                    fixedCharge += block.getFixedCharge();
-                    totalCharge = usageCharge + fixedCharge;
-                    levy = totalCharge * block.getLevy();
-                    billAmount = totalCharge + levy;
-                }
+        var category = inputs.getCategory();
+        if (category == ProjectType.Domestic || category == ProjectType.ReligiousAndCharitable) {
+            double totalUnits = inputs.getTotalUnits();
+            double solarUnits = inputs.getSolarUnits();
+            if (totalUnits >= solarUnits) {
+                return calculatePositiveBill(inputs);
+            } else {
+                return calculateNegativeBill(inputs);
             }
-            var result = new CalculatedBillDto(currencyCode);
-            result.setTotalUnits(totalUnits);
-            result.setUsageCharge(usageCharge);
-            result.setFixedCharge(fixedCharge);
-            result.setTotalCharge(totalCharge);
-            result.setLevy(levy);
-            result.setBillAmount(billAmount);
-            result.setCalculationSteps(calculationSteps);
-            return result;
         }
         return null;
+    }
+
+    private CalculatedBillDto calculateNegativeBill(BillCalculatorInputs inputs) {
+        double effectiveUnits = inputs.getSolarUnits() - inputs.getTotalUnits();
+        double totalIncome = effectiveUnits * inputs.getSolarTariffRate();
+        var calculationStep = String.format("%10.0f x %4.2f =%10.2f", effectiveUnits, inputs.getSolarTariffRate(), totalIncome);
+
+        CurrencyCode currencyCode = CurrencyCode.LKR;
+        var result = new CalculatedBillDto(currencyCode);
+        result.setTotalUnits(inputs.getTotalUnits());
+        result.setSolarUnits(inputs.getSolarUnits());
+        result.setTotalIncome(totalIncome);
+        result.setCalculationSteps(Collections.singletonList(calculationStep));
+        return result;
+    }
+
+    private CalculatedBillDto calculatePositiveBill(BillCalculatorInputs inputs) {
+        var category = inputs.getCategory();
+        double effectiveUnits = inputs.getTotalUnits() - inputs.getSolarUnits();
+        double levy = 0.00;
+        double billAmount = 0.00;
+        double totalCharge = 0.00;
+        double usageCharge = 0.00;
+        double fixedCharge = 0.00;
+        List<Object> calculationSteps = new ArrayList<>();
+
+        var tariff = tariffRepository.getByLimitedFromLessThanEqualAndLimitedToGreaterThanEqualAndCategoryAndStatusOrderByLowerLimitAsc(effectiveUnits, effectiveUnits, category, Status.ACTIVE);
+        CurrencyCode currencyCode = CurrencyCode.LKR;
+        for (var block : tariff) {
+            var lowerLimit = block.getLowerLimit();
+            var upperLimit = block.getUpperLimit();
+            currencyCode = block.getCurrencyCode();
+            if (!(lowerLimit <= effectiveUnits && effectiveUnits <= upperLimit) && effectiveUnits > upperLimit) {
+                if (lowerLimit == 0) {
+                    var charge = (upperLimit - lowerLimit) * block.getEnergyCharge();
+                    usageCharge += charge;
+                    calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (upperLimit - lowerLimit), block.getEnergyCharge(), (charge)));
+                }
+                if (lowerLimit != 0) {
+                    var charge = (upperLimit - lowerLimit + 1) * block.getEnergyCharge();
+                    usageCharge += charge;
+                    calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (upperLimit - lowerLimit + 1), block.getEnergyCharge(), (charge)));
+                }
+            }
+            if (lowerLimit <= effectiveUnits && effectiveUnits <= upperLimit) {
+                if (lowerLimit == 0) {
+                    var charge = (effectiveUnits - lowerLimit) * block.getEnergyCharge();
+                    usageCharge += charge;
+                    calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (effectiveUnits - lowerLimit), block.getEnergyCharge(), (charge)));
+                }
+                if (lowerLimit != 0) {
+                    var charge = (effectiveUnits - lowerLimit + 1) * block.getEnergyCharge();
+                    usageCharge += charge;
+                    calculationSteps.add(String.format("%10.0f x %4.2f =%10.2f", (effectiveUnits - lowerLimit + 1), block.getEnergyCharge(), (charge)));
+                }
+                fixedCharge += block.getFixedCharge();
+                totalCharge = usageCharge + fixedCharge;
+                levy = totalCharge * block.getLevy();
+                billAmount = totalCharge + levy;
+            }
+        }
+        var result = new CalculatedBillDto(currencyCode);
+        result.setTotalUnits(inputs.getTotalUnits());
+        result.setSolarUnits(inputs.getSolarUnits());
+        result.setUsageCharge(usageCharge);
+        result.setFixedCharge(fixedCharge);
+        result.setTotalCharge(totalCharge);
+        result.setLevy(levy);
+        result.setBillAmount(billAmount);
+        result.setCalculationSteps(calculationSteps);
+        return result;
     }
 
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    private class BillCalculatorInputs {
-
+    private static class BillCalculatorInputs {
+        private double solarUnits;
+        private double solarTariffRate;
         private double totalUnits;
         private double dayUnits;
         private double peakUnits;
         private double offPeakUnits;
         private ProjectType category;
 
-        public BillCalculatorInputs(ProjectEnergyConsumptionDetailsDto graphDetails) {
+        public BillCalculatorInputs(ProjectEnergyConsumptionDetailsDto graphDetails, double solarUnits, double solarTariffRate) {
             setTotalUnits(graphDetails.getTotalUnits());
             setCategory(graphDetails.getProjectType());
+            setSolarUnits(solarUnits);
+            setSolarTariffRate(solarTariffRate);
         }
+
         public double getTotalUnits() {
             return Math.round(totalUnits);
         }

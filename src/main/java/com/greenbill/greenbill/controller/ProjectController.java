@@ -3,6 +3,7 @@ package com.greenbill.greenbill.controller;
 
 import com.greenbill.greenbill.dto.ProjectDto;
 import com.greenbill.greenbill.dto.ResponseWrapper;
+import com.greenbill.greenbill.dto.request.SolarTariffRequestDto;
 import com.greenbill.greenbill.dto.response.ProjectSummaryDto;
 import com.greenbill.greenbill.service.ProjectService;
 import com.greenbill.greenbill.util.JwtUtil;
@@ -90,9 +91,28 @@ public class ProjectController {
         }
     }
 
-    private boolean isEmpty(String value) {
-        return value == null || value.isEmpty();
+    @PostMapping("/solar-tariff-rate/")
+    public ResponseEntity<ResponseWrapper> saveSolarTariffRate(@RequestBody SolarTariffRequestDto solarTariffRequestDto) {
+        try {
+            projectService.saveSolarTariffRate(solarTariffRequestDto);
+            var successResponse = new ResponseWrapper(null, HttpStatus.OK.value(), "Success: Successfully added");
+            return ResponseEntity.status(HttpStatus.OK).body(successResponse);
+
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(new ResponseWrapper(null, e.getStatusCode().value(), e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
+        }
     }
 
+    @GetMapping("/solar-tariff-rate/")
+    public ResponseEntity getSolarTariffRate(@RequestParam long projectId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(projectService.getSolarTariffRate(projectId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseWrapper(null, 500, INTERNAL_SERVER_ERROR_MESSAGE));
+        }
+    }
 
 }

@@ -18,13 +18,13 @@ public class NodeEnergyConsumptionDetailsDto implements BaseDto {
     private String name;
     private double totalUnits;
     private double unitPercentageOfParent;
-    private double unitPercentageOfProject=0;
+    private double unitPercentageOfProject = 0;
     private List<NodeEnergyConsumptionDetailsDto> children;
 
     public NodeEnergyConsumptionDetailsDto(ApplianceEntity appliance) {
         setName(appliance.getName());
         setFrontEndId(appliance.getFrontEndId());
-        setTotalUnits(appliance.getWattRate(), appliance.getHours(),appliance.getQuantity());
+        setTotalUnits(appliance.getWattRate(), appliance.getHours(), appliance.getQuantity());
     }
 
     public NodeEnergyConsumptionDetailsDto(NodeEntity node) {
@@ -32,7 +32,7 @@ public class NodeEnergyConsumptionDetailsDto implements BaseDto {
         setName(node.getName());
     }
 
-    public void setTotalUnits(double wattRate, double hours,Integer quantity) {
+    public void setTotalUnits(double wattRate, double hours, Integer quantity) {
         this.totalUnits = (wattRate * hours * quantity) * 30 / 1000;
     }
 

@@ -5,6 +5,7 @@ import com.greenbill.greenbill.dto.BaseDto;
 import com.greenbill.greenbill.enumeration.CurrencyCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Setter;
 
 import java.text.NumberFormat;
 import java.util.Currency;
@@ -21,6 +22,10 @@ public class CalculatedBillDto implements BaseDto {
     private String levy;
     private String billAmount;
     private List<Object> calculationSteps;
+
+    private double solarUnits;
+    private String totalIncome;
+
     @JsonIgnore
     private NumberFormat format;
 
@@ -28,10 +33,6 @@ public class CalculatedBillDto implements BaseDto {
         Currency currency = Currency.getInstance(String.valueOf(currencyCode));
         this.format = NumberFormat.getCurrencyInstance(new Locale("en", "LK"));
         format.setCurrency(currency);
-    }
-
-    public void setTotalUnits(double totalUnits) {
-        this.totalUnits = totalUnits;
     }
 
     public void setUsageCharge(double usageCharge) {
@@ -54,7 +55,8 @@ public class CalculatedBillDto implements BaseDto {
         this.billAmount = format.format(billAmount).replace(format.getCurrency().getSymbol(), format.getCurrency().getSymbol() + " ");
     }
 
-    public void setCalculationSteps(List<Object> calculationSteps) {
-        this.calculationSteps = calculationSteps;
+    public void setTotalIncome(double totalIncome) {
+        this.totalIncome = format.format(totalIncome).replace(format.getCurrency().getSymbol(), format.getCurrency().getSymbol() + " ");
     }
+
 }

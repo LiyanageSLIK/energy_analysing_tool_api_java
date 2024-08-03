@@ -1,11 +1,9 @@
 package com.greenbill.greenbill.service;
 
 import com.greenbill.greenbill.dto.ProjectDto;
+import com.greenbill.greenbill.dto.request.SolarTariffRequestDto;
 import com.greenbill.greenbill.dto.response.ProjectSummaryDto;
-import com.greenbill.greenbill.entity.ProjectEntity;
-import com.greenbill.greenbill.entity.RootEntity;
-import com.greenbill.greenbill.entity.SubscriptionEntity;
-import com.greenbill.greenbill.entity.SubscriptionPlanEntity;
+import com.greenbill.greenbill.entity.*;
 import com.greenbill.greenbill.enumeration.Status;
 import com.greenbill.greenbill.repository.ProjectRepository;
 import com.greenbill.greenbill.repository.RootRepository;
@@ -25,13 +23,15 @@ public class ProjectService {
 
     @Autowired
     private ProjectRepository projectRepository;
+
     @Autowired
     private SubscriptionRepository subscriptionRepository;
+
     @Autowired
     private SubscriptionPlanRepository subscriptionPlanRepository;
+
     @Autowired
     private RootRepository rootRepository;
-
 
     @Transactional
     public ProjectSummaryDto addProject(ProjectDto projectDto, String userEmail) throws Exception {
@@ -79,7 +79,7 @@ public class ProjectService {
 
     @Transactional
     public boolean validatePlayGroundProjectAccess(String email) {
-        SubscriptionPlanEntity activePlan = subscriptionPlanRepository.findBySubscriptions_StatusAndSubscriptions_User_Email(Status.ACTIVE,email);
+        SubscriptionPlanEntity activePlan = subscriptionPlanRepository.findBySubscriptions_StatusAndSubscriptions_User_Email(Status.ACTIVE, email);
         if (activePlan == null) {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Sorry You had no subscribe any subscription plan yet");
         }
@@ -87,4 +87,34 @@ public class ProjectService {
         int currentProjectCount = (int) projectRepository.countBySubscription_User_Email(email);
         return (currentProjectCount < maxProjectAllow);
     }
+
+    @Transactional
+    public void saveSolarTariffRate(SolarTariffRequestDto solarTariffRequestDto) {
+        var project = projectRepository.getById(solarTariffRequestDto.getProjectId());
+        if (project == null) {
+            throw new HttpClientErrorException(HttpStatus.CONFLICT, "Sorry could not find the project");
+        }
+        var solarTariff = project.getSolarTariff();
+        if (solarTariff == null) {
+            solarTariff = new SolarTariffEntity(project, solarTariffRequestDto.getSolarTariffRate());
+        } else {
+            solarTariff.setSolarTariffRate(solarTariffRequestDto.getSolarTariffRate());
+        }
+        project.setSolarTariff(solarTariff);
+        projectRepository.save(project);
+    }
+
+    @Transactional
+    public double getSolarTariffRate(long projectId) {
+        var project = projectRepository.getById(projectId);
+        if (project == null) {
+            throw new HttpClientErrorException(HttpStatus.CONFLICT, "Sorry could not find the project");
+        }
+        var solarTariff = project.getSolarTariff();
+        if (solarTariff == null) {
+            return 0;
+        }
+        return solarTariff.getSolarTariffRate();
+    }
+
 }

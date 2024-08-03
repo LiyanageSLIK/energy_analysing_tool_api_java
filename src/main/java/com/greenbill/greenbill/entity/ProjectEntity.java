@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -37,6 +39,12 @@ public class ProjectEntity {
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @ToString.Exclude
     private SubscriptionEntity subscription;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<SolarPanelEntity> solarPanels = new ArrayList<>();
+
+    @OneToOne(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private SolarTariffEntity solarTariff;
 
     public ProjectEntity(ProjectDto projectDto) {
         setName(projectDto.getName());
